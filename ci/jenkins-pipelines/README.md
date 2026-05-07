@@ -1,13 +1,13 @@
-# Ledgrionyx Jenkins Pipeline Library
+# Ledgora Jenkins Pipeline Library
 
 ## Repository layout
 
 ```
 ci/jenkins-pipelines/
-├── Jenkinsfile.infra-validate   # Triggered by Gerrit patchset-created (infra/openstack-ledgrionyx)
+├── Jenkinsfile.infra-validate   # Triggered by Gerrit patchset-created (infra/openstack-ledgora)
 ├── Jenkinsfile.infra-apply      # Triggered by Gerrit change-merged → applies to DEV
 ├── Jenkinsfile.infra-promote    # Manual dispatch → promotes infra to TEST / STAGE / PROD
-├── Jenkinsfile.app-build        # Triggered by Gerrit patchset-created (apps/ledgrionyx-core)
+├── Jenkinsfile.app-build        # Triggered by Gerrit patchset-created (apps/ledgora-core)
 ├── Jenkinsfile.app-deploy       # Manual dispatch or change-merged → deploys app to any env
 ├── vars/
 │   ├── gerrit.groovy            # Shared: post Verified votes and comments to Gerrit
@@ -58,17 +58,17 @@ In each Jenkins job's configuration:
 
 **Infra validate** (`Jenkinsfile.infra-validate`):
 - Trigger: Patchset Created
-- Gerrit project: `infra/openstack-ledgrionyx` pattern `plain`
+- Gerrit project: `infra/openstack-ledgora` pattern `plain`
 - Branch: `**` (all branches)
 
 **Infra apply** (`Jenkinsfile.infra-apply`):
 - Trigger: Change Merged
-- Gerrit project: `infra/openstack-ledgrionyx`
+- Gerrit project: `infra/openstack-ledgora`
 - Branch: `main`
 
 **App build** (`Jenkinsfile.app-build`):
 - Trigger: Patchset Created
-- Gerrit project: `apps/ledgrionyx-core`
+- Gerrit project: `apps/ledgora-core`
 - Branch: `**`
 
 **App deploy / Infra promote**: Manual dispatch (parametrized build). Optionally also triggered by specific Gerrit labels such as `Ready-For-Test +1`.

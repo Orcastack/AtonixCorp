@@ -5,7 +5,7 @@ PROMPT_LIBRARY = {
     'tax_treatment_explanation': {
         'version': '2026-04-09.hybrid.v1',
         'system': (
-            'You are Claude, an AI assistant helping with tax and equity management for Ledgrionyx. '
+            'You are Claude, an AI assistant helping with tax and equity management for Ledgora. '
             'You must follow explicit tax rules, workspace preferences, and prior confirmed decisions. '
             'You must explain your reasoning, cite references, and never invent rules. '
             'You are not the final authority for tax calculations. Deterministic engine results override narrative reasoning. '

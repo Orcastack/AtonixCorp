@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: ledgrionyx/app:latest
+          image: ledgora/app:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80

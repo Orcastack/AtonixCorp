@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block email_title %}Ledgrionyx{% endblock %}</title>
+    <title>{% block email_title %}Ledgora{% endblock %}</title>
     <style>
         body {
             margin: 0;
@@ -171,7 +171,7 @@
     </style>
 </head>
 <body>
-    <div class="preheader">{% block email_preheader %}Ledgrionyx platform update{% endblock %}</div>
+    <div class="preheader">{% block email_preheader %}Ledgora platform update{% endblock %}</div>
     <table role="presentation" width="100%" class="email-shell">
         <tr>
             <td align="center">
@@ -187,7 +187,7 @@
                                     <path d="M26.9 35H37.2" stroke="#C8A44D" stroke-width="3.5" stroke-linecap="round"/>
                                 </svg>
                                 <div class="brand-copy">
-                                    <strong>{% block email_brand_name %}{{ email_brand_name|default:"Ledgrionyx" }}{% endblock %}</strong>
+                                    <strong>{% block email_brand_name %}{{ email_brand_name|default:"Ledgora" }}{% endblock %}</strong>
                                     <span>{% block email_brand_title %}{{ email_brand_title|default:"Institutional Platform" }}{% endblock %}</span>
                                 </div>
                             </div>
@@ -201,7 +201,7 @@
                     <tr>
                         <td class="email-footer">
                             {% block email_footer %}
-                            {{ email_brand_footer|default:"Ledgrionyx developer communications are structured for operational clarity, predictable onboarding, and institutional-grade trust." }}
+                            {{ email_brand_footer|default:"Ledgora developer communications are structured for operational clarity, predictable onboarding, and institutional-grade trust." }}
                             {% endblock %}
                         </td>
                     </tr>

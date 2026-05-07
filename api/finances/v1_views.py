@@ -74,7 +74,7 @@ FINANCIAL_EVENT_SOURCES = {
 }
 
 WEBHOOK_MAX_ATTEMPTS = 3
-OPENAPI_SPEC_PATH = Path(__file__).resolve().parent.parent / 'openapi' / 'ledgrionyx-v1-openapi.yaml'
+OPENAPI_SPEC_PATH = Path(__file__).resolve().parent.parent / 'openapi' / 'ledgora-v1-openapi.yaml'
 
 
 def _sha256(value):
@@ -1057,7 +1057,7 @@ class RedocView(V1PublicAPIView):
     <head>
         <meta charset=\"utf-8\" />
         <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
-        <title>Ledgrionyx API Docs</title>
+        <title>Ledgora API Docs</title>
         <style>
             body { margin: 0; padding: 0; }
         </style>
@@ -1078,7 +1078,7 @@ class SwaggerUIView(V1PublicAPIView):
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Ledgrionyx API Swagger</title>
+        <title>Ledgora API Swagger</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css" />
         <style>
             body { margin: 0; background: #fafafa; }
@@ -1732,7 +1732,7 @@ class MigrationTransactionsView(BulkMigrationBaseView):
                     entity=entity,
                     name='Imported Transactions',
                     type=txn_type,
-                    defaults={'description': 'Imported via Ledgrionyx API v1'},
+                    defaults={'description': 'Imported via Ledgora API v1'},
                 )
                 reference = (record.get('external_id') or record.get('reference') or f'MIG-TXN-{index + 1}').strip()
                 transaction_obj, was_created = Transaction.objects.update_or_create(
@@ -1988,7 +1988,7 @@ class InvoicesView(V1BaseAPIView):
             currency=currency,
             status='posted',
             description='; '.join((line.get('description') or '').strip() for line in line_items if line.get('description')),
-            notes='Created via Ledgrionyx API v1',
+            notes='Created via Ledgora API v1',
             created_by=request.user,
         )
         for line in line_items:
@@ -2095,7 +2095,7 @@ class BillsView(V1BaseAPIView):
             currency=currency,
             status='posted',
             description='; '.join((line.get('description') or '').strip() for line in line_items if line.get('description')),
-            notes='Created via Ledgrionyx API v1',
+            notes='Created via Ledgora API v1',
             created_by=request.user,
         )
 

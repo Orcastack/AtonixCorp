@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useEnterprise } from '../../context/EnterpriseContext';
-import LedgrionyxLogo from '../../components/branding/LedgrionyxLogo';
+import LedgoraLogo from '../../components/branding/LedgoraLogo';
 import { countryDropdownOptions } from '../../utils/countryDropdowns';
 import {
   ACCOUNTING_MODULE_KEYS,
@@ -12,7 +12,7 @@ import {
 import './CreateWorkspace.css';
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Ledgrionyx — Create Organization
+   Ledgora — Create Organization
    Form to create a new organization record.
   On success: provisions the organization record and returns the user to the console.
 ───────────────────────────────────────────────────────────────────────────── */
@@ -344,7 +344,7 @@ const CreateWorkspace = () => {
           onChange={(e) => update('name', e.target.value)}
           autoFocus
         />
-        <span className="cw-hint">This will be displayed as the organization name throughout Ledgrionyx.</span>
+        <span className="cw-hint">This will be displayed as the organization name throughout Ledgora.</span>
       </div>
       <div className="cw-field">
         <label className="cw-label">Registration Number <span className="cw-optional">(optional)</span></label>
@@ -545,7 +545,7 @@ const CreateWorkspace = () => {
             <div className="cw-review-row"><span>Fiscal Year End</span><strong>{FISCAL_YEAR_ENDS.find(f => f.value === form.fiscalYearEnd)?.label}</strong></div>
           </div>
           <div className="cw-review-note">
-            Ledgrionyx will automatically set up your chart of accounts and default tax profile based on the country and business type selected.
+            Ledgora will automatically set up your chart of accounts and default tax profile based on the country and business type selected.
           </div>
         </div>
       </div>
@@ -693,7 +693,7 @@ const CreateWorkspace = () => {
     },
   ] : [
     {
-      title: 'Returns to Ledgrionyx Console',
+      title: 'Returns to Ledgora Console',
       description: 'After creation, you return to the console where the new organization is available from the top-level flow.',
     },
     {
@@ -711,7 +711,7 @@ const CreateWorkspace = () => {
       {/* Top Navbar */}
       <header className="cw-topnav">
         <div className="cw-topnav-brand">
-          <LedgrionyxLogo variant="white" size="small" withText text="Ledgrionyx" />
+          <LedgoraLogo variant="white" size="small" withText text="Ledgora" />
         </div>
         <button className="cw-topnav-back" onClick={() => navigate('/app/console')}>
           ← {isEntityCreate ? 'All Entities' : 'All Organizations'}
@@ -810,7 +810,7 @@ const CreateWorkspace = () => {
           <li>
             <div>
               <strong>Dedicated Equity Sidebar</strong>
-              <p>If you enable equity management, the organization gets a separate Ledgrionyx Equity Management navigation with registry, cap table, valuation, transactions, and governance flows.</p>
+              <p>If you enable equity management, the organization gets a separate Ledgora Equity Management navigation with registry, cap table, valuation, transactions, and governance flows.</p>
             </div>
           </li>
         </ul>

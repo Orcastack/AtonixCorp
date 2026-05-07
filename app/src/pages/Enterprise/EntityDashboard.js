@@ -37,7 +37,7 @@ const EntityDashboard = () => {
 
     const workspaceCandidates = [activeWorkspace];
     try {
-      const savedWorkspace = localStorage.getItem('ledgrionyx_active_workspace');
+      const savedWorkspace = localStorage.getItem('ledgora_active_workspace');
       if (savedWorkspace) {
         workspaceCandidates.push(JSON.parse(savedWorkspace));
       }

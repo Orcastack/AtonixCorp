@@ -603,7 +603,7 @@ export default function AutomationRules() {
             </select>
           </div>
         </div>
-        <Input label="Email Subject" value={form.subject} onChange={(event) => setForm((current) => ({ ...current, subject: event.target.value }))} placeholder="Ledgrionyx monthly board pack" />
+        <Input label="Email Subject" value={form.subject} onChange={(event) => setForm((current) => ({ ...current, subject: event.target.value }))} placeholder="Ledgora monthly board pack" />
         <div style={{ marginBottom: 12 }}>
           <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>Recipients</label>
           <textarea value={form.recipients} onChange={(event) => setForm((current) => ({ ...current, recipients: event.target.value }))} rows={3} placeholder="cfo@example.com, controller@example.com" style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13, resize: 'vertical' }} />

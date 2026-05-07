@@ -56,7 +56,7 @@ def seed_developer_portal_content(apps, schema_editor):
             'status': 'stable',
             'access_level': 'public',
             'auth_type': 'api_key',
-            'compliance_notes': 'Redistribution and extended caching are subject to Ledgrionyx data licensing and confidentiality controls.',
+            'compliance_notes': 'Redistribution and extended caching are subject to Ledgora data licensing and confidentiality controls.',
             'rate_limits': {'per_minute': 120, 'per_hour': 5000, 'burst': 'higher limits may apply for approved market-data clients'},
             'keywords': ['quotes', 'prices', 'market data', 'fx', 'equities'],
             'is_featured': True,
@@ -86,7 +86,7 @@ def seed_developer_portal_content(apps, schema_editor):
                         {'name': 'X-Organization-Id', 'required': True, 'description': 'Tenant routing header.'},
                     ],
                     'scopes': ['market.read'],
-                    'request_example': 'curl -X GET "https://api.ledgrionyx.com/v1/market/quotes?symbols=EURUSD,AAPL" -H "Authorization: Bearer <token>" -H "X-Organization-Id: org_123"',
+                    'request_example': 'curl -X GET "https://api.ledgora.com/v1/market/quotes?symbols=EURUSD,AAPL" -H "Authorization: Bearer <token>" -H "X-Organization-Id: org_123"',
                     'response_example': '{"data":[{"symbol":"EURUSD","bid":1.0841,"ask":1.0843,"mid":1.0842,"timestamp":"2026-03-15T12:00:00Z"}]}',
                     'error_responses': [
                         {'status': 400, 'code': 'INVALID_REQUEST', 'message': 'symbols is required.'},
@@ -101,11 +101,11 @@ def seed_developer_portal_content(apps, schema_editor):
         {
             'slug': 'accounts-balances-api',
             'name': 'Accounts & Balances API',
-            'description': 'Read account, balance, and position state across supported Ledgrionyx organizations.',
+            'description': 'Read account, balance, and position state across supported Ledgora organizations.',
             'overview': 'Use this API to retrieve current balances, cash positions, and account metadata used by treasury and operations teams.',
             'use_cases': [
                 'Display current available balances in a treasury dashboard.',
-                'Reconcile external systems against Ledgrionyx account snapshots.',
+                'Reconcile external systems against Ledgora account snapshots.',
             ],
             'data_domains': ['accounts', 'balances', 'positions'],
             'data_types': ['real-time', 'metadata'],
@@ -138,7 +138,7 @@ def seed_developer_portal_content(apps, schema_editor):
                         {'name': 'X-Organization-Id', 'required': True, 'description': 'Tenant routing header.'},
                     ],
                     'scopes': ['accounts.read'],
-                    'request_example': 'curl -X GET "https://api.ledgrionyx.com/v1/accounts" -H "Authorization: Bearer <token>" -H "X-Organization-Id: org_123"',
+                    'request_example': 'curl -X GET "https://api.ledgora.com/v1/accounts" -H "Authorization: Bearer <token>" -H "X-Organization-Id: org_123"',
                     'response_example': '[{"id":"acc_1","code":"1000","name":"Cash","type":"asset","current_balance":100000.0}]',
                     'error_responses': [
                         {'status': 403, 'code': 'INSUFFICIENT_SCOPE', 'message': 'Missing required API scope(s): accounts.read'},
@@ -194,7 +194,7 @@ def seed_developer_portal_content(apps, schema_editor):
                         {'name': 'X-Organization-Id', 'required': True, 'description': 'Tenant routing header.'},
                     ],
                     'scopes': ['banking.read'],
-                    'request_example': 'curl -X GET "https://api.ledgrionyx.com/v1/bank-accounts/bank_123/transactions?status=reconciled" -H "Authorization: Bearer <token>" -H "X-Organization-Id: org_123"',
+                    'request_example': 'curl -X GET "https://api.ledgora.com/v1/bank-accounts/bank_123/transactions?status=reconciled" -H "Authorization: Bearer <token>" -H "X-Organization-Id: org_123"',
                     'response_example': '[{"id":"txn_1","external_id":"provider_001","amount":-250.0,"status":"reconciled"}]',
                     'error_responses': [
                         {'status': 404, 'code': 'NOT_FOUND', 'message': 'Resource not found.'},
@@ -244,7 +244,7 @@ def seed_developer_portal_content(apps, schema_editor):
                         {'name': 'X-Organization-Id', 'required': True, 'description': 'Tenant routing header.'},
                     ],
                     'scopes': ['risk.read'],
-                    'request_example': 'curl -X GET "https://api.ledgrionyx.com/v1/risk/summary" -H "Authorization: Bearer <token>" -H "X-Organization-Id: org_123"',
+                    'request_example': 'curl -X GET "https://api.ledgora.com/v1/risk/summary" -H "Authorization: Bearer <token>" -H "X-Organization-Id: org_123"',
                     'response_example': '{"limit_utilization":0.41,"var_95":125000.0,"breaches":0}',
                     'error_responses': [
                         {'status': 403, 'code': 'FORBIDDEN', 'message': 'You do not have access to this organization.'},

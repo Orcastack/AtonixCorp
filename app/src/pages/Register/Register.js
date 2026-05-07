@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { countryDropdownOptions } from '../../utils/countryDropdowns';
-import LedgrionyxLogo from '../../components/branding/LedgrionyxLogo';
+import LedgoraLogo from '../../components/branding/LedgoraLogo';
 
 const Register = () => {
   const [step, setStep] = useState(1); // 1: email → 2: details
@@ -79,7 +79,7 @@ const Register = () => {
         <div className="auth-container">
           <div className="auth-header">
             <Link to="/" className="auth-logo-link">
-              <LedgrionyxLogo size="medium" withText />
+              <LedgoraLogo size="medium" withText />
             </Link>
           </div>
 
@@ -127,7 +127,7 @@ const Register = () => {
       <div className="auth-container">
         <div className="auth-header">
           <Link to="/" className="auth-logo-link">
-            <LedgrionyxLogo size="medium" withText />
+            <LedgoraLogo size="medium" withText />
           </Link>
         </div>
 

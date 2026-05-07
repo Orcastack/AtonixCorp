@@ -21,7 +21,7 @@ import './WorkspaceLayout.css';
 
 /* ─────────────────────────────────────────────────────────────────────────────
    WorkspaceLayout — full sidebar layout for workspace-scoped module pages.
-   Completely isolated from the Ledgrionyx Console — no console data, no
+   Completely isolated from the Ledgora Console — no console data, no
    console nav, no console permissions cross this boundary.
 ───────────────────────────────────────────────────────────────────────────── */
 
@@ -46,7 +46,7 @@ const WorkspaceLayout = ({ children }) => {
     if (fromList) return fromList;
     // Fall back to localStorage snapshot
     try {
-      const saved = localStorage.getItem('ledgrionyx_active_workspace');
+      const saved = localStorage.getItem('ledgora_active_workspace');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (String(parsed.id) === String(workspaceId)) return parsed;

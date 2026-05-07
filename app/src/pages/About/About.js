@@ -16,7 +16,7 @@ const About = () => {
         <div className="container">
           <div className="about-hero-inner">
             <p className="about-eyebrow">The Financial Operating System</p>
-            <h1>Ledgrionyx</h1>
+            <h1>Ledgora</h1>
             <p className="about-hero-sub">Not an accounting tool. Not a bookkeeping app. Not a reporting dashboard.<br />A unified Financial Operating System built for accounting firms, businesses,
               and financial institutions.
             </p>
@@ -57,7 +57,7 @@ const About = () => {
               </div>
             ))}
           </div>
-          <div className="problem-resolve-banner">Ledgrionyx exists to eliminate every one of these problems — permanently.
+          <div className="problem-resolve-banner">Ledgora exists to eliminate every one of these problems — permanently.
           </div>
         </div>
       </section>
@@ -69,7 +69,7 @@ const About = () => {
             <div className="solution-text">
               <p className="about-eyebrow-purple">The Solution</p>
               <h2>One Platform. All Financial Operations. Fully Connected.</h2>
-              <p>Ledgrionyx is a unified financial-operations environment — a single platform where
+              <p>Ledgora is a unified financial-operations environment — a single platform where
                 accounting firms and businesses manage everything: financial data, accounting workflows,
                 client relationships, documents, compliance, reporting, automation, and banking integrations.
               </p>
@@ -105,7 +105,7 @@ const About = () => {
             <p className="about-eyebrow-dark">Core Architecture</p>
             <h2>Nine Foundational Pillars</h2>
             <p className="about-section-sub">Every decision, every feature, every line of code is anchored to these principles.
-              They define Ledgrionyx's identity and guide everything we build.
+              They define Ledgora's identity and guide everything we build.
             </p>
           </div>
           <div className="about-pillars-grid">
@@ -137,8 +137,8 @@ const About = () => {
           <div className="ux-split">
             <div className="ux-text">
               <p className="about-eyebrow-purple">The User Experience</p>
-              <h2>What Ledgrionyx Feels Like</h2>
-              <p>When a user logs into Ledgrionyx, they must feel empowered, in control, supported,
+              <h2>What Ledgora Feels Like</h2>
+              <p>When a user logs into Ledgora, they must feel empowered, in control, supported,
                 efficient, confident, and secure. Every screen, every button, every workflow reflects this.
               </p>
               <div className="ux-qualities">
@@ -156,7 +156,7 @@ const About = () => {
               </div>
             </div>
             <div className="ux-feelings">
-              <p className="ux-feelings-title">When you use Ledgrionyx, you feel:</p>
+              <p className="ux-feelings-title">When you use Ledgora, you feel:</p>
               {['Empowered', 'In Control', 'Supported', 'Efficient', 'Confident', 'Secure'].map((f) => (
                 <div className="ux-feeling-chip" key={f}>{f}</div>
               ))}
@@ -189,7 +189,7 @@ const About = () => {
             <div className="brand-promise-card">
               <h3>Brand Promise</h3>
               <blockquote>
-                "Ledgrionyx gives accounting firms the power, speed, and intelligence they need to
+                "Ledgora gives accounting firms the power, speed, and intelligence they need to
                 operate at the highest level."
               </blockquote>
             </div>
@@ -216,8 +216,8 @@ const About = () => {
         <div className="container">
           <div className="future-inner">
             <p className="about-eyebrow about-eyebrow--inverse">Long-Term Vision</p>
-            <h2>The Future of Ledgrionyx</h2>
-            <p className="future-sub">Ledgrionyx is not just a platform — it is a movement. A transformation.
+            <h2>The Future of Ledgora</h2>
+            <p className="future-sub">Ledgora is not just a platform — it is a movement. A transformation.
               A new standard for how the world manages financial operations.
             </p>
             <div className="future-grid">
@@ -236,7 +236,7 @@ const About = () => {
                 </div>
               ))}
             </div>
-            <p className="future-closing">Ledgrionyx will become the platform that powers the world's financial operations.
+            <p className="future-closing">Ledgora will become the platform that powers the world's financial operations.
             </p>
           </div>
         </div>
@@ -246,7 +246,7 @@ const About = () => {
       <section className="about-cta-section">
         <div className="container">
           <div className="about-cta-inner">
-            <h2>This is Ledgrionyx.<br />
+            <h2>This is Ledgora.<br />
               <span>The future of financial operations begins here.</span>
             </h2>
             <p>Built for the future. Built for firms that demand excellence. Built for businesses

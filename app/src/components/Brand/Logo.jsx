@@ -1,8 +1,8 @@
 import React from 'react';
-import LedgrionyxLogo from '../branding/LedgrionyxLogo';
+import LedgoraLogo from '../branding/LedgoraLogo';
 
 export const Logo = ({ height = 32 }) => {
-  return <LedgrionyxLogo variant="full" size={height} withText />;
+  return <LedgoraLogo variant="full" size={height} withText />;
 };
 
 export default Logo;

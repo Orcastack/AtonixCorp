@@ -77,7 +77,7 @@ const Features = () => {
         <div className="hero-content">
           <h1>Powerful Features for Modern Finance</h1>
           <p>Discover the comprehensive suite of tools and capabilities that make
-            Ledgrionyx the leading choice for financial management.
+            Ledgora the leading choice for financial management.
           </p>
         </div>
       </section>
@@ -143,7 +143,7 @@ const Features = () => {
       <section className="features-cta">
         <div className="container">
           <h2>Ready to Experience These Features?</h2>
-          <p>Start your free trial today and discover how Ledgrionyx can transform your financial management.</p>
+          <p>Start your free trial today and discover how Ledgora can transform your financial management.</p>
           <div className="cta-buttons">
             <Link to="/register" className="btn-primary btn-large">Start Free Trial
             </Link>

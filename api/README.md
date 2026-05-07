@@ -81,7 +81,7 @@ This is the Django REST API for the AI Financial Modeling Integration System. It
 ## API Endpoints
 
 ### Core Financial API v1 Documentation
-- OpenAPI blueprint: `openapi/ledgrionyx-v1-openapi.yaml`
+- OpenAPI blueprint: `openapi/ledgora-v1-openapi.yaml`
 - External developer guide: Core financial API v1 developer guide
 - Redoc UI: `/v1/docs`
 - Swagger UI: `/v1/swagger`
@@ -249,7 +249,7 @@ curl http://localhost:8000/api/tax/countries/
 
 ## License
 
-© 2025 Ledgrionyx. All rights reserved.
+© 2025 Ledgora. All rights reserved.
 
 ## Support
 

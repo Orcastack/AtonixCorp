@@ -1,6 +1,6 @@
 // =============================================================================
-// Ledgrionyx – Infrastructure Apply Pipeline
-// Trigger: Gerrit change-merged on infra/openstack-ledgrionyx (main branch)
+// Ledgora – Infrastructure Apply Pipeline
+// Trigger: Gerrit change-merged on infra/openstack-ledgora (main branch)
 //
 // Automatically applies to DEV. For TEST/STAGE/PROD use the promotion pipeline.
 // All resources are tagged with the Gerrit change ID and commit SHA for full
@@ -130,7 +130,7 @@ Commit        : ${env.COMMIT_SHORT}
 Jenkins build : ${env.BUILD_URL}
 Plan summary  : ${env.PLAN_SUMMARY}
 
-Resources are tagged: system=ledgrionyx env=dev change_id=${env.CHANGE_ID} commit=${env.COMMIT_SHORT}
+Resources are tagged: system=ledgora env=dev change_id=${env.CHANGE_ID} commit=${env.COMMIT_SHORT}
 """
                 )
             }

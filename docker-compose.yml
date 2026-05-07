@@ -5,7 +5,7 @@ services:
     build:
       context: ./api
       dockerfile: Dockerfile
-    container_name: ledgrionyx-api
+    container_name: ledgora-api
     command: python manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
@@ -40,7 +40,7 @@ services:
     build:
       context: ./api
       dockerfile: Dockerfile
-    container_name: ledgrionyx-banking-sync
+    container_name: ledgora-banking-sync
     command: >
       /bin/sh -c "while true; do
       python manage.py sync_banking_integrations;
@@ -69,7 +69,7 @@ services:
     build:
       context: ./api
       dockerfile: Dockerfile
-    container_name: ledgrionyx-approval-digest
+    container_name: ledgora-approval-digest
     command: >
       /bin/sh -c "while true; do
       python manage.py send_approval_notification_digest --hours ${APPROVAL_DIGEST_LOOKBACK_HOURS:-24};
@@ -99,7 +99,7 @@ services:
     build:
       context: ./app
       dockerfile: Dockerfile
-    container_name: ledgrionyx-app
+    container_name: ledgora-app
     command: npm start
     ports:
       - "3000:3000"
@@ -114,11 +114,11 @@ services:
 
   db:
     image: dhi.io/postgres:14-alpine3.22
-    container_name: ledgrionyx-db
+    container_name: ledgora-db
     environment:
-      - POSTGRES_DB=ledgrionyx
-      - POSTGRES_USER=ledgrionyx
-      - POSTGRES_PASSWORD=ledgrionyxpassword
+      - POSTGRES_DB=ledgora
+      - POSTGRES_USER=ledgora
+      - POSTGRES_PASSWORD=ledgorapassword
     ports:
       - "5433:5432"
     volumes:

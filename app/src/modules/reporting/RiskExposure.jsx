@@ -309,8 +309,8 @@ export default function RiskExposure() {
             <label className="input-label">Entity</label>
             <select className="filter-select" style={{ width: '100%', height: 40 }} value={runForm.entity} onChange={setF('entity')}>
               <option value="all">All Entities</option>
-              <option value="1">Ledgrionyx US</option>
-              <option value="2">Ledgrionyx UK</option>
+              <option value="1">Ledgora US</option>
+              <option value="2">Ledgora UK</option>
             </select>
           </div>
           <div>

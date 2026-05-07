@@ -23,7 +23,7 @@ const Achievements = () => {
     { id: 1, title: 'Complete your Financial DNA Profile', reward: '200 XP', progress: 100, completed: true },
     { id: 2, title: 'Make 5 budget-conscious transactions', reward: '150 XP', progress: 80, completed: false },
     { id: 3, title: 'Maintain 7-day financial streak', reward: '100 XP', progress: 100, completed: true },
-    { id: 4, name: 'Refer 3 friends to Ledgrionyx', reward: '500 XP', progress: 33, completed: false },
+    { id: 4, name: 'Refer 3 friends to Ledgora', reward: '500 XP', progress: 33, completed: false },
     { id: 5, title: 'Invest in 3 different vaults', reward: '300 XP', progress: 66, completed: false },
     { id: 6, title: 'Enable all security features', reward: '250 XP', progress: 100, completed: true },
   ];

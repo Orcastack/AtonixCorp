@@ -14,5 +14,5 @@ resources:
   - networkpolicy.yaml
 
 commonLabels:
-  app.kubernetes.io/part-of: ledgrionyx
+  app.kubernetes.io/part-of: ledgora
   app.kubernetes.io/managed-by: kustomize

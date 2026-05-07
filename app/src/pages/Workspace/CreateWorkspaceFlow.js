@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEnterprise } from '../../context/EnterpriseContext';
-import LedgrionyxLogo from '../../components/branding/LedgrionyxLogo';
+import LedgoraLogo from '../../components/branding/LedgoraLogo';
 import { countryDropdownOptions } from '../../utils/countryDropdowns';
 import { getWorkspaceTypeDefinition, WORKSPACE_TYPE_OPTIONS } from '../../utils/workspaceTypeRegistry';
 import './CreateWorkspace.css';
@@ -355,7 +355,7 @@ export default function CreateWorkspaceFlow() {
       {/* Top Nav */}
       <nav className="cw-topnav">
         <div className="cw-topnav-brand">
-          <LedgrionyxLogo variant="white" size={28} withText={false} />
+          <LedgoraLogo variant="white" size={28} withText={false} />
           <span className="cw-topnav-title">Create Workspace</span>
         </div>
         <button className="cw-topnav-cancel" onClick={() => navigate('/app/enterprise/org-overview')}>

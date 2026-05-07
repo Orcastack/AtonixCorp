@@ -833,7 +833,7 @@ def execute_automation_workflow(workflow, *, initiated_by=None, trigger_type='ma
                 email = EmailMessage(
                     subject=action.get('subject') or f"{workflow.organization.name} Enterprise Reporting Pack",
                     body=action.get('body') or f"Attached is the {export_format.upper()} enterprise reporting pack for {workflow.organization.name} covering {payload['period']['start_date']} to {payload['period']['end_date']}.",
-                    from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'no-reply@ledgrionyx.local'),
+                    from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'no-reply@ledgora.local'),
                     to=recipients,
                 )
                 email.attach(filename, content, content_type)

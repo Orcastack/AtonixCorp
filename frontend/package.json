@@ -1,7 +1,7 @@
 {
-  "name": "ledgrionyx",
+  "name": "ledgora",
   "version": "1.0.0",
-  "homepage": "https://atonixcorp.github.io/ledgrionyx",
+  "homepage": "https://atonixcorp.github.io/ledgora",
   "private": true,
   "proxy": "http://localhost:8000",
   "engines": {

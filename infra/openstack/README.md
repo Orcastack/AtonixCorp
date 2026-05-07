@@ -1,9 +1,9 @@
-# Ledgrionyx – OpenStack Infrastructure
+# Ledgora – OpenStack Infrastructure
 
 This directory contains all Infrastructure as Code (IaC) and pipeline definitions
-for operating Ledgrionyx on OpenStack using Gerrit change control and Jenkins pipelines.
+for operating Ledgora on OpenStack using Gerrit change control and Jenkins pipelines.
 
-**No manual changes are permitted in any Ledgrionyx environment beyond temporary DEV experiments.**
+**No manual changes are permitted in any Ledgora environment beyond temporary DEV experiments.**
 
 ---
 
@@ -34,8 +34,8 @@ infra/openstack/
 │       └── lgx-db/        PostgreSQL container on db hosts
 infra/gerrit/
 ├── projects/
-│   ├── infra-openstack-ledgrionyx.config  Access rules for infra/openstack-ledgrionyx
-│   ├── apps-ledgrionyx-core.config Access rules for apps/ledgrionyx-core
+│   ├── infra-openstack-ledgora.config  Access rules for infra/openstack-ledgora
+│   ├── apps-ledgora-core.config Access rules for apps/ledgora-core
 │   └── ci-jenkins-pipelines.config Access rules for ci/jenkins-pipelines
 ├── groups                          Gerrit group UUID registry
 └── setup-instructions.md           Step-by-step Gerrit bootstrap guide
@@ -77,7 +77,7 @@ Engineer → Gerrit change → Jenkins validate (lint + plan) → peer review
 Every resource created by Terraform carries these tags:
 
 ```
-system=ledgrionyx
+system=ledgora
 env=<dev|test|stage|prod>
 service=<ledger|accounts|risk|reporting|shared>
 change_id=<GerritChangeID>
@@ -132,7 +132,7 @@ ansible-playbook playbooks/site.yml --inventory inventories/dev/hosts.yml
 
 ## Rollback procedure
 
-1. Identify the last known-good commit in `infra/openstack-ledgrionyx`.
+1. Identify the last known-good commit in `infra/openstack-ledgora`.
 2. Raise a Gerrit change reverting the problematic commits.
 3. Fast-track review (expedited, but still two approvers for PROD).
 4. Jenkins applies the revert.

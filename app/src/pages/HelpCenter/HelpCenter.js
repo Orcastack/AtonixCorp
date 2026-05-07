@@ -79,7 +79,7 @@ const HelpCenter = () => {
     {
       title: "Platform Overview",
       duration: "5 min",
-      description: "Get familiar with the Ledgrionyx platform interface and key features."
+      description: "Get familiar with the Ledgora platform interface and key features."
     },
     {
       title: "Portfolio Analysis",
@@ -94,7 +94,7 @@ const HelpCenter = () => {
     {
       title: "Mobile App Guide",
       duration: "6 min",
-      description: "Master the Ledgrionyx mobile app for trading on the go."
+      description: "Master the Ledgora mobile app for trading on the go."
     }
   ];
 
@@ -111,7 +111,7 @@ const HelpCenter = () => {
         <div className="container">
           <div className="hero-content">
             <h1>Help Center</h1>
-            <p>Find answers, guides, and tutorials to make the most of Ledgrionyx</p>
+            <p>Find answers, guides, and tutorials to make the most of Ledgora</p>
             <div className="search-box">
 
               <input
@@ -245,7 +245,7 @@ const HelpCenter = () => {
                 <div className="contact-option">
                   <h4>Email Support</h4>
                   <p>Send us a detailed message</p>
-                  <a href="mailto:support@ledgrionyx.com" className="contact-btn">Email Us</a>
+                  <a href="mailto:support@ledgora.com" className="contact-btn">Email Us</a>
                 </div>
                 <div className="contact-option">
                   <h4>Phone Support</h4>

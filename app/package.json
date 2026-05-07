@@ -1,7 +1,7 @@
 {
-  "name": "ledgrionyx",
+  "name": "ledgora",
   "version": "1.0.0",
-  "homepage": "/Ledgrionyx",
+  "homepage": "/Ledgora",
   "private": true,
   "proxy": "http://localhost:8000",
   "engines": {
@@ -26,8 +26,8 @@
     "prestart": "node scripts/check-node-version.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "standards:check": "node scripts/enforce-ledgrionyx-public-standards.js",
-    "standards:baseline": "node scripts/enforce-ledgrionyx-public-standards.js --write-baseline",
+    "standards:check": "node scripts/enforce-ledgora-public-standards.js",
+    "standards:baseline": "node scripts/enforce-ledgora-public-standards.js --write-baseline",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

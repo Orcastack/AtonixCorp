@@ -1,7 +1,7 @@
 # -----------------------------------------------------------------------------
-# Ledgrionyx – OpenStack Network Module
+# Ledgora – OpenStack Network Module
 # Provisions: network, subnets (main + backend), router, and floating-IP pool
-# Every resource is tagged per the Ledgrionyx traceability standard.
+# Every resource is tagged per the Ledgora traceability standard.
 # -----------------------------------------------------------------------------
 
 terraform {
@@ -70,7 +70,7 @@ resource "openstack_networking_router_interface_v2" "backend" {
 
 locals {
   tags = [
-    "system=ledgrionyx",
+    "system=ledgora",
     "env=${var.env}",
     "service=shared",
     "change_id=${var.change_id}",

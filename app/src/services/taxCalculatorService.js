@@ -1,4 +1,4 @@
-// Tax Calculator Service for Ledgrionyx
+// Tax Calculator Service for Ledgora
 // Comprehensive global tax rates database with AI-powered validation
 // Specification-compliant with modular, future-proof architecture
 

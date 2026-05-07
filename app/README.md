@@ -1,4 +1,4 @@
-# Ledgrionyx App
+# Ledgora App
 
 A modern React-based personal finance management application with expense tracking, budgeting, income management, and analytics.
 
@@ -17,7 +17,7 @@ A modern React-based personal finance management application with expense tracki
 - Node.js 18, 20, or 21
 - npm or yarn
 
-This app includes an [.nvmrc](/Users/ofidohubvm/Ledgrionyx/app/.nvmrc) file pinned to Node.js 20. If you use `nvm`, switch first:
+This app includes an [.nvmrc](/Users/ofidohubvm/Ledgora/app/.nvmrc) file pinned to Node.js 20. If you use `nvm`, switch first:
 
 ```bash
 nvm use

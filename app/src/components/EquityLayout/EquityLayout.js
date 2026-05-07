@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useEnterprise } from '../../context/EnterpriseContext';
-import LedgrionyxLogo from '../branding/LedgrionyxLogo';
+import LedgoraLogo from '../branding/LedgoraLogo';
 import { getWorkspaceLandingPath } from '../../utils/workspaceModules';
 import { reportUiError } from '../../utils/errorReporting';
 import { Icon } from '../ui';
@@ -38,7 +38,7 @@ const EquityLayout = ({ children }) => {
     const fromList = (entities || []).find((entity) => String(entity.id) === String(workspaceId));
     if (fromList) return fromList;
     try {
-      const saved = localStorage.getItem('ledgrionyx_active_workspace');
+      const saved = localStorage.getItem('ledgora_active_workspace');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (String(parsed.id) === String(workspaceId)) return parsed;
@@ -103,10 +103,10 @@ const EquityLayout = ({ children }) => {
       <nav className={`eq-sidebar${sidebarMinimized ? ' minimized' : ''}`} aria-label="Equity navigation">
         <div className="eq-sidebar-header">
           <div className="eq-brand-block">
-            <LedgrionyxLogo variant="white" size="small" withText={false} />
+            <LedgoraLogo variant="white" size="small" withText={false} />
             {!sidebarMinimized && (
               <div>
-                <div className="eq-brand-title">Ledgrionyx Equity</div>
+                <div className="eq-brand-title">Ledgora Equity</div>
                 <div className="eq-brand-sub">{resolvedWorkspace?.name || 'Workspace'}</div>
               </div>
             )}
@@ -160,7 +160,7 @@ const EquityLayout = ({ children }) => {
       <div className="eq-main-shell">
         <header className="eq-topbar">
           <div>
-            <div className="eq-topbar-kicker">Ledgrionyx Equity Management</div>
+            <div className="eq-topbar-kicker">Ledgora Equity Management</div>
             <h1 className="eq-topbar-title">{resolvedWorkspace?.name || 'Equity Workspace'}</h1>
           </div>
           <div className="eq-topbar-right" ref={profileRef}>

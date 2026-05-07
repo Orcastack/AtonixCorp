@@ -70,7 +70,7 @@ class CLIAuthLoginView(V1PublicAPIView):
             return Response(
                 _standard_error_payload(
                     code='INVALID_REQUEST',
-                    message='organization_id must be a valid Ledgrionyx organization identifier.',
+                    message='organization_id must be a valid Ledgora organization identifier.',
                     details={},
                 ),
                 status=status.HTTP_400_BAD_REQUEST,

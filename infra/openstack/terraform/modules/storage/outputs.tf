@@ -4,6 +4,6 @@ output "volume_ids" {
 }
 
 output "volume_names" {
-  description = "Canonical Ledgrionyx volume names."
+  description = "Canonical Ledgora volume names."
   value       = openstack_blockstorage_volume_v3.data[*].name
 }

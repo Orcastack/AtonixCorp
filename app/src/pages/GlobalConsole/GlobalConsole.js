@@ -2,12 +2,12 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useEnterprise } from '../../context/EnterpriseContext';
-import LedgrionyxLogo from '../../components/branding/LedgrionyxLogo';
+import LedgoraLogo from '../../components/branding/LedgoraLogo';
 import { globalInviteAPI, platformAuditEventsAPI, platformTasksAPI } from '../../services/api';
 import './GlobalConsole.css';
 
 /* ─────────────────────────────────────────────────────────────────────────────
-  Ledgrionyx — Global Capital Console
+  Ledgora — Global Capital Console
    The cross-company control center a user sees immediately after login.
    Shows: My Entities · Global Notifications · Global Tasks · Quick Actions
 ───────────────────────────────────────────────────────────────────────────── */
@@ -83,9 +83,9 @@ const emitAnalyticsEvent = (eventName, payload = {}) => {
     window.dataLayer.push(eventPayload);
   }
 
-  window.__LEDGRIONYX_ANALYTICS_QUEUE__ = window.__LEDGRIONYX_ANALYTICS_QUEUE__ || [];
-  window.__LEDGRIONYX_ANALYTICS_QUEUE__.push(eventPayload);
-  window.dispatchEvent(new CustomEvent('ledgrionyx:analytics', { detail: eventPayload }));
+  window.__LEDGORA_ANALYTICS_QUEUE__ = window.__LEDGORA_ANALYTICS_QUEUE__ || [];
+  window.__LEDGORA_ANALYTICS_QUEUE__.push(eventPayload);
+  window.dispatchEvent(new CustomEvent('ledgora:analytics', { detail: eventPayload }));
 };
 
 const GlobalConsole = () => {
@@ -359,11 +359,11 @@ const GlobalConsole = () => {
       <header className="gc-topnav">
         <div className="gc-topnav-left">
           <div className="gc-topnav-brand">
-            <LedgrionyxLogo variant="white" size="small" withText text="Ledgrionyx" />
+            <LedgoraLogo variant="white" size="small" withText text="Ledgora" />
           </div>
           <div className="gc-topnav-org-block">
             <span className="gc-topnav-org-label">Organization</span>
-            <strong className="gc-topnav-org-name">{currentOrganization?.name || 'Ledgrionyx Organization'}</strong>
+            <strong className="gc-topnav-org-name">{currentOrganization?.name || 'Ledgora Organization'}</strong>
           </div>
         </div>
         <div className="gc-topnav-right" ref={profileRef}>
@@ -417,7 +417,7 @@ const GlobalConsole = () => {
         </div>
         <div className="gc-capital-badges">
           <span className="gc-compliance-badge">Compliance: Current</span>
-          <span className="gc-capital-watermark">LEDGRIONYX GLOBAL</span>
+          <span className="gc-capital-watermark">LEDGORA GLOBAL</span>
         </div>
       </section>
 

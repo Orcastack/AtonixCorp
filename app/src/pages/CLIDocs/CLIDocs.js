@@ -4,22 +4,22 @@ import Footer from '../../components/Footer/Footer';
 import './CLIDocs.css';
 
 const authCommands = [
-  'ledgrionyx login --api-key <API_KEY> --org org_123 --profile prod',
-  'ledgrionyx whoami',
-  'ledgrionyx profiles',
-  'ledgrionyx use prod',
-  'ledgrionyx logout',
+  'ledgora login --api-key <API_KEY> --org org_123 --profile prod',
+  'ledgora whoami',
+  'ledgora profiles',
+  'ledgora use prod',
+  'ledgora logout',
 ];
 
 const businessCommands = [
-  'ledgrionyx organizations list',
-  'ledgrionyx accounts list',
-  'ledgrionyx customers list',
-  'ledgrionyx vendors list',
-  'ledgrionyx reports trial-balance --as-of-date 2026-03-31',
-  'ledgrionyx reports profit-and-loss --from-date 2026-03-01 --to-date 2026-03-31',
-  'ledgrionyx reports balance-sheet --as-of-date 2026-03-31',
-  'ledgrionyx reports cash-flow --from-date 2026-03-01 --to-date 2026-03-31',
+  'ledgora organizations list',
+  'ledgora accounts list',
+  'ledgora customers list',
+  'ledgora vendors list',
+  'ledgora reports trial-balance --as-of-date 2026-03-31',
+  'ledgora reports profit-and-loss --from-date 2026-03-01 --to-date 2026-03-31',
+  'ledgora reports balance-sheet --as-of-date 2026-03-31',
+  'ledgora reports cash-flow --from-date 2026-03-01 --to-date 2026-03-31',
 ];
 
 const storageItems = [
@@ -44,10 +44,10 @@ const CLIDocs = () => {
 
       <section className="cli-docs-hero">
         <div className="container">
-          <span className="cli-docs-kicker">Ledgrionyx CLI</span>
+          <span className="cli-docs-kicker">Ledgora CLI</span>
           <h1>CLI Authentication and Usage Guide</h1>
           <p>
-            This page documents the Ledgrionyx CLI login flow, secure local session storage,
+            This page documents the Ledgora CLI login flow, secure local session storage,
             automatic token refresh, and the currently available authenticated business commands.
           </p>
           <div className="cli-docs-hero-links">
@@ -65,7 +65,7 @@ const CLIDocs = () => {
             <p>Bootstrap the backend environment and install the CLI into the backend virtual environment.</p>
             <pre>{`./setup.sh`}</pre>
             <p>Or install the package directly in editable mode:</p>
-            <pre>{`cd tools/ledgrionyx_cli\n/home/atonixdev/ledgrionyx/api/.venv/bin/python -m pip install -e .`}</pre>
+            <pre>{`cd tools/ledgora_cli\n/home/atonixdev/ledgora/api/.venv/bin/python -m pip install -e .`}</pre>
           </article>
 
           <article className="cli-docs-card">
@@ -81,7 +81,7 @@ const CLIDocs = () => {
             <h2>Session Behavior</h2>
             <p>
               Each authenticated CLI request sends an <strong>Authorization</strong> bearer token,
-              <strong> X-Organization-Id</strong>, and a <strong>Ledgrionyx-CLI/&lt;version&gt;</strong> user agent.
+              <strong> X-Organization-Id</strong>, and a <strong>Ledgora-CLI/&lt;version&gt;</strong> user agent.
             </p>
             <p>
               If the access token is close to expiry, or a request returns <strong>401</strong>, the CLI refreshes the session
@@ -148,12 +148,12 @@ const CLIDocs = () => {
         <div className="container cli-docs-grid">
           <article className="cli-docs-card">
             <h2>Example Login</h2>
-            <pre>{`ledgrionyx login --api-key <API_KEY> --org org_123 --profile prod\nledgrionyx whoami`}</pre>
+            <pre>{`ledgora login --api-key <API_KEY> --org org_123 --profile prod\nledgora whoami`}</pre>
           </article>
 
           <article className="cli-docs-card">
             <h2>Safer Secret Input</h2>
-            <pre>{`/home/atonixdev/ledgrionyx/api/.venv/bin/python - <<'PY' | ledgrionyx login --api-key-stdin --org org_123 --profile prod\nimport getpass\nimport sys\n\nsys.stdout.write(getpass.getpass('Ledgrionyx API key: '))\nPY`}</pre>
+            <pre>{`/home/atonixdev/ledgora/api/.venv/bin/python - <<'PY' | ledgora login --api-key-stdin --org org_123 --profile prod\nimport getpass\nimport sys\n\nsys.stdout.write(getpass.getpass('Ledgora API key: '))\nPY`}</pre>
           </article>
 
           <article className="cli-docs-card">

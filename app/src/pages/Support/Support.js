@@ -102,7 +102,7 @@ const Support = () => {
 
               </div>
               <h3>Documentation</h3>
-              <p>Comprehensive guides and tutorials to help you make the most of Ledgrionyx.</p>
+              <p>Comprehensive guides and tutorials to help you make the most of Ledgora.</p>
               <Link to="/help-center" className="help-link">View Docs</Link>
             </div>
             <div className="help-card">
@@ -199,7 +199,7 @@ const Support = () => {
               <h3>Email Support</h3>
               <p>Send us a detailed message and we'll get back to you within 24 hours.</p>
               <div className="contact-info">
-                <span>support@ledgrionyx.com</span>
+                <span>support@ledgora.com</span>
                 <span>Response time: 24 hours</span>
               </div>
             </div>
@@ -258,7 +258,7 @@ const Support = () => {
           </div>
           <div className="community-content">
             <div className="community-text">
-              <p>Connect with other Ledgrionyx users, share insights, and learn from the community.
+              <p>Connect with other Ledgora users, share insights, and learn from the community.
                 Our forums and social channels are great places to get peer support and discover new ways
                 to maximize your financial potential.
               </p>

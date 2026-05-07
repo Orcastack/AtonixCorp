@@ -235,7 +235,7 @@ const Layout = ({ children }) => {
         <div className="sidebar-header">
           <div className="sidebar-brand">
             <LogoMark size={24} />
-            {!sidebarMinimized && <span style={{ color: '#FFFFFF', fontWeight: 700, fontSize: 13, letterSpacing: '-0.01em', whiteSpace: 'nowrap' }}>{currentOrganization?.name || 'Ledgrionyx'}</span>}
+            {!sidebarMinimized && <span style={{ color: '#FFFFFF', fontWeight: 700, fontSize: 13, letterSpacing: '-0.01em', whiteSpace: 'nowrap' }}>{currentOrganization?.name || 'Ledgora'}</span>}
           </div>
           {!sidebarMinimized && (
             <NavLink to="/app/console" className="sidebar-console-link" title="All Organizations">
@@ -302,7 +302,7 @@ const Layout = ({ children }) => {
         {/* Top Bar */}
         <header className="topbar">
           <div className="topbar-left">
-            <h2 className="topbar-title">{currentOrganization?.name || 'Ledgrionyx'}</h2>
+            <h2 className="topbar-title">{currentOrganization?.name || 'Ledgora'}</h2>
           </div>
           <div className="topbar-right">
             <div className="profile-menu" ref={profileRef}>

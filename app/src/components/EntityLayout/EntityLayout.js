@@ -20,7 +20,7 @@ const EntityLayout = ({ children }) => {
 
     const workspaceCandidates = [activeWorkspace];
     try {
-      const savedWorkspace = localStorage.getItem('ledgrionyx_active_workspace');
+      const savedWorkspace = localStorage.getItem('ledgora_active_workspace');
       if (savedWorkspace) {
         workspaceCandidates.push(JSON.parse(savedWorkspace));
       }
@@ -181,10 +181,10 @@ const EntityLayout = ({ children }) => {
           <button
             onClick={() => navigate('/app/enterprise/entities')}
             className="entity-back-btn"
-            title="Back to Ledgrionyx"
+            title="Back to Ledgora"
           >
             <span className="entity-back-arrow">←</span>
-            {!sidebarMinimized && <span className="entity-back-label">Ledgrionyx</span>}
+            {!sidebarMinimized && <span className="entity-back-label">Ledgora</span>}
           </button>
         </div>
 

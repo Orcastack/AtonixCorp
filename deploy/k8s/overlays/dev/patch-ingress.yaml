@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ledgrionyx
+  name: ledgora
 spec:
   rules:
-    - host: app.dev.ledgrionyx.com
+    - host: app.dev.ledgora.com

@@ -152,7 +152,7 @@ function App() {
     ? (process.env.PUBLIC_URL || '/')
     : '/';
 
-  // Console module routes — open inside the Ledgrionyx Console (Layout with sidebar).
+  // Console module routes — open inside the Ledgora Console (Layout with sidebar).
   // WorkspaceRoute / WorkspaceLayout is reserved for workspace-scoped routes only.
   const renderModuleCrudRoutes = (basePath, Component, requiredPermission) => [
     <Route key={`${basePath}-index`}  path={basePath}               element={<ProtectedRoute requiredPermission={requiredPermission}><Layout><Component /></Layout></ProtectedRoute>} />,
@@ -508,7 +508,7 @@ function App() {
 
               {/* ── Workspace Module Routes ──────────────────────────────────────────── */}
               {/* Each workspace route is guarded by WorkspaceRoute and rendered inside   */}
-              {/* WorkspaceLayout — completely isolated from the Ledgrionyx Console.   */}
+              {/* WorkspaceLayout — completely isolated from the Ledgora Console.   */}
               <Route path="/app/workspace/:workspaceId/overview"
                 element={<WorkspaceRoute><WorkspaceLayout><WorkspaceOverview /></WorkspaceLayout></WorkspaceRoute>} />
               <Route path="/app/workspace/:workspaceId/members"

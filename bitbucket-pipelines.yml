@@ -57,18 +57,18 @@ definitions:
           - docker
         script:
           - echo "$DOCKER_PASSWORD" | docker login "$DOCKER_REGISTRY" -u "$DOCKER_USERNAME" --password-stdin
-          - docker build -f api/Dockerfile.prod -t "$DOCKER_REGISTRY/ledgrionyx/backend:$BITBUCKET_COMMIT" api
-          - docker build -f app/Dockerfile.prod -t "$DOCKER_REGISTRY/ledgrionyx/app:$BITBUCKET_COMMIT" app
-          - docker push "$DOCKER_REGISTRY/ledgrionyx/backend:$BITBUCKET_COMMIT"
-          - docker push "$DOCKER_REGISTRY/ledgrionyx/app:$BITBUCKET_COMMIT"
+          - docker build -f api/Dockerfile.prod -t "$DOCKER_REGISTRY/ledgora/backend:$BITBUCKET_COMMIT" api
+          - docker build -f app/Dockerfile.prod -t "$DOCKER_REGISTRY/ledgora/app:$BITBUCKET_COMMIT" app
+          - docker push "$DOCKER_REGISTRY/ledgora/backend:$BITBUCKET_COMMIT"
+          - docker push "$DOCKER_REGISTRY/ledgora/app:$BITBUCKET_COMMIT"
 
     - step: &build-verify
         name: Verify production image builds
         services:
           - docker
         script:
-          - docker build -f api/Dockerfile.prod -t ledgrionyx/backend:pr-check api
-          - docker build -f app/Dockerfile.prod -t ledgrionyx/app:pr-check app
+          - docker build -f api/Dockerfile.prod -t ledgora/backend:pr-check api
+          - docker build -f app/Dockerfile.prod -t ledgora/app:pr-check app
 
     - step: &deploy-dev
         name: Deploy to dev
@@ -84,8 +84,8 @@ definitions:
           - sed -i "s|registry.example.com|$DOCKER_REGISTRY|g" deploy/k8s/overlays/$DEPLOY_ENV/kustomization.yaml
           - sed -i "s/newTag: dev/newTag: $BITBUCKET_COMMIT/g" deploy/k8s/overlays/$DEPLOY_ENV/kustomization.yaml
           - kubectl apply -k deploy/k8s/overlays/$DEPLOY_ENV
-          - kubectl rollout status deployment/backend -n ledgrionyx-dev --timeout=300s
-          - kubectl rollout status deployment/app -n ledgrionyx-dev --timeout=300s
+          - kubectl rollout status deployment/backend -n ledgora-dev --timeout=300s
+          - kubectl rollout status deployment/app -n ledgora-dev --timeout=300s
           - curl --fail --silent --show-error "https://$APP_HOST/api/health/"
           - |
             curl --fail --silent --show-error \
@@ -108,8 +108,8 @@ definitions:
           - sed -i "s|registry.example.com|$DOCKER_REGISTRY|g" deploy/k8s/overlays/$DEPLOY_ENV/kustomization.yaml
           - sed -i "s/newTag: staging/newTag: $BITBUCKET_COMMIT/g" deploy/k8s/overlays/$DEPLOY_ENV/kustomization.yaml
           - kubectl apply -k deploy/k8s/overlays/$DEPLOY_ENV
-          - kubectl rollout status deployment/backend -n ledgrionyx-staging --timeout=300s
-          - kubectl rollout status deployment/app -n ledgrionyx-staging --timeout=300s
+          - kubectl rollout status deployment/backend -n ledgora-staging --timeout=300s
+          - kubectl rollout status deployment/app -n ledgora-staging --timeout=300s
           - curl --fail --silent --show-error "https://$APP_HOST/api/health/"
           - |
             curl --fail --silent --show-error \
@@ -133,8 +133,8 @@ definitions:
           - sed -i "s|registry.example.com|$DOCKER_REGISTRY|g" deploy/k8s/overlays/$DEPLOY_ENV/kustomization.yaml
           - sed -i "s/newTag: prod/newTag: $BITBUCKET_COMMIT/g" deploy/k8s/overlays/$DEPLOY_ENV/kustomization.yaml
           - kubectl apply -k deploy/k8s/overlays/$DEPLOY_ENV
-          - kubectl rollout status deployment/backend -n ledgrionyx-prod --timeout=300s
-          - kubectl rollout status deployment/app -n ledgrionyx-prod --timeout=300s
+          - kubectl rollout status deployment/backend -n ledgora-prod --timeout=300s
+          - kubectl rollout status deployment/app -n ledgora-prod --timeout=300s
           - curl --fail --silent --show-error "https://$APP_HOST/api/health/"
           - |
             curl --fail --silent --show-error \

@@ -1,6 +1,6 @@
 // =============================================================================
-// Ledgrionyx – Application Build Pipeline
-// Trigger: Gerrit patchset-created on apps/ledgrionyx-core
+// Ledgora – Application Build Pipeline
+// Trigger: Gerrit patchset-created on apps/ledgora-core
 //
 // Stages: compile → unit test → security scan → container build → push registry
 // Artifacts are tagged with commit SHA, Gerrit change ID, and build number.
@@ -23,7 +23,7 @@ pipeline {
         GERRIT_REFSPEC      = "${env.GERRIT_REFSPEC}"
 
         REGISTRY_URL        = credentials('container-registry-url')
-        IMAGE_NAME          = "ledgrionyx/api"
+        IMAGE_NAME          = "ledgora/api"
         COMMIT_SHORT        = "${env.GERRIT_PATCHSET_REVISION?.take(8) ?: 'unknown'}"
         IMAGE_TAG           = "${env.COMMIT_SHORT}-${env.BUILD_NUMBER}"
     }
@@ -36,7 +36,7 @@ pipeline {
                     $class: 'GitSCM',
                     branches: [[name: env.GERRIT_PATCHSET_REV]],
                     userRemoteConfigs: [[
-                        url: 'ssh://gerrit.ledgrionyx.internal:29418/apps/ledgrionyx-core',
+                        url: 'ssh://gerrit.ledgora.internal:29418/apps/ledgora-core',
                         refspec: env.GERRIT_REFSPEC,
                         credentialsId: 'gerrit-ssh-key'
                     ]]

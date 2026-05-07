@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Ledgrionyx – DEV environment root
+# Ledgora – DEV environment root
 # OpenStack Project: lgx-dev
 # Applied automatically by Jenkins when changes merge to main.
 # Do NOT apply manually.

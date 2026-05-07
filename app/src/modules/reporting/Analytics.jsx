@@ -17,11 +17,11 @@ const reports = [
 ];
 
 const recentRuns = [
-  { report: 'Income Statement',    user: 'sarah.johnson@ledgrionyx.com',  date: '2025-01-31', format: 'PDF',  status: 'Complete' },
-  { report: 'AR Aging Report',     user: 'michael.chen@ledgrionyx.com',   date: '2025-01-31', format: 'CSV',  status: 'Complete' },
-  { report: 'Budget vs Actual',    user: 'admin@ledgrionyx.com',          date: '2025-01-30', format: 'XLSX', status: 'Complete' },
-  { report: 'General Ledger',      user: 'sarah.johnson@ledgrionyx.com',  date: '2025-01-30', format: 'CSV',  status: 'Complete' },
-  { report: 'Tax Liability Report',user: 'michael.chen@ledgrionyx.com',   date: '2025-01-29', format: 'PDF',  status: 'Error'    },
+  { report: 'Income Statement',    user: 'sarah.johnson@ledgora.com',  date: '2025-01-31', format: 'PDF',  status: 'Complete' },
+  { report: 'AR Aging Report',     user: 'michael.chen@ledgora.com',   date: '2025-01-31', format: 'CSV',  status: 'Complete' },
+  { report: 'Budget vs Actual',    user: 'admin@ledgora.com',          date: '2025-01-30', format: 'XLSX', status: 'Complete' },
+  { report: 'General Ledger',      user: 'sarah.johnson@ledgora.com',  date: '2025-01-30', format: 'CSV',  status: 'Complete' },
+  { report: 'Tax Liability Report',user: 'michael.chen@ledgora.com',   date: '2025-01-29', format: 'PDF',  status: 'Error'    },
 ];
 
 const CATEGORY_COLORS = {
@@ -188,8 +188,8 @@ export default function Analytics() {
             <label className="input-label">Entity</label>
             <select className="filter-select" style={{ width: '100%', height: 40 }} value={form.entity} onChange={set('entity')}>
               <option value="all">All Entities</option>
-              <option value="1">Ledgrionyx US</option>
-              <option value="2">Ledgrionyx UK</option>
+              <option value="1">Ledgora US</option>
+              <option value="2">Ledgora UK</option>
             </select>
           </div>
         </div>

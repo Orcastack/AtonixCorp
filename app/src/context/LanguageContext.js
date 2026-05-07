@@ -4,7 +4,7 @@ const LanguageContext = createContext();
 
 const MESSAGES = {
   en: {
-    appName: 'Ledgrionyx',
+    appName: 'Ledgora',
     languageName: 'English',
     nav: {
       home: 'Home',
@@ -85,7 +85,7 @@ const MESSAGES = {
     },
   },
   fr: {
-    appName: 'Ledgrionyx',
+    appName: 'Ledgora',
     languageName: 'Français',
     nav: {
       home: 'Accueil',
@@ -166,7 +166,7 @@ const MESSAGES = {
     },
   },
   es: {
-    appName: 'Ledgrionyx',
+    appName: 'Ledgora',
     languageName: 'Español',
     nav: {
       home: 'Inicio',
@@ -247,7 +247,7 @@ const MESSAGES = {
     },
   },
   de: {
-    appName: 'Ledgrionyx',
+    appName: 'Ledgora',
     languageName: 'Deutsch',
     nav: {
       home: 'Startseite',
@@ -328,7 +328,7 @@ const MESSAGES = {
     },
   },
   pt: {
-    appName: 'Ledgrionyx',
+    appName: 'Ledgora',
     languageName: 'Português',
     nav: {
       home: 'Início',
@@ -409,7 +409,7 @@ const MESSAGES = {
     },
   },
   zh: {
-    appName: 'Ledgrionyx',
+    appName: 'Ledgora',
     languageName: '',
     nav: {
       home: '',
@@ -490,7 +490,7 @@ const MESSAGES = {
     },
   },
   ar: {
-    appName: 'Ledgrionyx',
+    appName: 'Ledgora',
     languageName: 'العربية',
     nav: {
       home: 'الرئيسية',

@@ -367,7 +367,7 @@ const TaxCalculator = () => {
       {/* API Information for Developers */}
       <div className="api-section">
         <h2>API Integration</h2>
-        <p className="api-intro">This calculator is built with a modular, API-ready architecture following the Ledgrionyx specification.
+        <p className="api-intro">This calculator is built with a modular, API-ready architecture following the Ledgora specification.
         </p>
         <div className="api-endpoints">
           <h3>Available Endpoints (Future)</h3>

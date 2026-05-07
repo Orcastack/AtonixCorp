@@ -3,7 +3,7 @@ import React from 'react';
 const socialLinks = [
   {
     label: 'LinkedIn',
-    href: 'https://www.linkedin.com/company/ledgrionyx',
+    href: 'https://www.linkedin.com/company/ledgora',
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M6.94 8.75V19H3.56V8.75H6.94ZM5.25 3C6.33 3 7.19 3.86 7.19 4.94C7.19 6.01 6.33 6.88 5.25 6.88C4.18 6.88 3.31 6.01 3.31 4.94C3.31 3.86 4.18 3 5.25 3ZM20.69 13.07V19H17.31V13.56C17.31 12.19 16.82 11.25 15.58 11.25C14.63 11.25 14.06 11.89 13.81 12.51C13.72 12.73 13.69 13.03 13.69 13.34V19H10.31V8.75H13.69V10.15C14.14 9.45 14.94 8.44 16.79 8.44C19.09 8.44 20.69 9.94 20.69 13.07Z" fill="currentColor" />
@@ -12,7 +12,7 @@ const socialLinks = [
   },
   {
     label: 'Facebook',
-    href: 'https://www.facebook.com/ledgrionyx',
+    href: 'https://www.facebook.com/ledgora',
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M13.52 21V12.79H16.28L16.69 9.59H13.52V7.54C13.52 6.61 13.78 5.98 15.12 5.98H16.8V3.12C16.01 3.04 15.22 3 14.43 3C12.09 3 10.49 4.43 10.49 7.07V9.59H7.75V12.79H10.49V21H13.52Z" fill="currentColor" />
@@ -21,7 +21,7 @@ const socialLinks = [
   },
   {
     label: 'X',
-    href: 'https://x.com/ledgrionyx',
+    href: 'https://x.com/ledgora',
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M18.9 3H21L14.12 10.86L22.21 21H15.87L10.9 14.84L5.51 21H3.4L10.76 12.59L3 3H9.5L13.99 8.63L18.9 3ZM18.16 19.74H19.32L8.87 4.19H7.63L18.16 19.74Z" fill="currentColor" />
@@ -30,7 +30,7 @@ const socialLinks = [
   },
   {
     label: 'Instagram',
-    href: 'https://www.instagram.com/ledgrionyx',
+    href: 'https://www.instagram.com/ledgora',
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M7.5 3H16.5C18.99 3 21 5.01 21 7.5V16.5C21 18.99 18.99 21 16.5 21H7.5C5.01 21 3 18.99 3 16.5V7.5C3 5.01 5.01 3 7.5 3ZM7.35 4.8C5.95 4.8 4.8 5.95 4.8 7.35V16.65C4.8 18.05 5.95 19.2 7.35 19.2H16.65C18.05 19.2 19.2 18.05 19.2 16.65V7.35C19.2 5.95 18.05 4.8 16.65 4.8H7.35ZM17.45 6.15C17.95 6.15 18.35 6.55 18.35 7.05C18.35 7.55 17.95 7.95 17.45 7.95C16.95 7.95 16.55 7.55 16.55 7.05C16.55 6.55 16.95 6.15 17.45 6.15ZM12 7.5C14.49 7.5 16.5 9.51 16.5 12C16.5 14.49 14.49 16.5 12 16.5C9.51 16.5 7.5 14.49 7.5 12C7.5 9.51 9.51 7.5 12 7.5ZM12 9.3C10.51 9.3 9.3 10.51 9.3 12C9.3 13.49 10.51 14.7 12 14.7C13.49 14.7 14.7 13.49 14.7 12C14.7 10.51 13.49 9.3 12 9.3Z" fill="currentColor" />
@@ -39,7 +39,7 @@ const socialLinks = [
   },
   {
     label: 'YouTube',
-    href: 'https://www.youtube.com/@ledgrionyx',
+    href: 'https://www.youtube.com/@ledgora',
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M21.58 7.19C21.34 6.29 20.64 5.58 19.73 5.34C18.1 4.91 12 4.91 12 4.91C12 4.91 5.9 4.91 4.27 5.34C3.36 5.58 2.66 6.29 2.42 7.19C2 8.83 2 12.25 2 12.25C2 12.25 2 15.67 2.42 17.31C2.66 18.21 3.36 18.92 4.27 19.16C5.9 19.59 12 19.59 12 19.59C12 19.59 18.1 19.59 19.73 19.16C20.64 18.92 21.34 18.21 21.58 17.31C22 15.67 22 12.25 22 12.25C22 12.25 22 8.83 21.58 7.19ZM10.05 15.4V9.1L15.5 12.25L10.05 15.4Z" fill="currentColor" />
@@ -48,7 +48,7 @@ const socialLinks = [
   },
   {
     label: 'GitHub',
-    href: 'https://github.com/Ledgrionyx/ledgrionyx',
+    href: 'https://github.com/Ledgora/ledgora',
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M12 2C6.48 2 2 6.58 2 12.23C2 16.75 4.87 20.59 8.84 21.94C9.34 22.04 9.52 21.72 9.52 21.45C9.52 21.2 9.51 20.39 9.5 19.32C6.73 19.94 6.14 17.95 6.14 17.95C5.68 16.75 5.03 16.43 5.03 16.43C4.12 15.79 5.1 15.8 5.1 15.8C6.1 15.87 6.63 16.86 6.63 16.86C7.52 18.43 8.97 17.98 9.54 17.72C9.63 17.05 9.89 16.59 10.17 16.33C7.96 16.07 5.63 15.19 5.63 11.28C5.63 10.17 6.02 9.26 6.66 8.55C6.56 8.29 6.21 7.24 6.76 5.82C6.76 5.82 7.6 5.55 9.51 6.88C10.31 6.65 11.17 6.53 12 6.53C12.83 6.53 13.69 6.65 14.49 6.88C16.4 5.55 17.24 5.82 17.24 5.82C17.79 7.24 17.44 8.29 17.34 8.55C17.98 9.26 18.37 10.17 18.37 11.28C18.37 15.2 16.03 16.07 13.81 16.33C14.17 16.65 14.49 17.28 14.49 18.24C14.49 19.62 14.48 21.06 14.48 21.45C14.48 21.72 14.66 22.05 15.17 21.94C19.13 20.59 22 16.75 22 12.23C22 6.58 17.52 2 12 2Z" fill="currentColor" />
@@ -59,7 +59,7 @@ const socialLinks = [
 
 function SocialIcons() {
   return (
-    <div className="footer-social" aria-label="Ledgrionyx social channels">
+    <div className="footer-social" aria-label="Ledgora social channels">
       {socialLinks.map((item) => (
         <a
           key={item.label}

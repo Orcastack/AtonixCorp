@@ -1,15 +1,15 @@
 ---
 # roles/lgx-common/defaults/main.yml
-# Baseline defaults for all Ledgrionyx hosts.
+# Baseline defaults for all Ledgora hosts.
 
 atc_timezone: UTC
 atc_ntp_servers:
   - 0.pool.ntp.org
   - 1.pool.ntp.org
 
-atc_log_dir: /var/log/ledgrionyx
-ledgrionyx_app_user: ledgrionyx
-ledgrionyx_app_group: ledgrionyx
+atc_log_dir: /var/log/ledgora
+ledgora_app_user: ledgora
+ledgora_app_group: ledgora
 
 atc_security_packages:
   - unattended-upgrades

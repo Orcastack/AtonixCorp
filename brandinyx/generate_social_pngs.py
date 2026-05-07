@@ -21,7 +21,7 @@ BASE_SIZE = 1024
 TEXT_BASELINE_Y = 864
 TEXT_FONT_SIZE = 86
 TEXT_LETTER_SPACING = -1.9
-WORDMARK = "Ledgrionyx"
+WORDMARK = "Ledgora"
 
 
 def scale_value(size: int, value: float) -> float:

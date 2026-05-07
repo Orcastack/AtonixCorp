@@ -7,7 +7,7 @@ atc_container_restart_policy: unless-stopped
 
 # Image is injected at deploy time via extra-vars; this default exists
 # only to allow site.yml re-runs without the image_tag var.
-atc_image: "{{ registry_url | default('registry.ledgrionyx.internal') }}/ledgrionyx/api:{{ image_tag | default('latest') }}"
+atc_image: "{{ registry_url | default('registry.ledgora.internal') }}/ledgora/api:{{ image_tag | default('latest') }}"
 
-atc_env_file: /opt/ledgrionyx/.env
-atc_data_dir: /opt/ledgrionyx/data
+atc_env_file: /opt/ledgora/.env
+atc_data_dir: /opt/ledgora/data

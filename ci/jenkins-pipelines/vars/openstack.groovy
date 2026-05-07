@@ -1,5 +1,5 @@
 // vars/openstack.groovy
-// Shared OpenStack utility steps for Ledgrionyx pipelines.
+// Shared OpenStack utility steps for Ledgora pipelines.
 
 /**
  * Run a terraform command in the given environment root directory,

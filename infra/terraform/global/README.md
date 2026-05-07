@@ -1,4 +1,4 @@
-# Ledgrionyx Terraform Global Conventions
+# Ledgora Terraform Global Conventions
 
 This directory defines the shared conventions for the Terraform stack.
 

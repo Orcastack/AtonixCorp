@@ -1,8 +1,8 @@
 # -----------------------------------------------------------------------------
-# Ledgrionyx – OpenStack Compute Module
-# Provisions Nova instances for a named Ledgrionyx service.
+# Ledgora – OpenStack Compute Module
+# Provisions Nova instances for a named Ledgora service.
 # Naming convention: lgx-<env>-<service>-<zero-padded-index>
-# Every instance carries the full Ledgrionyx traceability tag set.
+# Every instance carries the full Ledgora traceability tag set.
 # -----------------------------------------------------------------------------
 
 terraform {
@@ -39,9 +39,9 @@ resource "openstack_compute_instance_v2" "service" {
 
   user_data = var.user_data
 
-  # Ledgrionyx mandatory metadata tags
+  # Ledgora mandatory metadata tags
   metadata = {
-    system    = "ledgrionyx"
+    system    = "ledgora"
     env       = var.env
     service   = var.service
     change_id = var.change_id

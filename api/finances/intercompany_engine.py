@@ -58,7 +58,7 @@ def _ensure_internal_customer(entity, counterparty):
         customer_code=customer_code,
         defaults={
             'customer_name': f'{counterparty.name} (Intercompany)',
-            'email': f'intercompany+entity{counterparty.id}@internal.ledgrionyx',
+            'email': f'intercompany+entity{counterparty.id}@internal.ledgora',
             'address': counterparty.country,
             'city': counterparty.country,
             'country': counterparty.country,
@@ -78,7 +78,7 @@ def _ensure_internal_vendor(entity, counterparty):
         vendor_code=vendor_code,
         defaults={
             'vendor_name': f'{counterparty.name} (Intercompany)',
-            'email': f'intercompany+entity{counterparty.id}@internal.ledgrionyx',
+            'email': f'intercompany+entity{counterparty.id}@internal.ledgora',
             'address': counterparty.country,
             'city': counterparty.country,
             'country': counterparty.country,

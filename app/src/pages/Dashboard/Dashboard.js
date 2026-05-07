@@ -200,7 +200,7 @@ const Dashboard = () => {
         <div className="dashboard-sidebar-brand">
           <span className="dashboard-sidebar-brand-mark">LGX</span>
           <div>
-            <div className="dashboard-sidebar-brand-name">Ledgrionyx</div>
+            <div className="dashboard-sidebar-brand-name">Ledgora</div>
             <div className="dashboard-sidebar-brand-subtitle">Financial Dashboard</div>
           </div>
         </div>
@@ -223,7 +223,7 @@ const Dashboard = () => {
       <div className="dashboard-main-column">
         <header className="dashboard-top-header">
           <div className="dashboard-top-copy">
-            <p className="dashboard-top-kicker">Ledgrionyx Financial Console</p>
+            <p className="dashboard-top-kicker">Ledgora Financial Console</p>
             <h1 className="dashboard-top-title">{t('dashboard.title')}</h1>
             <p className="dashboard-top-subtitle">
               Clean oversight for income, savings, learning, and financial discipline.

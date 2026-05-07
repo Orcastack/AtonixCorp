@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ── Ledgora Brand Color System v2 ── -->
+    <color name="brand_primary">#EE6C4D</color>       <!-- Primary accent — icon bg, splash bg -->
+    <color name="brand_primary_dark">#C94E30</color>   <!-- Dark mode / pressed state -->
+    <color name="brand_accent_gold">#EE6C4D</color>    <!-- Retained alias — now maps to primary -->
+    <color name="brand_shield_white">#FFFFFF</color>   <!-- Shield fill -->
+    <color name="brand_white">#FFFFFF</color>
+    <color name="brand_text_dark">#0B0B0B</color>
+    <color name="brand_text_muted">#6B6B6B</color>
+</resources>

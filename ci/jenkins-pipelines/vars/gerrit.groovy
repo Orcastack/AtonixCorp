@@ -1,6 +1,6 @@
 // vars/gerrit.groovy
 // Shared step: post build status and comments back to Gerrit.
-// Used by all Ledgrionyx pipelines.
+// Used by all Ledgora pipelines.
 
 def vote(Map args) {
     // args: verified (+1/-1/0), message
@@ -22,7 +22,7 @@ def vote(Map args) {
                 "labels": {"Verified": ${verified}},
                 "message": ${groovy.json.JsonOutput.toJson(message)}
               }' \
-              "https://gerrit.ledgrionyx.internal/a/changes/${env.GERRIT_CHANGE_ID}/revisions/${env.GERRIT_PATCHSET_REV ?: 'current'}/review"
+              "https://gerrit.ledgora.internal/a/changes/${env.GERRIT_CHANGE_ID}/revisions/${env.GERRIT_PATCHSET_REV ?: 'current'}/review"
         """
     }
 }
@@ -44,7 +44,7 @@ def comment(Map args) {
               -X POST \
               -H 'Content-Type: application/json' \
               -d '{"message": ${groovy.json.JsonOutput.toJson(message)}}' \
-              "https://gerrit.ledgrionyx.internal/a/changes/${changeId}/revisions/current/review"
+              "https://gerrit.ledgora.internal/a/changes/${changeId}/revisions/current/review"
         """
     }
 }

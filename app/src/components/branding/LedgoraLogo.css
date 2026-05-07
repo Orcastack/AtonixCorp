@@ -1,0 +1,91 @@
+.ledgora-logo-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  user-select: none;
+}
+
+.ledgora-logo-mark {
+  display: block;
+  flex-shrink: 0;
+  border-radius: 12px;
+}
+
+.ledgora-logo-wordmark {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1;
+}
+
+/* ── Institutional wordmark ─────────────────────────────────── */
+.ledgora-logo-wordmark__primary {
+  font-family: 'Inter', 'IBM Plex Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-black);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.ledgora-logo-wordmark__secondary {
+  font-family: 'Inter', 'IBM Plex Sans', sans-serif;
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.40);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ── Variant: full (light background) ───────────────────────── */
+.ledgora-logo--full .ledgora-logo-wordmark__primary {
+  color: #000000;
+}
+
+.ledgora-logo--full .ledgora-logo-wordmark__secondary {
+  color: rgba(0, 0, 0, 0.40);
+}
+
+/* ── Variant: white — dark backgrounds ──────────────────────── */
+.ledgora-logo--white .ledgora-logo-wordmark__primary,
+.ledgora-logo--dark .ledgora-logo-wordmark__primary {
+  color: #FFFFFF;
+}
+
+.ledgora-logo--white .ledgora-logo-wordmark__secondary,
+.ledgora-logo--dark .ledgora-logo-wordmark__secondary {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* ── Variant: mono ───────────────────────────────────────────── */
+.ledgora-logo--mono .ledgora-logo-wordmark__primary {
+  color: #000000;
+}
+
+.ledgora-logo--mono .ledgora-logo-wordmark__secondary {
+  color: rgba(0, 0, 0, 0.40);
+}
+
+/* ── Sizes ───────────────────────────────────────────────────── */
+.ledgora-logo--small .ledgora-logo-wordmark__primary {
+  font-size: 0.875rem;
+  letter-spacing: -0.015em;
+}
+
+.ledgora-logo--large {
+  gap: 12px;
+}
+
+.ledgora-logo--large .ledgora-logo-wordmark__primary {
+  font-size: 1.1875rem;
+  letter-spacing: -0.025em;
+}
+
+.ledgora-logo--mono {
+  color: var(--ly-color-text-primary);
+}
+
+.ledgora-logo--mono .ledgora-logo-mark__orbit {
+  stroke: var(--ly-color-text-muted);
+}

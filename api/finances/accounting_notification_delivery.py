@@ -31,12 +31,12 @@ def _frontend_base_url():
 
 def _email_brand_context():
     return {
-        'email_brand_name': getattr(settings, 'EMAIL_BRAND_NAME', 'Ledgrionyx'),
+        'email_brand_name': getattr(settings, 'EMAIL_BRAND_NAME', 'Ledgora'),
         'email_brand_title': getattr(settings, 'EMAIL_BRAND_TITLE', 'Institutional Finance Operations'),
         'email_brand_footer': getattr(
             settings,
             'EMAIL_BRAND_FOOTER',
-            'Ledgrionyx finance operations communications are designed for secure approval workflows, accountable execution, and institutional-grade control.',
+            'Ledgora finance operations communications are designed for secure approval workflows, accountable execution, and institutional-grade control.',
         ),
         'email_support_email': getattr(settings, 'EMAIL_SUPPORT_EMAIL', ''),
         'email_support_url': getattr(settings, 'EMAIL_SUPPORT_URL', _frontend_base_url()),
@@ -123,7 +123,7 @@ def send_approval_email(*, user, title, message, action_url='', related_content_
     email = EmailMultiAlternatives(
         subject=title,
         body=text_body,
-        from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'no-reply@ledgrionyx.local'),
+        from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'no-reply@ledgora.local'),
         to=[user.email],
     )
     email.attach_alternative(html_body, 'text/html')
@@ -223,7 +223,7 @@ def send_approval_digest(*, hours=24, users=None):
         email = EmailMultiAlternatives(
             subject=f"Finance approval digest ({len(items)} pending)",
             body=text_body,
-            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'no-reply@ledgrionyx.local'),
+            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'no-reply@ledgora.local'),
             to=[user.email],
         )
         email.attach_alternative(html_body, 'text/html')

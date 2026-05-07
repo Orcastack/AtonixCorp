@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import LedgrionyxLogo from '../../components/branding/LedgrionyxLogo';
+import LedgoraLogo from '../../components/branding/LedgoraLogo';
 
 const Login = () => {
   const [identifier, setIdentifier] = useState('');
@@ -33,7 +33,7 @@ const Login = () => {
       <div className="auth-container">
         <div className="auth-header">
           <Link to="/" className="auth-logo-link">
-            <LedgrionyxLogo size="medium" withText />
+            <LedgoraLogo size="medium" withText />
           </Link>
         </div>
 

@@ -8,7 +8,7 @@ This document defines the visual identity, layout structure, component behavior,
 
 The objective is to produce a dashboard that feels financial, mature, institutional, clean, predictable, professional, zero-noise, and zero-freestyle. The experience should communicate trust and discipline before any user reads a single metric. It should feel like a financial intelligence environment, not a consumer app with decorative charts and casual styling.
 
-The reference quality is the MoneyPilot interface you described, adapted to the Ledgrionyx brand and the platform’s financial ecosystem. The visual standard is high. Every page, card, and control must look as though it belongs to the same system.
+The reference quality is the MoneyPilot interface you described, adapted to the Ledgora brand and the platform’s financial ecosystem. The visual standard is high. Every page, card, and control must look as though it belongs to the same system.
 
 ### 2. Core Design Philosophy
 

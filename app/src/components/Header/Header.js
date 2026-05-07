@@ -43,7 +43,7 @@ const Header = () => {
 
       <div className="ly-primary-bar">
         <div className="ly-primary-inner">
-          <Link to="/" className="ly-logo-link" aria-label="Ledgrionyx Home">
+          <Link to="/" className="ly-logo-link" aria-label="Ledgora Home">
             <Logo height={34} />
           </Link>
 

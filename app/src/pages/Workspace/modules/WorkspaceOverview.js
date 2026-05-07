@@ -110,7 +110,7 @@ const WorkspaceOverview = () => {
       if (fromList) return fromList;
       if (activeWorkspace && String(activeWorkspace.id) === String(workspaceId)) return activeWorkspace;
       try {
-        const saved = localStorage.getItem('ledgrionyx_active_workspace');
+        const saved = localStorage.getItem('ledgora_active_workspace');
         if (saved) {
           const parsed = JSON.parse(saved);
           if (String(parsed.id) === String(workspaceId)) return parsed;

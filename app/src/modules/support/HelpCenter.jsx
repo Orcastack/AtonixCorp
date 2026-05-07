@@ -49,7 +49,7 @@ const FAQ_ITEMS = [
   {
     category: 'Integrations',
     q: 'Is there a REST API available?',
-    a: 'Yes. Go to Integrations → API Keys to generate your API key. Full API documentation is available at ledgrionyx.com/api-docs. All endpoints use Bearer token authentication.',
+    a: 'Yes. Go to Integrations → API Keys to generate your API key. Full API documentation is available at ledgora.com/api-docs. All endpoints use Bearer token authentication.',
   },
   {
     category: 'Security',

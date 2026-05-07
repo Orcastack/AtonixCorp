@@ -6,16 +6,16 @@ const FONT_OPTIONS = ['Inter', 'Roboto', 'Poppins', 'Lato', 'Montserrat', 'Open 
 export default function Branding() {
   const [saved, setSaved] = useState(false);
   const [form, setForm] = useState({
-    firmName: 'Ledgrionyx',
+    firmName: 'Ledgora',
     tagline: 'Institutional-Grade Financial Intelligence',
     primaryColor: '#00B5E2',
     secondaryColor: '#0B0C10',
     accentColor: '#10B981',
     font: 'Inter',
     logoText: 'LGX',
-    supportEmail: 'support@ledgrionyx.com',
-    website: 'https://ledgrionyx.com',
-    footerText: '© 2026 Ledgrionyx. All rights reserved.',
+    supportEmail: 'support@ledgora.com',
+    website: 'https://ledgora.com',
+    footerText: '© 2026 Ledgora. All rights reserved.',
     showPoweredBy: false,
   });
 
@@ -151,7 +151,7 @@ export default function Branding() {
                   onChange={e => set('showPoweredBy', e.target.checked)}
                   style={{ width: 16, height: 16 }}
                 />
-                Show "Powered by Ledgrionyx" in client-facing views
+                Show "Powered by Ledgora" in client-facing views
               </label>
             </div>
           </div>

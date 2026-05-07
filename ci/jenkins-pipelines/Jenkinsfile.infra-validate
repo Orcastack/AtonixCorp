@@ -1,6 +1,6 @@
 // =============================================================================
-// Ledgrionyx – Infrastructure Validate Pipeline
-// Trigger: Gerrit patchset-created on infra/openstack-ledgrionyx
+// Ledgora – Infrastructure Validate Pipeline
+// Trigger: Gerrit patchset-created on infra/openstack-ledgora
 //
 // Runs lint, security checks, and terraform plan. Posts Verified vote
 // and a plan summary back to the Gerrit change.

@@ -193,12 +193,12 @@
   background: transparent;
 }
 
-.footer-secondary .ledgrionyx-logo--white {
+.footer-secondary .ledgora-logo--white {
   color: #ffffff;
 }
 
-.footer-secondary .ledgrionyx-logo--white .ledgrionyx-logo-wordmark__secondary,
-.footer-secondary .ledgrionyx-logo--white .ledgrionyx-logo-mark__orbit {
+.footer-secondary .ledgora-logo--white .ledgora-logo-wordmark__secondary,
+.footer-secondary .ledgora-logo--white .ledgora-logo-mark__orbit {
   color: rgba(255, 255, 255, 0.72);
   stroke: rgba(255, 255, 255, 0.72);
 }

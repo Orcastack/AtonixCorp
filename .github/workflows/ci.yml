@@ -58,7 +58,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Check Ledgrionyx public standards
+      - name: Check Ledgora public standards
         run: npm run standards:check
 
       - name: Build app

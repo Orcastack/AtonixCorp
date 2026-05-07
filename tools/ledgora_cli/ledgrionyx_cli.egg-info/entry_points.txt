@@ -1,0 +1,2 @@
+[console_scripts]
+ledgora = ledgora_cli.main:main

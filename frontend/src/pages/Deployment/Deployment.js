@@ -62,11 +62,11 @@ const Deployment = () => {
         <div className="deployment-shell deployment-hero__grid">
           <div className="deployment-hero__copy">
             <p className="deployment-eyebrow">Deployment Architecture</p>
-            <h1>Ledgrionyx deployment is now visible through the frontend.</h1>
+            <h1>Ledgora deployment is now visible through the frontend.</h1>
             <p className="deployment-hero__lede">
               This page translates the repository deployment model into a user-facing product surface. It explains
               how the React frontend, Django backend, Docker images, Kubernetes overlays, and Terraform stacks work
-              together when Ledgrionyx is published from GitHub.
+              together when Ledgora is published from GitHub.
             </p>
             <div className="deployment-hero__actions">
               <Link to="/features" className="deployment-btn deployment-btn--primary">
@@ -126,7 +126,7 @@ const Deployment = () => {
             <p className="deployment-eyebrow">Frontend Surface</p>
             <h2>The deployment story lives in the product, not only in Markdown.</h2>
             <p>
-              Users visiting the public site can now understand how Ledgrionyx is delivered, what environments exist,
+              Users visiting the public site can now understand how Ledgora is delivered, what environments exist,
               and what release contracts protect platform stability without leaving the frontend experience.
             </p>
           </div>
@@ -142,7 +142,7 @@ const Deployment = () => {
             <article className="deployment-surface-card">
               <h3>Consistent UI system</h3>
               <p>
-                Deployment content uses the same Ledgrionyx frontend design language, navigation, and footer structure
+                Deployment content uses the same Ledgora frontend design language, navigation, and footer structure
                 as the rest of the public product site.
               </p>
             </article>
@@ -179,7 +179,7 @@ const Deployment = () => {
             <h3>Frontend publishing is ready for GitHub Pages visibility.</h3>
             <p>
               The frontend is now wired to support the repository base path used by GitHub Pages, making
-              atonixcorp.github.io/ledgrionyx/ the correct public surface for this repository deployment.
+              atonixcorp.github.io/ledgora/ the correct public surface for this repository deployment.
             </p>
           </aside>
         </div>
@@ -217,7 +217,7 @@ const Deployment = () => {
 
             <div className="deployment-contract-box">
               <h3>Kubernetes secret contract</h3>
-              <p>The cluster expects <strong>ledgrionyx-app-secrets</strong> with the following minimum keys:</p>
+              <p>The cluster expects <strong>ledgora-app-secrets</strong> with the following minimum keys:</p>
               <div className="deployment-chip-row">
                 {secretKeys.map((key) => (
                   <span key={key} className="deployment-chip">{key}</span>
@@ -246,9 +246,9 @@ const Deployment = () => {
         <div className="deployment-shell deployment-cta">
           <div>
             <p className="deployment-eyebrow deployment-eyebrow--inverse">GitHub Pages Target</p>
-            <h2>This frontend page is designed to be visible at atonixcorp.github.io/ledgrionyx/.</h2>
+            <h2>This frontend page is designed to be visible at atonixcorp.github.io/ledgora/.</h2>
             <p>
-              It gives users a clean public view of how Ledgrionyx is shipped, promoted, and verified without exposing
+              It gives users a clean public view of how Ledgora is shipped, promoted, and verified without exposing
               them directly to internal deployment files first.
             </p>
           </div>

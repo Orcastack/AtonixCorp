@@ -28,7 +28,7 @@ def _draw_lines(pdf, lines, start_y):
     for label, value in lines:
         if y < 25 * mm:
             pdf.showPage()
-            y = _draw_header(pdf, 'Ledgrionyx Equity Management', 'Continued')
+            y = _draw_header(pdf, 'Ledgora Equity Management', 'Continued')
         pdf.setFillColor(colors.HexColor('#5B6C8B'))
         pdf.setFont('Helvetica-Bold', 9)
         pdf.drawString(18 * mm, y, label.upper())

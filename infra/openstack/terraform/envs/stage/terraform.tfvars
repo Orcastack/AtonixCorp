@@ -1,4 +1,4 @@
-os_auth_url         = "https://openstack.ledgrionyx.internal:5000/v3"
+os_auth_url         = "https://openstack.ledgora.internal:5000/v3"
 os_region           = "RegionOne"
 external_network_id = "REPLACE_WITH_OPENSTACK_EXTERNAL_NETWORK_UUID"
 floating_ip_pool    = "public"

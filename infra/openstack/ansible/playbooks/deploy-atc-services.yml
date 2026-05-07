@@ -1,6 +1,6 @@
 ---
 # deploy-lgx-services.yml
-# Deploys the Ledgrionyx container image to API hosts in the target environment.
+# Deploys the Ledgora container image to API hosts in the target environment.
 # Called by Jenkins Jenkinsfile.app-deploy.
 #
 # Required extra-vars (injected by Jenkins):
@@ -10,14 +10,14 @@
 #   gerrit_change_id – Gerrit change ID for audit tagging
 #   vault_token      – HashiCorp Vault token for secret retrieval
 
-- name: Deploy Ledgrionyx API services
+- name: Deploy Ledgora API services
   hosts: api
   gather_facts: true
   serial: "50%"   # Rolling deploy – never take all hosts down simultaneously
   max_fail_percentage: 0
 
   vars:
-    atc_image: "{{ registry_url }}/ledgrionyx/api:{{ image_tag }}"
+    atc_image: "{{ registry_url }}/ledgora/api:{{ image_tag }}"
     atc_deploy_label_change_id: "{{ gerrit_change_id }}"
     atc_deploy_label_image_tag: "{{ image_tag }}"
 
@@ -65,5 +65,5 @@
           host={{ inventory_hostname }}
           image={{ atc_image }}
           change_id={{ gerrit_change_id }}
-        dest: "/var/log/ledgrionyx/deploy-audit.log"
+        dest: "/var/log/ledgora/deploy-audit.log"
         mode: '0640'

@@ -23,7 +23,7 @@ const WorkspaceRoute = ({ children }) => {
     if (!workspaceId) {
       return activeWorkspace || (() => {
         try {
-          const saved = localStorage.getItem('ledgrionyx_active_workspace');
+          const saved = localStorage.getItem('ledgora_active_workspace');
           return saved ? JSON.parse(saved) : null;
         } catch {
           return null;
@@ -41,7 +41,7 @@ const WorkspaceRoute = ({ children }) => {
     }
 
     try {
-      const saved = localStorage.getItem('ledgrionyx_active_workspace');
+      const saved = localStorage.getItem('ledgora_active_workspace');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (String(parsed.id) === String(workspaceId)) {
@@ -102,7 +102,7 @@ const WorkspaceRoute = ({ children }) => {
         setResolvedWorkspace(workspace);
         setActiveWorkspace(workspace);
         try {
-          localStorage.setItem('ledgrionyx_active_workspace', JSON.stringify(workspace));
+          localStorage.setItem('ledgora_active_workspace', JSON.stringify(workspace));
         } catch {
           // ignore storage failures
         }

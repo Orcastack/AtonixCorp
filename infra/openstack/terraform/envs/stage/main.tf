@@ -1,8 +1,8 @@
 # -----------------------------------------------------------------------------
-# Ledgrionyx – STAGE environment root
+# Ledgora – STAGE environment root
 # OpenStack Project: lgx-stage
 # Pre-production; used for release validation and regulatory checks.
-# Changes require: infra lead + Ledgrionyx owner approval in Gerrit.
+# Changes require: infra lead + Ledgora owner approval in Gerrit.
 # -----------------------------------------------------------------------------
 
 provider "openstack" {

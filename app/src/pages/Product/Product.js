@@ -13,7 +13,7 @@ const Product = () => {
       <section className="product-hero">
         <div className="hero-content">
           <h1>Next-Generation Financial Platform</h1>
-          <p>Ledgrionyx redefines financial management with sovereign-grade security,
+          <p>Ledgora redefines financial management with sovereign-grade security,
             AI-powered intelligence, and comprehensive multi-asset capabilities.
           </p>
           <div className="hero-stats">
@@ -139,7 +139,7 @@ const Product = () => {
       <section className="product-cta">
         <div className="container">
           <h2>Ready to Transform Your Financial Management?</h2>
-          <p>Join thousands of users who trust Ledgrionyx for their financial needs.</p>
+          <p>Join thousands of users who trust Ledgora for their financial needs.</p>
           <div className="cta-buttons">
             <Link to="/register" className="btn-primary btn-large">Start Free Trial
             </Link>

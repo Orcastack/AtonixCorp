@@ -68,7 +68,7 @@ const CATALOG = [
   // Add-ons
   {
     id: 'ai_advisor', name: 'AI Financial Advisor', category: 'Add-on',
-    provider: 'Ledgrionyx AI', color: 'var(--color-cyan-dark)',
+    provider: 'Ledgora AI', color: 'var(--color-cyan-dark)',
     description: 'AI-powered financial insights, anomaly detection, and predictive cash flow forecasting.',
     tags: ['ai', 'analytics', 'forecasting'],
     rating: 4.9, reviews: 445, featured: true,
@@ -76,7 +76,7 @@ const CATALOG = [
   },
   {
     id: 'doc_automation', name: 'Document Automation', category: 'Add-on',
-    provider: 'Ledgrionyx Labs', color: 'var(--color-cyan)',
+    provider: 'Ledgora Labs', color: 'var(--color-cyan)',
     description: 'Auto-generate financial reports, proposals, and engagement letters from templates.',
     tags: ['documents', 'automation', 'reports'],
     rating: 4.7, reviews: 310, featured: false,
@@ -84,7 +84,7 @@ const CATALOG = [
   },
   {
     id: 'client_portal', name: 'Enhanced Client Portal', category: 'Add-on',
-    provider: 'Ledgrionyx Labs', color: 'var(--color-success)',
+    provider: 'Ledgora Labs', color: 'var(--color-success)',
     description: 'Branded self-service portal for clients with real-time financial visibility.',
     tags: ['portal', 'clients', 'collaboration'],
     rating: 4.8, reviews: 280, featured: false,
@@ -92,7 +92,7 @@ const CATALOG = [
   },
   {
     id: 'security_vault', name: 'Security Vault Pro', category: 'Add-on',
-    provider: 'Ledgrionyx Security', color: 'var(--color-error)',
+    provider: 'Ledgora Security', color: 'var(--color-error)',
     description: 'Advanced encryption, multi-factor authentication, and audit trail capabilities.',
     tags: ['security', 'compliance', 'encryption'],
     rating: 4.9, reviews: 195, featured: false,
@@ -100,7 +100,7 @@ const CATALOG = [
   },
   {
     id: 'notifications_pro', name: 'Smart Alerts Pro', category: 'Add-on',
-    provider: 'Ledgrionyx Labs', color: 'var(--color-warning)',
+    provider: 'Ledgora Labs', color: 'var(--color-warning)',
     description: 'Multi-channel alerts (email, SMS, WhatsApp) with custom threshold triggers.',
     tags: ['notifications', 'alerts', 'sms'],
     rating: 4.6, reviews: 220, featured: false,

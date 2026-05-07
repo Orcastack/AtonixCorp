@@ -1,8 +1,8 @@
 // =============================================================================
-// Ledgrionyx – Application Deploy Pipeline
-// Trigger: Manual dispatch or change-merged on apps/ledgrionyx-core
+// Ledgora – Application Deploy Pipeline
+// Trigger: Manual dispatch or change-merged on apps/ledgora-core
 //
-// Deploys a versioned container image to an Ledgrionyx environment via
+// Deploys a versioned container image to an Ledgora environment via
 // Ansible. The same image from the build pipeline is reused at every stage
 // (no rebuilds). PROD applies require explicit manual gate approval.
 // =============================================================================
@@ -78,7 +78,7 @@ Gerrit change : ${params.GERRIT_CHANGE_ID}
 Image tag     : ${params.IMAGE_TAG}
 
 Approve to proceed within the current change window.""",
-                        submitter: 'Ledgrionyx Owners,App Leads',
+                        submitter: 'Ledgora Owners,App Leads',
                     )
                 }
             }
@@ -145,7 +145,7 @@ Approve to proceed within the current change window.""",
                     changeId: params.GERRIT_CHANGE_ID,
                     message: """✅ Application deployed to ${params.TARGET_ENV.toUpperCase()}
 
-Image     : ${env.REGISTRY_URL}/ledgrionyx/api:${params.IMAGE_TAG}
+Image     : ${env.REGISTRY_URL}/ledgora/api:${params.IMAGE_TAG}
 Build     : ${env.BUILD_URL}
 Timestamp : ${new Date().format("yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone('UTC'))}
 """

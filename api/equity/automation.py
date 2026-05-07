@@ -162,7 +162,7 @@ def _record_email_delivery(*, workspace, recipient_user, recipient_email: str, t
         sent = send_mail(
             subject=title,
             message=message,
-            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'no-reply@ledgrionyx.local'),
+            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'no-reply@ledgora.local'),
             recipient_list=[recipient_email],
             fail_silently=False,
         )

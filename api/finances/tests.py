@@ -601,7 +601,7 @@ class DeveloperPortalViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         content = response.content.decode('utf-8')
-        self.assertIn('Ledgrionyx APIs', content)
+        self.assertIn('Ledgora APIs', content)
         self.assertIn('Request API key', content)
         self.assertIn('Search APIs', content)
 
@@ -705,7 +705,7 @@ class DeveloperPortalViewTests(TestCase):
             {
                 'first_name': 'Ato',
                 'last_name': 'Developer',
-                'email': 'developer@ledgrionyx.test',
+                'email': 'developer@ledgora.test',
                 'organization': 'LGX Developer Lab',
                 'intended_use': 'Build a portfolio sync integration.',
             },
@@ -714,16 +714,16 @@ class DeveloperPortalViewTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data['developer']['email'], 'developer@ledgrionyx.test')
+        self.assertEqual(response.data['developer']['email'], 'developer@ledgora.test')
         self.assertIn('.', response.data['api_key']['api_key'])
         self.assertEqual(response.data['api_key']['environment'], 'sandbox')
         self.assertEqual(response.data['api_key']['rate_limit_profile']['name'], 'STANDARD')
 
-        user = User.objects.get(email='developer@ledgrionyx.test')
+        user = User.objects.get(email='developer@ledgora.test')
         self.assertTrue(UserProfile.objects.filter(user=user).exists())
 
         organization = Organization.objects.get(owner=user, name='LGX Developer Lab')
-        request_record = DeveloperPortalKeyRequest.objects.get(email='developer@ledgrionyx.test')
+        request_record = DeveloperPortalKeyRequest.objects.get(email='developer@ledgora.test')
         application = OAuthApplication.objects.get(pk=request_record.application_id)
 
         self.assertEqual(request_record.status, 'generated')
@@ -810,7 +810,7 @@ class DeveloperPortalViewTests(TestCase):
         self.assertIn('access', token_response.data)
 
 
-@override_settings(LEDGRIONYX_API_ENVIRONMENT='sandbox')
+@override_settings(LEDGORA_API_ENVIRONMENT='sandbox')
 class CoreFinancialAPIV1Tests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
@@ -1684,8 +1684,8 @@ class EntityViewSetTests(TestCase):
         )
         self.organization = Organization.objects.create(
             owner=self.user,
-            name='Ledgrionyx Holdings',
-            slug='ledgrionyx-holdings',
+            name='Ledgora Holdings',
+            slug='ledgora-holdings',
             primary_country='US',
             primary_currency='USD',
         )
@@ -1697,7 +1697,7 @@ class EntityViewSetTests(TestCase):
             '/api/entities/',
             {
                 'organization_id': self.organization.id,
-                'name': 'Ledgrionyx Parent Co',
+                'name': 'Ledgora Parent Co',
                 'country': 'US',
                 'entity_type': 'holding_company',
                 'status': 'active',
@@ -1709,7 +1709,7 @@ class EntityViewSetTests(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['entity_type'], 'holding_company')
         self.assertTrue(
-            Entity.objects.filter(name='Ledgrionyx Parent Co', entity_type='holding_company').exists()
+            Entity.objects.filter(name='Ledgora Parent Co', entity_type='holding_company').exists()
         )
 
     def test_permission_context_grants_owner_entity_access_without_seeded_permissions(self):
@@ -1776,8 +1776,8 @@ class EntityViewSetTests(TestCase):
 
 @override_settings(
     EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend',
-    DEFAULT_FROM_EMAIL='no-reply@ledgrionyx.test',
-    APPROVAL_NOTIFICATION_BASE_URL='https://console.ledgrionyx.test',
+    DEFAULT_FROM_EMAIL='no-reply@ledgora.test',
+    APPROVAL_NOTIFICATION_BASE_URL='https://console.ledgora.test',
 )
 class AccountingApprovalWorkflowAPITests(TestCase):
     def setUp(self):

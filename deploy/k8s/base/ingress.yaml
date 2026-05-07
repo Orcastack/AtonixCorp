@@ -1,14 +1,14 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ledgrionyx
+  name: ledgora
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: 20m
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   ingressClassName: nginx
   rules:
-    - host: app.ledgrionyx.local
+    - host: app.ledgora.local
       http:
         paths:
           - path: /api

@@ -91,13 +91,13 @@ const Landing = () => {
       <Header />
 
       <main className="landing-main">
-        <section className="landing-hero" aria-label="Ledgrionyx overview">
+        <section className="landing-hero" aria-label="Ledgora overview">
           <div className="landing-shell landing-hero__layout">
             <div className="landing-hero__copy">
               <p className="landing-kicker">Institutional Equity, Finance, and Tax Operations</p>
               <h1>One operating system for ownership, finance, tax, and governed execution.</h1>
               <p className="landing-lead">
-                Ledgrionyx gives firms a calmer operating model for entity records, accounting control,
+                Ledgora gives firms a calmer operating model for entity records, accounting control,
                 compliance execution, and reviewable approvals across the whole organization.
               </p>
 

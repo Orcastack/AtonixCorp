@@ -280,7 +280,7 @@ def landing_page(request):
         .order_by('featured_rank', 'name')[:6]
     )
     context = {
-        'title': 'Ledgrionyx APIs',
+        'title': 'Ledgora APIs',
         'subtitle': 'Institutional-grade market, account, transaction, and risk data for engineering teams.',
         'version': settings.APP_VERSION,
         'description': 'A clear, authoritative API entry point for discovery, authentication, rate limits, and operational trust.',
@@ -307,7 +307,7 @@ def landing_page(request):
             {'name': 'Get API Key', 'url': '/keys/register', 'description': 'Provision a developer key for sandbox access.'},
             {'name': 'Authentication Docs', 'url': '/developer/docs/authentication', 'description': 'Review bearer, CLI, and org header conventions.'},
             {'name': 'Platform Status', 'url': '/status', 'description': 'Inspect live health, version, and backend component state.'},
-            {'name': 'API Catalog', 'url': '/apis', 'description': 'Browse all published Ledgrionyx API surfaces.'},
+            {'name': 'API Catalog', 'url': '/apis', 'description': 'Browse all published Ledgora API surfaces.'},
         ],
         'system_info': {
             'backend': 'Django REST Framework',

@@ -160,7 +160,7 @@ const OwnershipRegistry = () => {
         emptyTitle="No shareholders have been registered yet"
         emptyBody="Create the first holder record to start the beneficial ownership registry and compliance workflow."
         formTitle="Create shareholder"
-        formDescription="Capture the legal owner, beneficial owner designation, and onboarding status used throughout Ledgrionyx Equity Management."
+        formDescription="Capture the legal owner, beneficial owner designation, and onboarding status used throughout Ledgora Equity Management."
         formFields={[
           { key: 'name', label: 'Shareholder name', placeholder: 'Ada Ventures SPV' },
           {

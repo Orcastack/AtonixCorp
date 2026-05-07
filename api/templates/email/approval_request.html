@@ -1,7 +1,7 @@
 {% extends "email/base.html" %}
 
 {% block email_title %}{{ title }}{% endblock %}
-{% block email_preheader %}{{ object_label }} requires attention in your Ledgrionyx approval queue.{% endblock %}
+{% block email_preheader %}{{ object_label }} requires attention in your Ledgora approval queue.{% endblock %}
 {% block email_brand_title %}{{ email_brand_title|default:"Institutional Finance Operations" }}{% endblock %}
 
 {% block email_content %}
@@ -32,7 +32,7 @@
 {% endblock %}
 
 {% block email_footer %}
-{{ email_brand_footer|default:"Ledgrionyx finance operations communications are designed for secure approval workflows, accountable execution, and institutional-grade control." }}
+{{ email_brand_footer|default:"Ledgora finance operations communications are designed for secure approval workflows, accountable execution, and institutional-grade control." }}
 {% if email_support_email %}<br><br>Support: <a href="mailto:{{ email_support_email }}">{{ email_support_email }}</a>{% endif %}
 {% if email_support_url %}<br>Operations portal: <a href="{{ email_support_url }}">{{ email_support_url }}</a>{% endif %}
 {% endblock %}

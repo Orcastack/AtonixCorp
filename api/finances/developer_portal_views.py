@@ -362,19 +362,19 @@ class DeveloperAuthenticationDocsView(DeveloperFacingAPIView):
             {
                 'slug': 'authentication',
                 'title': 'Authentication',
-                'summary': 'Ledgrionyx supports OAuth 2.0 client credentials for server-to-server access and API-key based CLI login for developer workflows.',
+                'summary': 'Ledgora supports OAuth 2.0 client credentials for server-to-server access and API-key based CLI login for developer workflows.',
                 'supported_methods': [
                     {
                         'type': 'oauth2_client_credentials',
                         'token_endpoint': '/v1/auth/token',
                         'headers': ['Authorization: Bearer <token>', 'X-Organization-Id: org_<id>'],
-                        'example': 'curl -X POST "https://api.ledgrionyx.com/v1/auth/token" -H "Content-Type: application/json" -d "{\"client_id\":\"...\",\"client_secret\":\"...\",\"grant_type\":\"client_credentials\"}"',
+                        'example': 'curl -X POST "https://api.ledgora.com/v1/auth/token" -H "Content-Type: application/json" -d "{\"client_id\":\"...\",\"client_secret\":\"...\",\"grant_type\":\"client_credentials\"}"',
                     },
                     {
                         'type': 'developer_cli_api_key',
                         'token_endpoint': '/auth/cli-login',
                         'headers': ['Authorization: Bearer <token>', 'X-Organization-Id: org_<id>'],
-                        'example': 'curl -X POST "https://api.ledgrionyx.com/auth/cli-login" -H "Content-Type: application/json" -d "{\"api_key\":\"client_id.client_secret\",\"organization_id\":\"org_123\"}"',
+                        'example': 'curl -X POST "https://api.ledgora.com/auth/cli-login" -H "Content-Type: application/json" -d "{\"api_key\":\"client_id.client_secret\",\"organization_id\":\"org_123\"}"',
                     },
                 ],
                 'error_handling': {

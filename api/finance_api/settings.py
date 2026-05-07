@@ -184,14 +184,14 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 EMAIL_USE_TLS = env_bool('EMAIL_USE_TLS', False)
 EMAIL_USE_SSL = env_bool('EMAIL_USE_SSL', False)
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'no-reply@ledgrionyx.local')
-EMAIL_BRAND_NAME = os.getenv('EMAIL_BRAND_NAME', 'Ledgrionyx')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'no-reply@ledgora.local')
+EMAIL_BRAND_NAME = os.getenv('EMAIL_BRAND_NAME', 'Ledgora')
 EMAIL_BRAND_TITLE = os.getenv('EMAIL_BRAND_TITLE', 'Institutional Finance Operations')
 EMAIL_BRAND_FOOTER = os.getenv(
     'EMAIL_BRAND_FOOTER',
-    'Ledgrionyx finance operations communications are designed for secure approval workflows, accountable execution, and institutional-grade control.',
+    'Ledgora finance operations communications are designed for secure approval workflows, accountable execution, and institutional-grade control.',
 )
-EMAIL_SUPPORT_EMAIL = os.getenv('EMAIL_SUPPORT_EMAIL', 'support@ledgrionyx.local')
+EMAIL_SUPPORT_EMAIL = os.getenv('EMAIL_SUPPORT_EMAIL', 'support@ledgora.local')
 EMAIL_SUPPORT_URL = os.getenv('EMAIL_SUPPORT_URL', FRONTEND_BASE_URL)
 
 AI_ENABLE_EXTERNAL_MODELS = env_bool('AI_ENABLE_EXTERNAL_MODELS', False)

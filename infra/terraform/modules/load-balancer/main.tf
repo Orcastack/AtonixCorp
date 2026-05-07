@@ -1,6 +1,6 @@
 resource "aws_security_group" "alb" {
   name        = "${var.name_prefix}-alb-sg"
-  description = "Ingress security group for Ledgrionyx"
+  description = "Ingress security group for Ledgora"
   vpc_id      = var.vpc_id
 
   ingress {
