@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ledgora-config
+data:
+  DJANGO_ALLOWED_HOSTS: "api.staging.ledgora.com"
+  CORS_ALLOWED_ORIGINS: "https://app.staging.ledgora.com"
+  CSRF_TRUSTED_ORIGINS: "https://app.staging.ledgora.com"
+  FRONTEND_BASE_URL: "https://app.staging.ledgora.com"
+  APPROVAL_NOTIFICATION_BASE_URL: "https://app.staging.ledgora.com"
+  DEPLOYMENT_ENVIRONMENT: staging
+  APP_VERSION: staging

@@ -1,0 +1,11 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ledgora
+spec:
+  tls:
+    - hosts:
+        - app.ledgora.com
+      secretName: ledgora-production-tls
+  rules:
+    - host: app.ledgora.com

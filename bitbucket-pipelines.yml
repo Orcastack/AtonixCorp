@@ -78,14 +78,18 @@ definitions:
           - curl -sSLo /usr/local/bin/kubectl https://dl.k8s.io/release/v1.30.2/bin/linux/amd64/kubectl
           - chmod +x /usr/local/bin/kubectl
           - export DEPLOY_ENV=dev
+          - export K8S_NAMESPACE=dev
           - export APP_HOST="$DEV_APP_HOST"
           - export EKS_CLUSTER_NAME="$DEV_EKS_CLUSTER_NAME"
           - aws eks update-kubeconfig --name "$EKS_CLUSTER_NAME" --region "$AWS_DEFAULT_REGION"
-          - sed -i "s|registry.example.com|$DOCKER_REGISTRY|g" deploy/k8s/overlays/$DEPLOY_ENV/kustomization.yaml
-          - sed -i "s/newTag: dev/newTag: $BITBUCKET_COMMIT/g" deploy/k8s/overlays/$DEPLOY_ENV/kustomization.yaml
-          - kubectl apply -k deploy/k8s/overlays/$DEPLOY_ENV
-          - kubectl rollout status deployment/backend -n ledgora-dev --timeout=300s
-          - kubectl rollout status deployment/app -n ledgora-dev --timeout=300s
+          - sed -i "s|registry.example.com|$DOCKER_REGISTRY|g" k8s/overlays/$DEPLOY_ENV/kustomization.yaml
+          - 'sed -i "s/newTag: dev/newTag: $BITBUCKET_COMMIT/g" k8s/overlays/$DEPLOY_ENV/kustomization.yaml'
+          - kubectl apply -k k8s/overlays/$DEPLOY_ENV
+          - kubectl rollout status statefulset/postgres -n "$K8S_NAMESPACE" --timeout=300s
+          - kubectl rollout status deployment/backend -n "$K8S_NAMESPACE" --timeout=300s
+          - kubectl rollout status deployment/banking-sync -n "$K8S_NAMESPACE" --timeout=300s
+          - kubectl rollout status deployment/approval-digest -n "$K8S_NAMESPACE" --timeout=300s
+          - kubectl rollout status deployment/app -n "$K8S_NAMESPACE" --timeout=300s
           - curl --fail --silent --show-error "https://$APP_HOST/api/health/"
           - |
             curl --fail --silent --show-error \
@@ -102,14 +106,18 @@ definitions:
           - curl -sSLo /usr/local/bin/kubectl https://dl.k8s.io/release/v1.30.2/bin/linux/amd64/kubectl
           - chmod +x /usr/local/bin/kubectl
           - export DEPLOY_ENV=staging
+          - export K8S_NAMESPACE=staging
           - export APP_HOST="$STAGING_APP_HOST"
           - export EKS_CLUSTER_NAME="$STAGING_EKS_CLUSTER_NAME"
           - aws eks update-kubeconfig --name "$EKS_CLUSTER_NAME" --region "$AWS_DEFAULT_REGION"
-          - sed -i "s|registry.example.com|$DOCKER_REGISTRY|g" deploy/k8s/overlays/$DEPLOY_ENV/kustomization.yaml
-          - sed -i "s/newTag: staging/newTag: $BITBUCKET_COMMIT/g" deploy/k8s/overlays/$DEPLOY_ENV/kustomization.yaml
-          - kubectl apply -k deploy/k8s/overlays/$DEPLOY_ENV
-          - kubectl rollout status deployment/backend -n ledgora-staging --timeout=300s
-          - kubectl rollout status deployment/app -n ledgora-staging --timeout=300s
+          - sed -i "s|registry.example.com|$DOCKER_REGISTRY|g" k8s/overlays/$DEPLOY_ENV/kustomization.yaml
+          - 'sed -i "s/newTag: staging/newTag: $BITBUCKET_COMMIT/g" k8s/overlays/$DEPLOY_ENV/kustomization.yaml'
+          - kubectl apply -k k8s/overlays/$DEPLOY_ENV
+          - kubectl rollout status statefulset/postgres -n "$K8S_NAMESPACE" --timeout=300s
+          - kubectl rollout status deployment/backend -n "$K8S_NAMESPACE" --timeout=300s
+          - kubectl rollout status deployment/banking-sync -n "$K8S_NAMESPACE" --timeout=300s
+          - kubectl rollout status deployment/approval-digest -n "$K8S_NAMESPACE" --timeout=300s
+          - kubectl rollout status deployment/app -n "$K8S_NAMESPACE" --timeout=300s
           - curl --fail --silent --show-error "https://$APP_HOST/api/health/"
           - |
             curl --fail --silent --show-error \
@@ -126,15 +134,19 @@ definitions:
         script:
           - curl -sSLo /usr/local/bin/kubectl https://dl.k8s.io/release/v1.30.2/bin/linux/amd64/kubectl
           - chmod +x /usr/local/bin/kubectl
-          - export DEPLOY_ENV=prod
+          - export DEPLOY_ENV=production
+          - export K8S_NAMESPACE=production
           - export APP_HOST="$PROD_APP_HOST"
           - export EKS_CLUSTER_NAME="$PROD_EKS_CLUSTER_NAME"
           - aws eks update-kubeconfig --name "$EKS_CLUSTER_NAME" --region "$AWS_DEFAULT_REGION"
-          - sed -i "s|registry.example.com|$DOCKER_REGISTRY|g" deploy/k8s/overlays/$DEPLOY_ENV/kustomization.yaml
-          - sed -i "s/newTag: prod/newTag: $BITBUCKET_COMMIT/g" deploy/k8s/overlays/$DEPLOY_ENV/kustomization.yaml
-          - kubectl apply -k deploy/k8s/overlays/$DEPLOY_ENV
-          - kubectl rollout status deployment/backend -n ledgora-prod --timeout=300s
-          - kubectl rollout status deployment/app -n ledgora-prod --timeout=300s
+          - sed -i "s|registry.example.com|$DOCKER_REGISTRY|g" k8s/overlays/$DEPLOY_ENV/kustomization.yaml
+          - 'sed -i "s/newTag: production/newTag: $BITBUCKET_COMMIT/g" k8s/overlays/$DEPLOY_ENV/kustomization.yaml'
+          - kubectl apply -k k8s/overlays/$DEPLOY_ENV
+          - kubectl rollout status statefulset/postgres -n "$K8S_NAMESPACE" --timeout=300s
+          - kubectl rollout status deployment/backend -n "$K8S_NAMESPACE" --timeout=300s
+          - kubectl rollout status deployment/banking-sync -n "$K8S_NAMESPACE" --timeout=300s
+          - kubectl rollout status deployment/approval-digest -n "$K8S_NAMESPACE" --timeout=300s
+          - kubectl rollout status deployment/app -n "$K8S_NAMESPACE" --timeout=300s
           - curl --fail --silent --show-error "https://$APP_HOST/api/health/"
           - |
             curl --fail --silent --show-error \

@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: approval-digest
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: approval-digest
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: approval-digest
+    spec:
+      serviceAccountName: ledgora-runtime
+      containers:
+        - name: approval-digest
+          image: ledgora/backend:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - |
+              while true; do
+                python manage.py send_approval_notification_digest --hours ${APPROVAL_DIGEST_LOOKBACK_HOURS}
+                sleep ${APPROVAL_DIGEST_INTERVAL_SECONDS}
+              done
+          envFrom:
+            - configMapRef:
+                name: ledgora-config
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: database-url
+            - name: DJANGO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: django-secret-key
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

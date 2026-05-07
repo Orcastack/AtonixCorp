@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: dev
+
+resources:
+  - ../../base
+  - namespace.yaml
+
+patchesStrategicMerge:
+  - patch-config.yaml
+  - patch-ingress.yaml
+  - patch-scale.yaml
+
+images:
+  - name: ledgora/backend
+    newName: registry.example.com/ledgora/backend
+    newTag: dev
+  - name: ledgora/app
+    newName: registry.example.com/ledgora/app
+    newTag: dev

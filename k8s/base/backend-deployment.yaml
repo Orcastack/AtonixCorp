@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 2
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: backend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: backend
+    spec:
+      serviceAccountName: ledgora-runtime
+      containers:
+        - name: backend
+          image: ledgora/backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+              name: http
+          envFrom:
+            - configMapRef:
+                name: ledgora-config
+          env:
+            - name: DJANGO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: django-secret-key
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: database-url
+            - name: PLATFORM_EVENT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: platform-event-token
+            - name: BANKING_TOKEN_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: banking-token-encryption-key
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: anthropic-api-key
+            - name: PLAID_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: plaid-client-id
+            - name: PLAID_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: plaid-client-secret
+            - name: PLAID_OAUTH_AUTHORIZE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: plaid-oauth-authorize-url
+            - name: YODLEE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: yodlee-client-id
+            - name: YODLEE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: yodlee-client-secret
+            - name: YODLEE_OAUTH_AUTHORIZE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: yodlee-oauth-authorize-url
+            - name: FINICITY_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: finicity-client-id
+            - name: FINICITY_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: finicity-client-secret
+            - name: FINICITY_OAUTH_AUTHORIZE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: finicity-oauth-authorize-url
+          readinessProbe:
+            httpGet:
+              path: /api/health/
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health/
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi

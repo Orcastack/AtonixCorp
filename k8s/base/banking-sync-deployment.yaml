@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: banking-sync
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: banking-sync
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: banking-sync
+    spec:
+      serviceAccountName: ledgora-runtime
+      containers:
+        - name: banking-sync
+          image: ledgora/backend:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - |
+              while true; do
+                python manage.py sync_banking_integrations
+                sleep ${BANKING_SYNC_INTERVAL_SECONDS}
+              done
+          envFrom:
+            - configMapRef:
+                name: ledgora-config
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: database-url
+            - name: DJANGO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: django-secret-key
+            - name: BANKING_TOKEN_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: banking-token-encryption-key
+            - name: PLAID_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: plaid-client-id
+            - name: PLAID_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: plaid-client-secret
+            - name: YODLEE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: yodlee-client-id
+            - name: YODLEE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: yodlee-client-secret
+            - name: FINICITY_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: finicity-client-id
+            - name: FINICITY_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: ledgora-app-secrets
+                  key: finicity-client-secret
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
