@@ -113,7 +113,7 @@ services:
       - api
 
   db:
-    image: dhi.io/postgres:14-alpine3.22
+    image: postgres:14-alpine
     container_name: ledgora-db
     environment:
       - POSTGRES_DB=ledgora
