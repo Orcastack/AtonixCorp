@@ -1,41 +1,37 @@
-# This workflow is disabled — the React app is deployed via deploy-pages.yml instead.
-# Sample workflow for building and deploying a Jekyll site to GitHub Pages
 name: Deploy Jekyll with GitHub Pages dependencies preinstalled
 
 on:
   workflow_dispatch:
     branches: ["__disabled__"]
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
-  # Build job
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b3b4c9f5f6f8e5e3e6d4c1a2b7c3d9e2f1
+
       - name: Setup Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@45bfe01c2f7e3a9b6c4d2f1e8a7b9c3f5d1e2a0b
+
       - name: Build with Jekyll
-        uses: actions/jekyll-build-pages@v1
+        uses: actions/jekyll-build-pages@b16e0e5f7c3a4d2b9e1f0c7a6b5d4e3f2a1c0b9d
         with:
           source: ./
           destination: ./_site
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
 
-  # Deployment job
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@7b1f4a7c2d9e8f3b6a4c2d1e7f9b3a5c4d2e1f0
+
   deploy:
     environment:
       name: github-pages
@@ -45,4 +41,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@c8d5e0f9f5e5a4b3c2d1e7f9b3a5c4d2e1f0a7b6
