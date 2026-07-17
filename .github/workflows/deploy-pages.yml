@@ -22,13 +22,11 @@ jobs:
         working-directory: app
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@08eba0b3b4c9f5f6f8e5e3e6d4c1a2b7c3d9e2f1 
       - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-
+        uses: actions/configure-pages@45bfe01c2f7e3a9b6c4d2f1e8a7b9c3f5d1e2a0b # v5
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@1830845b2c9e4f7d1a6c3b2f9e8d7c6b5a4f3e2d # v4
         with:
           node-version: '20'
           cache: npm
@@ -41,9 +39,8 @@ jobs:
         env:
           CI: false
         run: npm run build
-
       - name: Upload GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@7b1f4a7c2d9e8f3b6a4c2d1e7f9b3a5c4d2e1f0 # v3
         with:
           path: app/build
 
@@ -56,4 +53,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@c8d5e0f9f5e5a4b3c2d1e7f9b3a5c4d2e1f0a7b6 
