@@ -1,19 +1,19 @@
 # Core web framework
-Django==4.2.7
-djangorestframework==3.14.0
-djangorestframework-simplejwt==5.3.1
-django-cors-headers==4.3.1
+Django
+djangorestframework
+djangorestframework-simplejwt
+django-cors-headers
 
 # Configuration and database
-dj-database-url==2.2.0
-psycopg[binary]==3.2.3
+dj-database-url
+psycopg
 
 # Production serving
-gunicorn==22.0.0
-cryptography==44.0.2
+gunicorn
+cryptography
 
 # Reporting and document generation
-python-dateutil==2.8.2
-reportlab==4.0.9
-Pillow==12.1.1
-openpyxl==3.1.5
+python-dateutil
+reportlab
+Pillow
+openpyxl

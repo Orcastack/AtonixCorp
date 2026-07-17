@@ -28,8 +28,8 @@ org, created = Organization.objects.get_or_create(
         'description': 'Test organization',
         'industry': 'Financial Services',
         'employee_count': 50,
-        'primary_currency': 'USD',
-        'primary_country': 'Nigeria'
+        'primary_currency': 'US',
+        'primary_country': 'South Africa'
     }
 )
 if created:

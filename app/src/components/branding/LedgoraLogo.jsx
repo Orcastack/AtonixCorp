@@ -10,7 +10,7 @@ const SIZE_MAP = {
 function LedgoraLogo({ variant = 'full', withText = true, size = 'medium', text = 'Ledgora', className = '' }) {
   const dimension = typeof size === 'number' ? size : (SIZE_MAP[size] || SIZE_MAP.medium);
   const classes = ['ledgora-logo-lockup', `ledgora-logo--${variant}`, className].filter(Boolean).join(' ');
-  const secondaryText = text === 'Ledgora' ? '' : text.replace('Ledgora', '').trim();
+  const secondaryText = text === 'AtonixCorp' ? '' : text.replace('AtonixCorp', '').trim();
 
   return (
     <span className={classes}>
@@ -32,7 +32,7 @@ function LedgoraLogo({ variant = 'full', withText = true, size = 'medium', text 
       </svg>
       {withText ? (
         <span className="ledgora-logo-wordmark">
-          <span className="ledgora-logo-wordmark__primary">Ledgora</span>
+          <span className="ledgora-logo-wordmark__primary">AtonixCorp</span>
           {secondaryText ? <span className="ledgora-logo-wordmark__secondary">{secondaryText}</span> : null}
         </span>
       ) : null}

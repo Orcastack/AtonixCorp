@@ -1,7 +1,7 @@
 {
-  "name": "ledgora",
+  "name": "atonixcorp",
   "version": "1.0.0",
-  "homepage": "/Ledgora",
+  "homepage": "",
   "private": true,
   "proxy": "http://localhost:8000",
   "engines": {

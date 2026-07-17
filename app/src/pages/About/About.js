@@ -15,9 +15,9 @@ const About = () => {
         <div className="about-hero-bg" />
         <div className="container">
           <div className="about-hero-inner">
-            <p className="about-eyebrow">The Financial Operating System</p>
+            <p className="about-eyebrow">The Enterprise Operating System</p>
             <h1>Ledgora</h1>
-            <p className="about-hero-sub">Not an accounting tool. Not a bookkeeping app. Not a reporting dashboard.<br />A unified Financial Operating System built for accounting firms, businesses,
+            <p className="about-hero-sub">Not an accounting tool. Not a bookkeeping app. Not a reporting dashboard.<br />A unified Enterprise Operating System built for all firms, businesses,
               and financial institutions.
             </p>
             <div className="about-hero-cta">
@@ -137,7 +137,7 @@ const About = () => {
           <div className="ux-split">
             <div className="ux-text">
               <p className="about-eyebrow-purple">The User Experience</p>
-              <h2>What Ledgora Feels Like</h2>
+              <h2>What AtonixCorp Feels Like</h2>
               <p>When a user logs into Ledgora, they must feel empowered, in control, supported,
                 efficient, confident, and secure. Every screen, every button, every workflow reflects this.
               </p>
@@ -156,7 +156,7 @@ const About = () => {
               </div>
             </div>
             <div className="ux-feelings">
-              <p className="ux-feelings-title">When you use Ledgora, you feel:</p>
+              <p className="ux-feelings-title">When you use AtonixCorp, you feel:</p>
               {['Empowered', 'In Control', 'Supported', 'Efficient', 'Confident', 'Secure'].map((f) => (
                 <div className="ux-feeling-chip" key={f}>{f}</div>
               ))}
@@ -189,7 +189,7 @@ const About = () => {
             <div className="brand-promise-card">
               <h3>Brand Promise</h3>
               <blockquote>
-                "Ledgora gives accounting firms the power, speed, and intelligence they need to
+                "AtonixCorp gives accounting firms the power, speed, and intelligence they need to
                 operate at the highest level."
               </blockquote>
             </div>
@@ -216,8 +216,8 @@ const About = () => {
         <div className="container">
           <div className="future-inner">
             <p className="about-eyebrow about-eyebrow--inverse">Long-Term Vision</p>
-            <h2>The Future of Ledgora</h2>
-            <p className="future-sub">Ledgora is not just a platform — it is a movement. A transformation.
+            <h2>The Future of AtonixCorp</h2>
+            <p className="future-sub">AtonixCorp is not just a platform — it is a movement. A transformation.
               A new standard for how the world manages financial operations.
             </p>
             <div className="future-grid">
@@ -236,7 +236,7 @@ const About = () => {
                 </div>
               ))}
             </div>
-            <p className="future-closing">Ledgora will become the platform that powers the world's financial operations.
+            <p className="future-closing">AtonixCorp will become the platform that powers the world's financial operations.
             </p>
           </div>
         </div>
@@ -246,7 +246,7 @@ const About = () => {
       <section className="about-cta-section">
         <div className="container">
           <div className="about-cta-inner">
-            <h2>This is Ledgora.<br />
+            <h2>This is AtonixCorp.<br />
               <span>The future of financial operations begins here.</span>
             </h2>
             <p>Built for the future. Built for firms that demand excellence. Built for businesses
