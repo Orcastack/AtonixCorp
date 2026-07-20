@@ -205,6 +205,191 @@ textarea:focus {
   box-shadow: var(--shadow-sm);
 }
 
+/* Authentication uses the same light, high-visibility surface system as the platform. */
+.auth-page {
+  min-height: 100vh;
+  padding: var(--space-xl) var(--ui-gutter);
+  background: var(--color-silver-100);
+}
+
+.auth-container {
+  width: min(100%, 440px);
+}
+
+.auth-header {
+  margin-bottom: var(--space-lg);
+}
+
+.auth-logo-link {
+  color: var(--color-heading);
+}
+
+.auth-card {
+  border: 1px solid var(--color-silver-300);
+  border-radius: var(--radius-lg);
+  background: var(--color-white);
+  box-shadow: var(--shadow-md);
+}
+
+.auth-card h1 {
+  color: var(--color-heading);
+  font-family: var(--font-family);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0;
+}
+
+.auth-subtitle,
+.auth-footer {
+  color: var(--color-silver-700);
+  font-family: var(--font-family);
+}
+
+.auth-form label {
+  color: var(--color-heading);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-semibold);
+}
+
+.auth-form input,
+.auth-form select,
+.phone-input,
+.country-select {
+  border-color: var(--color-silver-300);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  color: var(--color-heading);
+  font-family: var(--font-family);
+}
+
+.auth-form input::placeholder {
+  color: var(--color-silver-500);
+}
+
+.auth-page .auth-form input:focus,
+.auth-page .auth-form select:focus,
+.auth-page .phone-input:focus,
+.auth-page .country-select:focus {
+  border-color: var(--color-blue-600) !important;
+  box-shadow: 0 0 0 3px rgba(40, 120, 189, 0.14) !important;
+}
+
+.auth-form .btn-primary,
+.auth-form .btn-full {
+  border: 1px solid var(--color-blue-700);
+  border-radius: var(--radius-md);
+  background: var(--color-blue-700);
+  color: var(--color-white);
+  font-family: var(--font-family);
+}
+
+.auth-form .btn-primary:hover,
+.auth-form .btn-full:hover {
+  background: var(--color-navy-800);
+  border-color: var(--color-navy-800);
+}
+
+.auth-page .password-toggle,
+.auth-page .btn-link {
+  border-color: var(--color-silver-300);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  color: var(--color-blue-700);
+  font-family: var(--font-family);
+}
+
+.auth-page .password-toggle:hover,
+.auth-page .btn-link:hover {
+  border-color: var(--color-blue-600);
+  color: var(--color-blue-700);
+  background: var(--color-blue-100);
+}
+
+.auth-error {
+  border-color: #f2b8b5;
+  border-radius: var(--radius-md);
+  background: var(--color-error-light);
+  color: var(--color-error);
+}
+
+.auth-footer a {
+  color: var(--color-blue-700);
+  font-weight: var(--font-weight-semibold);
+}
+
+.auth-footer a:hover {
+  color: var(--color-navy-800);
+}
+
+.step-dot {
+  background: var(--color-silver-300);
+}
+
+.step-dot.active,
+.step-dot.completed {
+  background: var(--color-blue-600);
+}
+
+.password-strength {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+  color: var(--color-silver-700);
+  font-size: var(--font-size-xs);
+}
+
+.password-strength > span {
+  display: flex;
+  gap: 3px;
+}
+
+.password-strength i {
+  width: 22px;
+  height: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--color-silver-300);
+}
+
+.password-strength--fair i:nth-child(-n + 2) {
+  background: var(--color-warning);
+}
+
+.password-strength--strong i {
+  background: var(--color-success);
+}
+
+.password-strength--strong {
+  color: var(--color-success);
+}
+
+@media (prefers-color-scheme: dark) {
+  .auth-page {
+    background: var(--color-silver-100);
+  }
+
+  .auth-card,
+  .auth-form input,
+  .auth-form select,
+  .phone-input,
+  .country-select,
+  .password-toggle,
+  .btn-link {
+    background: var(--color-white);
+    color: var(--color-heading);
+  }
+
+  .auth-card h1,
+  .auth-form label {
+    color: var(--color-heading);
+  }
+
+  .auth-subtitle,
+  .auth-footer {
+    color: var(--color-silver-700);
+  }
+}
+
 @media (max-width: 760px) {
   .page-header {
     display: grid;

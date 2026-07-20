@@ -20,6 +20,11 @@ const Register = () => {
   const navigate = useNavigate();
 
   const selectedCountry = countryDropdownOptions.find(c => c.code === country);
+  const passwordStrength = password.length < 6
+    ? { label: 'Use at least 6 characters', level: 'weak' }
+    : password.length < 10 || !(/[A-Z]/.test(password) && /[0-9]/.test(password))
+      ? { label: 'Add a number and uppercase letter', level: 'fair' }
+      : { label: 'Strong password', level: 'strong' };
 
   // Step 1: Email validation
   const handleEmailSubmit = (e) => {
@@ -92,7 +97,7 @@ const Register = () => {
             <h1>Create Enterprise Account</h1>
             <p className="auth-subtitle">Step 1 of 2 - Enter your business email</p>
 
-            {error && <div className="auth-error">{error}</div>}
+            {error && <div className="auth-error" role="alert">{error}</div>}
 
             <form onSubmit={handleEmailSubmit} className="auth-form">
               <div className="form-group">
@@ -140,7 +145,7 @@ const Register = () => {
           <h1>Complete Your Profile</h1>
           <p className="auth-subtitle">Step 2 of 2 - Enterprise Account</p>
 
-          {error && <div className="auth-error">{error}</div>}
+          {error && <div className="auth-error" role="alert">{error}</div>}
 
           <form onSubmit={handleDetailsSubmit} className="auth-form">
             <div className="form-group">
@@ -221,6 +226,10 @@ const Register = () => {
                 >
                   {showPassword ? "Hide" : "Show"}
                 </button>
+              </div>
+              <div className={`password-strength password-strength--${passwordStrength.level}`} aria-live="polite">
+                <span><i aria-hidden="true" /><i aria-hidden="true" /><i aria-hidden="true" /></span>
+                {passwordStrength.label}
               </div>
             </div>
 

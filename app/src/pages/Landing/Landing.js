@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
+import { FiDownload, FiMonitor } from 'react-icons/fi';
+import { FaApple } from 'react-icons/fa';
+import { SiGoogleplay } from 'react-icons/si';
 
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
@@ -46,33 +49,92 @@ const operationalPillars = [
   },
 ];
 
-const heroSignals = ['Entity governance', 'Approval discipline', 'Filing readiness'];
-
-const heroSummary = [
-  { label: 'Coverage', value: 'Governance + Finance + Equity' },
-  { label: 'Execution mode', value: 'Structured, subscribed, and accountable' },
-];
-
-const heroDomains = ['Governance', 'Finance', 'Equity', 'Policy', 'Analytics'];
-
-const heroTimeline = [
-  {
-    title: 'Governance records',
-    detail: 'Ownership, approvals, permissions',
-    active: true,
+const dashboardTabs = {
+  Governance: {
+    eyebrow: 'Organization controls',
+    title: 'Governance workspace',
+    metrics: [
+      { label: 'Active entities', value: '24', trend: 'Across 6 jurisdictions' },
+      { label: 'Approvals due', value: '8', trend: '3 due this week' },
+      { label: 'Control coverage', value: '96%', trend: 'Policies reviewed' },
+    ],
+    activity: [
+      ['Board resolution', 'Ready for review', 'Today'],
+      ['Director appointment', 'Awaiting signature', 'Tomorrow'],
+      ['Delegated authority', 'Published', '14 Jun'],
+    ],
   },
-  {
-    title: 'Operational books',
-    detail: 'Ledger activity, controls, reporting',
+  Finance: {
+    eyebrow: 'Financial control',
+    title: 'Finance command center',
+    metrics: [
+      { label: 'Cash position', value: '$4.8m', trend: 'Consolidated entities' },
+      { label: 'Close tasks', value: '12', trend: '7 completed this month' },
+      { label: 'Reconciled', value: '98%', trend: 'Bank and ledger accounts' },
+    ],
+    activity: [
+      ['Cash forecast', 'Updated', 'Today'],
+      ['Intercompany review', 'Needs approval', 'Tomorrow'],
+      ['Period close', 'On track', '28 Jun'],
+    ],
   },
-  {
-    title: 'Compliance execution',
-    detail: 'Tax obligations, filings, evidence',
+  Equity: {
+    eyebrow: 'Ownership records',
+    title: 'Equity administration',
+    metrics: [
+      { label: 'Issued shares', value: '4.2m', trend: 'Across 3 classes' },
+      { label: 'Pending grants', value: '16', trend: 'Approvals in motion' },
+      { label: 'Cap table status', value: 'Current', trend: 'Last updated today' },
+    ],
+    activity: [
+      ['Option grant batch', 'Ready for approval', 'Today'],
+      ['Transfer register', 'Verified', 'Yesterday'],
+      ['Valuation record', 'Filed', '12 Jun'],
+    ],
   },
+  Policy: {
+    eyebrow: 'Policy execution',
+    title: 'Policy and compliance',
+    metrics: [
+      { label: 'Open obligations', value: '18', trend: 'Across the organization' },
+      { label: 'On-time filings', value: '100%', trend: 'Current reporting cycle' },
+      { label: 'Evidence complete', value: '94%', trend: 'Audit-ready records' },
+    ],
+    activity: [
+      ['Tax filing calendar', 'On track', 'Today'],
+      ['Policy attestation', '7 responses due', 'Friday'],
+      ['Evidence request', 'Assigned', '18 Jun'],
+    ],
+  },
+  Analytics: {
+    eyebrow: 'Executive intelligence',
+    title: 'Analytics overview',
+    metrics: [
+      { label: 'Decision readiness', value: '92%', trend: 'Management reporting' },
+      { label: 'Risk signals', value: '3', trend: 'Require attention' },
+      { label: 'Reports delivered', value: '41', trend: 'This reporting period' },
+    ],
+    activity: [
+      ['Board pack', 'Prepared', 'Today'],
+      ['Risk review', 'Scheduled', 'Thursday'],
+      ['Entity report', 'Delivered', '10 Jun'],
+    ],
+  },
+};
+
+const subscriptionTiers = ['Basic', 'Professional', 'Enterprise', 'Institutional'];
+
+const downloads = [
+  { label: 'Mac', detail: 'Desktop client', icon: FiMonitor },
+  { label: 'Windows', detail: 'Desktop client', icon: FiDownload },
+  { label: 'Google Play', detail: 'Android app', icon: SiGoogleplay },
+  { label: 'App Store', detail: 'iOS app', icon: FaApple },
 ];
 
 const Landing = () => {
   const { isAuthenticated, loading } = useAuth();
+  const [activeDashboard, setActiveDashboard] = useState('Governance');
+  const dashboard = dashboardTabs[activeDashboard];
 
   if (loading) {
     return (
@@ -95,10 +157,10 @@ const Landing = () => {
           <div className="landing-shell landing-hero__layout">
             <div className="landing-hero__copy">
               <p className="landing-kicker">Governance-as-a-Service for modern institutions</p>
-              <h1>One operating system for governance, finance, equity, subscriptions, and controlled execution.</h1>
+              <h1>The operating system for accountable institutions.</h1>
               <p className="landing-lead">
-                AtonixCorp gives organizations a single platform for policy enforcement, finance and equity management,
-                workflow approvals, analytics, and subscription-based access across the whole institution.
+                AtonixCorp connects governance, finance, equity, policy execution, and analytics in one
+                controlled workspace built for boards, executives, and operating teams.
               </p>
 
               <div className="landing-actions">
@@ -106,42 +168,65 @@ const Landing = () => {
                 <Link to="/features" className="landing-button landing-button--secondary">Review Modules</Link>
               </div>
 
-              <div className="landing-hero__trustband" aria-label="Operational trust indicators">
-                {heroSignals.map((signal) => (
-                  <span key={signal}>{signal}</span>
+              <div className="landing-downloads" aria-label="AtonixCorp downloads">
+                {downloads.map(({ label, detail, icon: DownloadIcon }) => (
+                  <a className="landing-download" href="#downloads" key={label}>
+                    <DownloadIcon aria-hidden="true" />
+                    <span><strong>{label}</strong><small>{detail}</small></span>
+                  </a>
                 ))}
               </div>
               <p className="landing-hero__microcopy">
-                Built to align with OrcaOS, OrcaCLI, OrcaSDK, and OrcaCompute for end-to-end institutional operations.
+                Available across desktop and mobile for secure work wherever decisions are made.
               </p>
             </div>
 
-            <aside className="landing-hero__frame" aria-label="Platform operating frame">
-              <div className="landing-hero__frame-bar" />
-              <p className="landing-hero__frame-title">Operating Domains</p>
-              <div className="landing-hero__domain-list">
-                {heroDomains.map((domain) => (
-                  <span key={domain}>{domain}</span>
+            <aside className="landing-dashboard-preview" aria-label="AtonixCorp dashboard preview">
+              <div className="landing-dashboard-preview__bar">
+                <div>
+                  <p>{dashboard.eyebrow}</p>
+                  <strong>{dashboard.title}</strong>
+                </div>
+                <span className="landing-dashboard-preview__status">Live preview</span>
+              </div>
+              <div className="landing-dashboard-tabs" role="tablist" aria-label="Platform dashboards">
+                {Object.keys(dashboardTabs).map((tab) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    role="tab"
+                    aria-selected={activeDashboard === tab}
+                    className={activeDashboard === tab ? 'is-active' : ''}
+                    onClick={() => setActiveDashboard(tab)}
+                  >
+                    {tab}
+                  </button>
                 ))}
               </div>
-              <div className="landing-hero__summary-grid">
-                {heroSummary.map((item) => (
-                  <div key={item.label} className="landing-hero__summary-card">
-                    <span>{item.label}</span>
-                    <strong>{item.value}</strong>
+              <div className="landing-dashboard-metrics">
+                {dashboard.metrics.map((metric) => (
+                  <div className="landing-dashboard-metric" key={metric.label}>
+                    <span>{metric.label}</span>
+                    <strong>{metric.value}</strong>
+                    <small>{metric.trend}</small>
                   </div>
                 ))}
               </div>
-              <div className="landing-hero__frame-copy">
-                {heroTimeline.map((item) => (
-                  <div key={item.title} className={`landing-hero__timeline-item${item.active ? ' is-active' : ''}`}>
-                    <span className="landing-hero__timeline-dot" aria-hidden="true" />
-                    <div>
-                      <p>{item.title}</p>
-                      <small>{item.detail}</small>
-                    </div>
+              <div className="landing-dashboard-activity">
+                <div className="landing-dashboard-activity__heading"><span>Priority work</span><span>Due</span></div>
+                {dashboard.activity.map(([item, status, due]) => (
+                  <div className="landing-dashboard-activity__row" key={item}>
+                    <div><strong>{item}</strong><small>{status}</small></div>
+                    <span>{due}</span>
                   </div>
                 ))}
+              </div>
+              <div className="landing-dashboard-tiers">
+                <span>Subscription access</span>
+                <div>
+                  {subscriptionTiers.map((tier) => <span key={tier}>{tier}</span>)}
+                </div>
+                <Link to="/pricing">Compare plans</Link>
               </div>
             </aside>
           </div>

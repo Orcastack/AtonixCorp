@@ -41,7 +41,7 @@ const Login = () => {
           <h1>Welcome Back</h1>
           <p className="auth-subtitle">Sign in to your account to continue</p>
 
-          {error && <div className="auth-error">{error}</div>}
+          {error && <div className="auth-error" role="alert">{error}</div>}
 
           <form onSubmit={handleSubmit} className="auth-form">
             <div className="form-group">

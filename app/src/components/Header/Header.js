@@ -7,7 +7,6 @@ import './Header.css';
 
 const UTILITY_ITEMS = [
   { label: 'Contact', to: '/contact' },
-  { label: 'Media', to: '/contact#media' },
   { label: 'Support', to: '/support' },
   { label: 'Security', to: '/security-center' },
   { label: 'Login', to: '/login' },
@@ -20,7 +19,7 @@ const NAV_ITEMS = [
   { label: 'Global Tax', to: '/global-tax' },
   { label: 'Pricing',    to: '/pricing' },
   { label: 'About',      to: '/about' },
-  { label: 'Contact',    to: '/contact' },
+ // { label: 'Contact',    to: '/contact' },
 ];
 
 const Header = () => {
