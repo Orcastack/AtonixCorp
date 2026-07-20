@@ -64,7 +64,7 @@
 }
 
 .overview-label {
-  color: rgba(0, 0, 0, 0.72);
+  color: rgba(255, 255, 255, 0.84);
   font-size: var(--font-size-xs);
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -222,12 +222,18 @@
 
 .tax-list-item {
   display: flex;
+  width: 100%;
   justify-content: space-between;
   gap: 10px;
   align-items: center;
   padding: 12px 14px;
+  background: var(--color-white);
+  border: 0;
   border-bottom: 1px solid var(--color-silver-very-light);
   cursor: pointer;
+  color: var(--color-midnight);
+  font: inherit;
+  text-align: left;
   transition: background 0.2s ease, border-left-color 0.2s ease;
   border-left: 3px solid transparent;
 }
@@ -239,6 +245,13 @@
 .tax-list-item.active {
   background: var(--color-cyan-light);
   border-left-color: var(--color-cyan);
+}
+
+.tax-list-item:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 3px solid rgba(var(--color-primary-rgb), 0.36);
+  outline-offset: -3px;
 }
 
 .country-name {

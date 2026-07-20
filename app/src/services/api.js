@@ -135,7 +135,7 @@ export const governanceCommissionEntriesAPI = {
 
 // Tax countries API
 export const taxAPI = {
-  list: () => api.get('/tax/countries/'),
+  list: () => api.get('/tax/countries/', { skipGlobalErrorHandler: true }),
   get: (code) => api.get(`/tax/countries/${code}/`),
 };
 

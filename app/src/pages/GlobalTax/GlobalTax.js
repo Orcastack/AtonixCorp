@@ -21,7 +21,8 @@ const GlobalTax = () => {
     setLoading(true);
     taxAPI.list()
       .then((res) => {
-        const nextCountries = normalizeTaxDirectory(res.data, fallbackCountries);
+        const liveCountries = normalizeTaxDirectory(res.data);
+        const nextCountries = liveCountries.length > 0 ? liveCountries : fallbackCountries;
         setCountries(nextCountries);
         setSelected((currentSelected) => {
           if (!currentSelected) {
@@ -30,7 +31,7 @@ const GlobalTax = () => {
 
           return nextCountries.find((country) => country.code === currentSelected.code) || nextCountries[0] || null;
         });
-        setIsUsingFallback(nextCountries === fallbackCountries);
+        setIsUsingFallback(liveCountries.length === 0);
       })
       .catch(() => {
         setCountries(fallbackCountries);
@@ -131,17 +132,20 @@ const GlobalTax = () => {
                 </div>
                 <div className="tax-list">
                   {filtered.map(c => (
-                    <div
+                    <button
                       key={c.code}
+                      type="button"
                       className={`tax-list-item ${selectedCountry?.code === c.code ? 'active' : ''}`}
                       onClick={() => setSelected(c)}
+                      aria-pressed={selectedCountry?.code === c.code}
+                      aria-label={`View tax information for ${c.name}`}
                     >
                       <div className="item-content">
                         <div className="country-name">{c.name}</div>
                         <div className="country-region">{c.region}</div>
                       </div>
                       <div className="country-code">{c.code}</div>
-                    </div>
+                    </button>
                   ))}
                   {filtered.length === 0 && (
                     <div className="empty-list">No jurisdictions match your search</div>
