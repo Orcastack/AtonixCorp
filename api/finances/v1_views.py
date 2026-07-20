@@ -23,6 +23,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .enterprise_views import _accessible_organizations_queryset
+from .company_identity import normalize_registration_number
 from .models import (
     AuditLog,
     BankAccount,
@@ -1382,6 +1383,14 @@ class OrganizationsView(V1BaseAPIView):
         name = (payload.get('name') or '').strip()
         if not name:
             return Response({'detail': 'name is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            registration_number = normalize_registration_number(payload.get('registration_number'))
+        except Exception as error:
+            return Response({'registration_number': [str(error)]}, status=status.HTTP_400_BAD_REQUEST)
+        if Organization.objects.filter(name__iexact=name).exists():
+            return Response({'name': ['A company with this name already exists.']}, status=status.HTTP_400_BAD_REQUEST)
+        if Organization.objects.filter(registration_number=registration_number).exists():
+            return Response({'registration_number': ['This company registration number is already in use.']}, status=status.HTTP_400_BAD_REQUEST)
 
         slug_base = slugify(name) or f'org-{request.user.pk}'
         slug = slug_base
@@ -1393,6 +1402,7 @@ class OrganizationsView(V1BaseAPIView):
         organization = Organization.objects.create(
             owner=request.user,
             name=name,
+            registration_number=registration_number,
             slug=slug,
             industry=(payload.get('industry') or '').strip(),
             primary_country=(payload.get('country') or 'US').strip(),

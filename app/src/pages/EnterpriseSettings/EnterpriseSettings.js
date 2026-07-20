@@ -37,11 +37,18 @@ const CURRENCIES = [
 ];
 
 const EnterpriseSettings = () => {
-  const { currentOrganization, deleteOrganization, updateOrganization } = useEnterprise();
+  const {
+    currentOrganization,
+    deleteOrganization,
+    updateOrganization,
+    exportGovernanceConfiguration,
+    importGovernanceConfiguration,
+  } = useEnterprise();
   const [activeTab, setActiveTab] = useState('organization');
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
+  const [governanceBusy, setGovernanceBusy] = useState(false);
 
   // Organization Settings State
   const [orgSettings, setOrgSettings] = useState({
@@ -212,6 +219,36 @@ const EnterpriseSettings = () => {
     }
   };
 
+  const handleExportGovernanceConfiguration = async () => {
+    if (!currentOrganization?.id || governanceBusy) return;
+    setGovernanceBusy(true);
+    setSaveError(null);
+    try {
+      await exportGovernanceConfiguration(currentOrganization.id);
+    } catch (err) {
+      setSaveError(err.message || 'Failed to export governance configuration');
+    } finally {
+      setGovernanceBusy(false);
+    }
+  };
+
+  const handleImportGovernanceConfiguration = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file || !currentOrganization?.id || governanceBusy) return;
+    setGovernanceBusy(true);
+    setSaveError(null);
+    try {
+      await importGovernanceConfiguration(currentOrganization.id, file);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err) {
+      setSaveError(err.message || 'Failed to restore governance configuration');
+    } finally {
+      setGovernanceBusy(false);
+    }
+  };
+
   return (
     <div className="page-container enterprise-settings">
       <div className="settings-header">
@@ -355,6 +392,33 @@ const EnterpriseSettings = () => {
               <button className="btn-primary" onClick={handleSaveSettings}>
                 Save Organization Settings
               </button>
+
+              <div className="settings-card" style={{ marginTop: '1.5rem' }}>
+                <h3>Governance Configuration</h3>
+                <p style={{ marginBottom: '1rem', color: '#6b7280' }}>
+                  Download the versioned YAML record of your organization structure, roles, permissions, offices, and workflows, or restore it after a migration or recovery event.
+                </p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'center' }}>
+                  <button
+                    className="btn-secondary"
+                    type="button"
+                    onClick={handleExportGovernanceConfiguration}
+                    disabled={governanceBusy || !currentOrganization?.id}
+                  >
+                    {governanceBusy ? 'Working...' : 'Download YAML'}
+                  </button>
+                  <label className="btn-secondary" style={{ cursor: governanceBusy ? 'not-allowed' : 'pointer', margin: 0 }}>
+                    {governanceBusy ? 'Working...' : 'Restore YAML'}
+                    <input
+                      type="file"
+                      accept=".yaml,.yml,application/x-yaml,text/yaml"
+                      onChange={handleImportGovernanceConfiguration}
+                      disabled={governanceBusy || !currentOrganization?.id}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
+                </div>
+              </div>
 
               <div className="settings-card" style={{ marginTop: '1.5rem', borderColor: '#f3c2b8', background: '#fff7f5' }}>
                 <h3>Delete Organization</h3>

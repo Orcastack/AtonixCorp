@@ -20,8 +20,11 @@ from decimal import Decimal, ROUND_HALF_UP
 from django.utils import timezone
 from workspaces.models import Workspace
 
+from .governance_configurations import restore_governance_document
+from .company_identity import normalize_registration_number
+
 from .models import (
-    Organization, Entity, TeamMember, Role, Permission, TaxExposure, ROLE_ORG_OWNER, ROLE_CFO,
+    Organization, OrganizationDirectoryEntry, Entity, TeamMember, Role, Permission, TaxExposure, ROLE_ORG_OWNER, ROLE_CFO,
     ROLE_FINANCE_ANALYST, ROLE_VIEWER, ROLE_EXTERNAL_ADVISOR,
     TaxProfile, TaxRegimeRegistry, TaxCalculation, TaxFiling, TaxAuditLog, TaxRuleSetVersion, TaxRiskAlert, ComplianceDeadline, CashflowForecast, AuditLog, PlatformAuditEvent, PlatformTask, EntityDepartment,
     GovernancePolicy, GovernanceAmendment, GovernanceVote, GovernanceCommissionPlan, GovernanceCommissionEntry,
@@ -291,7 +294,34 @@ class OrganizationViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """Create organization with current user as owner"""
-        serializer.save(owner=self.request.user)
+        organization = serializer.save(owner=self.request.user)
+        log_platform_audit_event(
+            domain='identity',
+            event_type='company.created',
+            action='company_created',
+            actor=self.request.user,
+            organization=organization,
+            resource_type='Organization',
+            resource_id=str(organization.id),
+            resource_name=organization.name,
+            summary=f'Created company {organization.name}',
+            metadata={'registration_number': organization.registration_number, 'founder_id': self.request.user.id},
+        )
+
+    @action(detail=False, methods=['post'])
+    def verify_registration_number(self, request):
+        """Validate the canonical company identity before a registration attempt."""
+        try:
+            registration_number = normalize_registration_number(request.data.get('registration_number'))
+        except Exception as error:
+            raise ValidationError({'registration_number': str(error)})
+        return Response({
+            'registration_number': registration_number,
+            'valid': True,
+            'available': not Organization.objects.filter(registration_number=registration_number).exists(),
+            'verification_source': 'syntax',
+            'external_registry_verified': False,
+        })
 
     def _get_organization_delete_blockers(self, organization):
         blockers = []
@@ -375,6 +405,146 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         organizations = self.get_queryset()
         serializer = self.get_serializer(organizations, many=True)
         return Response(serializer.data)
+
+    def _require_governance_configuration_owner(self, organization, user):
+        if organization.owner_id != user.id:
+            raise PermissionDenied('Only the organization owner can export or restore governance configuration.')
+
+    @action(detail=True, methods=['get'])
+    def directory(self, request, pk=None):
+        organization = self.get_object()
+        from .directory_service import sync_organization_directory
+
+        sync_organization_directory(organization)
+        return Response([
+            {
+                'id': entry.id,
+                'dn': entry.dn,
+                'uid': entry.uid,
+                'cn': entry.cn,
+                'node_type': entry.node_type,
+                'role_code': entry.role_code,
+                'permissions': entry.permissions,
+                'parent_id': entry.parent_id,
+                'entity_id': entry.entity_id,
+                'user_id': entry.user_id,
+                'attributes': entry.attributes,
+                'is_active': entry.is_active,
+            }
+            for entry in organization.directory_entries.select_related('parent').order_by('dn')
+        ])
+
+    @action(detail=True, methods=['post'])
+    def create_directory_office(self, request, pk=None):
+        organization = self.get_object()
+        self._require_governance_configuration_owner(organization, request.user)
+        from django.utils.text import slugify
+        from .directory_service import _organization_dn, sync_organization_directory
+
+        office_name = str(request.data.get('name') or '').strip()
+        office_key = slugify(office_name)
+        if not office_key:
+            raise ValidationError({'name': 'An office name is required.'})
+        root = sync_organization_directory(organization)
+        entry, created = OrganizationDirectoryEntry.objects.get_or_create(
+            organization=organization,
+            source_type='manual_office',
+            source_id=office_key,
+            defaults={
+                'parent': root,
+                'node_type': 'office',
+                'dn': f'ou={office_key},{_organization_dn(organization)}',
+                'cn': office_name,
+                'attributes': {'office_key': office_key},
+            },
+        )
+        if not created:
+            raise ValidationError({'name': 'An office with this name already exists.'})
+        log_platform_audit_event(
+            domain='identity', event_type='directory.office_created', action='directory_office_created',
+            actor=request.user, organization=organization, resource_type='OrganizationDirectoryEntry',
+            resource_id=str(entry.id), resource_name=entry.cn,
+            summary=f'Created directory office: {entry.cn}', metadata={'dn': entry.dn},
+        )
+        return Response({'id': entry.id, 'dn': entry.dn, 'cn': entry.cn}, status=drf_status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['post'])
+    def assign_directory_role(self, request, pk=None):
+        organization = self.get_object()
+        self._require_governance_configuration_owner(organization, request.user)
+        from .directory_service import ensure_governance_roles
+
+        user_id = request.data.get('user_id')
+        role_code = str(request.data.get('role_code') or '').upper()
+        if not user_id or not role_code:
+            raise ValidationError({'detail': 'user_id and role_code are required.'})
+        member_user = get_object_or_404(User, pk=user_id)
+        if member_user.id == organization.owner_id:
+            raise ValidationError({'user_id': 'The founder role is bound to the organization owner and cannot be reassigned.'})
+
+        ensure_governance_roles()
+        role = get_object_or_404(Role, code=role_code)
+        if role.code in {'ORG_OWNER', 'FOUNDER'}:
+            raise ValidationError({'role_code': 'Founder and organization-owner roles are reserved.'})
+        member, created = TeamMember.objects.update_or_create(
+            organization=organization,
+            user=member_user,
+            defaults={'role': role, 'is_active': True, 'accepted_at': timezone.now()},
+        )
+        scoped_entity_ids = request.data.get('scoped_entity_ids') or []
+        if scoped_entity_ids:
+            member.scoped_entities.set(Entity.objects.filter(organization=organization, id__in=scoped_entity_ids))
+        else:
+            member.scoped_entities.clear()
+
+        log_platform_audit_event(
+            domain='identity', event_type='directory.role_assigned', action='directory_role_assigned',
+            actor=request.user, organization=organization, resource_type='TeamMember', resource_id=str(member.id),
+            resource_name=member_user.get_full_name() or member_user.username,
+            summary=f'Assigned {role.code} in {organization.name}',
+            metadata={'user_id': member_user.id, 'role_code': role.code, 'created': created},
+        )
+        return Response({
+            'user_id': member_user.id,
+            'role_code': role.code,
+            'scoped_entity_ids': list(member.scoped_entities.values_list('id', flat=True)),
+        }, status=drf_status.HTTP_201_CREATED if created else drf_status.HTTP_200_OK)
+
+    @action(detail=True, methods=['get'])
+    def export_governance_yaml(self, request, pk=None):
+        organization = self.get_object()
+        self._require_governance_configuration_owner(organization, request.user)
+        from .directory_service import sync_organization_directory
+        from .governance_configurations import refresh_governance_configuration
+
+        sync_organization_directory(organization)
+        configuration = refresh_governance_configuration(organization)
+        response = FileResponse(configuration.configuration_file.open('rb'), content_type='application/x-yaml')
+        response['Content-Disposition'] = f'attachment; filename="org-{organization.id}-config.yml"'
+        return response
+
+    @action(detail=True, methods=['post'])
+    def import_governance_yaml(self, request, pk=None):
+        organization = self.get_object()
+        self._require_governance_configuration_owner(organization, request.user)
+        uploaded_file = request.FILES.get('file')
+        if uploaded_file is None:
+            raise ValidationError({'file': 'A YAML configuration file is required.'})
+        if uploaded_file.size > 5 * 1024 * 1024:
+            raise ValidationError({'file': 'Configuration files must not exceed 5 MB.'})
+
+        import yaml
+        try:
+            document = yaml.safe_load(uploaded_file.read().decode('utf-8'))
+        except (UnicodeDecodeError, yaml.YAMLError) as error:
+            raise ValidationError({'file': 'Upload a valid UTF-8 YAML configuration file.'}) from error
+
+        configuration = restore_governance_document(organization, document)
+        return Response({
+            'schema_version': configuration.schema_version,
+            'revision': configuration.revision,
+            'generated_at': configuration.generated_at,
+        })
 
     @action(detail=True, methods=['get'])
     def workspaces(self, request, pk=None):

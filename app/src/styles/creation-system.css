@@ -1,0 +1,73 @@
+/*
+ * Enterprise creation system
+ * Use these primitives for organization, entity, department, and workspace
+ * provisioning flows. Layout remains local; surfaces and controls do not.
+ */
+.creation-flow {
+  --creation-surface: var(--color-white, #ffffff);
+  --creation-subtle-surface: var(--color-silver-100, #f5f7fa);
+  --creation-border: var(--color-silver-300, #cbd5e1);
+  --creation-ink: var(--color-heading, #1e293b);
+  --creation-muted: var(--color-silver-700, #475569);
+  --creation-focus: var(--color-blue-600, #2878bd);
+  --creation-control-height: 44px;
+  --creation-space-1: 8px;
+  --creation-space-2: 16px;
+  --creation-space-3: 24px;
+  --creation-space-4: 32px;
+  --creation-radius: 0;
+  font-family: var(--font-family, 'IBM Plex Sans', sans-serif);
+}
+
+.creation-card,
+.creation-summary-card,
+.creation-option-card,
+.creation-module-card {
+  background: var(--creation-surface);
+  border: 1px solid var(--creation-border);
+  border-radius: var(--creation-radius);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+}
+
+.creation-card { padding: var(--creation-space-3); }
+.creation-summary-card { padding: var(--creation-space-2); }
+
+.creation-field {
+  display: grid;
+  gap: var(--creation-space-1);
+  min-width: 0;
+}
+
+.creation-label {
+  color: var(--creation-ink);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.creation-control {
+  box-sizing: border-box;
+  min-height: var(--creation-control-height);
+  width: 100%;
+  border: 1px solid var(--creation-border);
+  border-radius: var(--creation-radius);
+  background: var(--creation-surface);
+  color: var(--creation-ink);
+  font: inherit;
+  font-size: 14px;
+  line-height: 20px;
+  padding: 11px 12px;
+}
+
+.creation-control:focus-visible {
+  border-color: var(--creation-focus);
+  box-shadow: 0 0 0 3px rgba(40, 120, 189, 0.14);
+  outline: none;
+}
+
+.creation-description {
+  color: var(--creation-muted);
+  font-size: 13px;
+  line-height: 20px;
+  margin: 0;
+}

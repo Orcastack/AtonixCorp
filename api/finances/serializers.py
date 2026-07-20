@@ -1,4 +1,5 @@
 from django.utils.text import slugify
+from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.db.models import Count
@@ -46,6 +47,7 @@ from .models import (
 )
 from .banking_security import mask_secret
 from .tax_security import mask_json_payload, mask_tax_identifier, should_mask_tax_audit
+from .company_identity import normalize_registration_number
 
 
 # ============ User & Auth Serializers ============
@@ -81,14 +83,43 @@ class OrganizationSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source='settings.email', required=False, allow_blank=True)
     address = serializers.CharField(source='settings.address', required=False, allow_blank=True)
     service_time = serializers.CharField(source='settings.service_time', required=False, allow_blank=True)
+    registration_number = serializers.CharField(required=False, allow_blank=False, max_length=64)
 
     class Meta:
         model = Organization
-        fields = ['id', 'name', 'slug', 'description', 'logo_url', 'industry', 'employee_count', 'primary_currency', 'primary_country', 'country', 'currency', 'email', 'address', 'service_time', 'settings', 'website', 'owner_name', 'owner_email', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'registration_number', 'slug', 'description', 'logo_url', 'industry', 'employee_count', 'primary_currency', 'primary_country', 'country', 'currency', 'email', 'address', 'service_time', 'settings', 'website', 'owner_name', 'owner_email', 'created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
         extra_kwargs = {
             'slug': {'required': False, 'allow_blank': True},
         }
+
+    def validate_registration_number(self, value):
+        try:
+            return normalize_registration_number(value)
+        except DjangoValidationError as error:
+            raise serializers.ValidationError(error.messages[0])
+
+    def validate(self, attrs):
+        name = str(attrs.get('name', getattr(self.instance, 'name', ''))).strip()
+        if not name:
+            raise serializers.ValidationError({'name': 'Company name is required.'})
+        existing_names = Organization.objects.filter(name__iexact=name)
+        if self.instance:
+            existing_names = existing_names.exclude(pk=self.instance.pk)
+        if existing_names.exists():
+            raise serializers.ValidationError({'name': 'A company with this name already exists.'})
+        if self.instance is None and not attrs.get('registration_number'):
+            raise serializers.ValidationError({'registration_number': 'Company registration number is required.'})
+        registration_number = attrs.get('registration_number')
+        if registration_number:
+            existing_registration_numbers = Organization.objects.filter(registration_number=registration_number)
+            if self.instance:
+                existing_registration_numbers = existing_registration_numbers.exclude(pk=self.instance.pk)
+            if existing_registration_numbers.exists():
+                raise serializers.ValidationError({
+                    'registration_number': 'This company registration number is already in use.'
+                })
+        return attrs
 
     def _merge_settings(self, validated_data, instance=None):
         incoming_settings = validated_data.pop('settings', None) or {}
@@ -98,6 +129,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         self._merge_settings(validated_data)
+        validated_data['name'] = validated_data['name'].strip()
         slug = (validated_data.get('slug') or '').strip()
         if not slug:
             base_slug = slugify(validated_data.get('name') or '') or 'organization'

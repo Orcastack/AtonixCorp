@@ -5,7 +5,10 @@ from decimal import Decimal
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import URLValidator
+from django.db.models.functions import Lower
 from django.utils import timezone
+
+from .company_identity import normalize_registration_number
 
 # Role constants
 ROLE_ORG_OWNER = 'ORG_OWNER'
@@ -14,6 +17,13 @@ ROLE_FINANCE_ANALYST = 'FINANCE_ANALYST'
 ROLE_VIEWER = 'VIEWER'
 ROLE_EXTERNAL_ADVISOR = 'EXTERNAL_ADVISOR'
 ROLE_COMPLIANCE_OFFICER = 'COMPLIANCE_OFFICER'
+ROLE_FOUNDER = 'FOUNDER'
+ROLE_CEO = 'CEO'
+ROLE_CTO = 'CTO'
+ROLE_CSO = 'CSO'
+ROLE_BOARD = 'BOARD'
+ROLE_DEPARTMENT_HEAD = 'DEPARTMENT_HEAD'
+ROLE_UNIT_MEMBER = 'UNIT_MEMBER'
 
 ROLE_CHOICES = [
     (ROLE_ORG_OWNER, 'Organization Owner'),
@@ -22,6 +32,13 @@ ROLE_CHOICES = [
     (ROLE_VIEWER, 'Viewer'),
     (ROLE_EXTERNAL_ADVISOR, 'External Advisor'),
     (ROLE_COMPLIANCE_OFFICER, 'Compliance Officer'),
+    (ROLE_FOUNDER, 'Founder'),
+    (ROLE_CEO, 'Chief Executive Officer'),
+    (ROLE_CTO, 'Chief Technology Officer'),
+    (ROLE_CSO, 'Chief Security Officer'),
+    (ROLE_BOARD, 'Board Member'),
+    (ROLE_DEPARTMENT_HEAD, 'Department Head'),
+    (ROLE_UNIT_MEMBER, 'Unit Member'),
 ]
 
 # Account type constants
@@ -81,6 +98,7 @@ class Organization(models.Model):
     """Organization model for enterprise accounts"""
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_organizations')
     name = models.CharField(max_length=255)
+    registration_number = models.CharField(max_length=64, unique=True, null=True, blank=True)
     slug = models.SlugField(unique=True)
     description = models.TextField(blank=True)
     logo_url = models.URLField(blank=True)
@@ -96,9 +114,74 @@ class Organization(models.Model):
     class Meta:
         unique_together = ('owner', 'slug')
         ordering = ['-created_at']
+        constraints = [
+            models.UniqueConstraint(Lower('name'), name='unique_organization_name_case_insensitive'),
+        ]
+
+    def save(self, *args, **kwargs):
+        if self.registration_number:
+            self.registration_number = normalize_registration_number(self.registration_number)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
+
+
+class GovernanceConfiguration(models.Model):
+    """Current portable governance configuration for an organization."""
+
+    organization = models.OneToOneField(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name='governance_configuration',
+    )
+    schema_version = models.CharField(max_length=20, default='v1')
+    revision = models.PositiveIntegerField(default=0)
+    configuration_file = models.FileField(upload_to='governance_configurations/')
+    checksum = models.CharField(max_length=64, blank=True)
+    generated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.organization.name} governance configuration ({self.schema_version})'
+
+
+class OrganizationDirectoryEntry(models.Model):
+    """LDAP-compatible directory projection for organization-scoped identities."""
+
+    NODE_TYPE_CHOICES = [
+        ('organization', 'Organization'),
+        ('office', 'Office'),
+        ('department', 'Department'),
+        ('unit', 'Unit'),
+        ('user', 'User'),
+    ]
+
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='directory_entries')
+    entity = models.ForeignKey('Entity', on_delete=models.CASCADE, null=True, blank=True, related_name='directory_entries')
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='organization_directory_entries')
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
+    node_type = models.CharField(max_length=20, choices=NODE_TYPE_CHOICES)
+    uid = models.CharField(max_length=64, null=True, blank=True, db_index=True)
+    dn = models.CharField(max_length=500)
+    cn = models.CharField(max_length=255)
+    role_code = models.CharField(max_length=50, blank=True)
+    permissions = models.JSONField(default=list, blank=True)
+    source_type = models.CharField(max_length=50, blank=True)
+    source_id = models.CharField(max_length=100, blank=True)
+    attributes = models.JSONField(default=dict, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['dn']
+        constraints = [
+            models.UniqueConstraint(fields=['organization', 'dn'], name='unique_directory_dn_per_organization'),
+            models.UniqueConstraint(fields=['organization', 'source_type', 'source_id'], name='unique_directory_source_per_organization'),
+        ]
+
+    def __str__(self):
+        return self.dn
 
 
 class Entity(models.Model):

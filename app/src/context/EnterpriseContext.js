@@ -687,6 +687,42 @@ export const EnterpriseProvider = ({ children }) => {
     }
   }, [apiUrl, buildAuthHeaders]);
 
+  const exportGovernanceConfiguration = useCallback(async (orgId) => {
+    if (!orgId) throw new Error('Organization id is required');
+    const response = await fetch(apiUrl(`/api/organizations/${orgId}/export_governance_yaml/`), {
+      headers: buildAuthHeaders(),
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      throw new Error(errorData?.detail || 'Failed to export governance configuration');
+    }
+
+    const url = URL.createObjectURL(await response.blob());
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `org-${orgId}-config.yml`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }, [apiUrl, buildAuthHeaders]);
+
+  const importGovernanceConfiguration = useCallback(async (orgId, file) => {
+    if (!orgId || !file) throw new Error('A governance configuration file is required');
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await fetch(apiUrl(`/api/organizations/${orgId}/import_governance_yaml/`), {
+      method: 'POST',
+      headers: buildAuthHeaders(),
+      body: formData,
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      throw new Error(errorData?.detail || errorData?.file?.[0] || 'Failed to restore governance configuration');
+    }
+    return response.json();
+  }, [apiUrl, buildAuthHeaders]);
+
   /**
    * Delete organization when it has no remaining organization-scoped data.
    */
@@ -1937,6 +1973,8 @@ export const EnterpriseProvider = ({ children }) => {
     createOrganization,
     updateOrganization,
     deleteOrganization,
+    exportGovernanceConfiguration,
+    importGovernanceConfiguration,
     createEntity,
     deleteEntity,
     addTeamMember,

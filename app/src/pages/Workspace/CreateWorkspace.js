@@ -250,7 +250,7 @@ const CreateWorkspace = () => {
   };
 
   const canGoNext = () => {
-    if (step === 1) return form.name.trim().length >= 2;
+    if (step === 1) return form.name.trim().length >= 2 && (!isOrgCreate || form.registrationNumber.trim().length >= 4);
     if (step === 2) return !!form.country && !!form.currency;
     if (step === 4) return !!form.workspaceMode && (form.enabledModules.length > 0 || form.workspaceMode === 'standalone');
     return true;
@@ -259,6 +259,7 @@ const CreateWorkspace = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name.trim()) { setError('Company name is required'); return; }
+    if (isOrgCreate && !form.registrationNumber.trim()) { setError('Company registration number is required'); return; }
     if (!form.country)     { setError('Country is required'); return; }
     if (!form.workspaceMode) { setError('Select an organization package before launch.'); return; }
     if (!isOrgCreate && !currentOrganization?.id) { setError('No active organization is selected for this account.'); return; }
@@ -271,6 +272,7 @@ const CreateWorkspace = () => {
         // Creating a top-level organization — no currentOrganization required
         const newOrg = await createOrganization({
           name: form.name.trim(),
+          registration_number: form.registrationNumber.trim(),
           primary_country: form.country,
           primary_currency: form.currency,
           industry: form.industry.trim() || form.businessType,
@@ -282,7 +284,6 @@ const CreateWorkspace = () => {
             email: form.email.trim(),
             address: form.address.trim(),
             service_time: form.serviceTime.trim(),
-            registration_number: form.registrationNumber.trim(),
             tax_regime: form.taxRegime.trim(),
           },
         });
@@ -347,13 +348,14 @@ const CreateWorkspace = () => {
         <span className="cw-hint">This will be displayed as the organization name throughout AtonixCorp.</span>
       </div>
       <div className="cw-field">
-        <label className="cw-label">Registration Number <span className="cw-optional">(optional)</span></label>
+        <label className="cw-label">Company Registration Number {isOrgCreate && <span className="cw-required">*</span>}</label>
         <input
           className="cw-input"
           type="text"
           placeholder="e.g. 12345678"
           value={form.registrationNumber}
           onChange={(e) => update('registrationNumber', e.target.value)}
+          required={isOrgCreate}
         />
       </div>
       <div className="cw-field">
@@ -529,7 +531,7 @@ const CreateWorkspace = () => {
 
       {/* Summary Review */}
       <div className="cw-field cw-field-wide">
-        <div className="cw-review-card">
+        <div className="cw-review-card creation-summary-card">
           <h4 className="cw-review-title">Review — New {flowLabel}</h4>
           <div className="cw-review-rows">
             <div className="cw-review-row"><span>Name</span><strong>{form.name}</strong></div>
@@ -707,7 +709,7 @@ const CreateWorkspace = () => {
   ];
 
   return (
-    <div className="cw-page">
+    <div className="cw-page creation-flow">
       {/* Top Navbar */}
       <header className="cw-topnav">
         <div className="cw-topnav-brand">
@@ -724,7 +726,7 @@ const CreateWorkspace = () => {
         ← Back to Console
       </button>
 
-      <div className="cw-card">
+      <div className="cw-card creation-card">
         {/* Header */}
         <div className="cw-header">
           <span className="cw-kicker">{flowKicker}</span>

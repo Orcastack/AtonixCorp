@@ -1299,6 +1299,265 @@
   border: 1px solid transparent;
 }
 
+/* ─── Enterprise Creation Contract ────────────────────────────────────────
+   All organization provisioning surfaces use the shared squared primitives in
+   styles/creation-system.css. These local rules keep legacy cw markup aligned
+   with that contract without changing wizard behavior. */
+.creation-flow .cw-card,
+.creation-flow .cw-review-card,
+.creation-flow .cw-package-card,
+.creation-flow .cw-launch-summary-row,
+.creation-flow .cw-launch-package-card,
+.creation-flow .cw-launch-module-card,
+.creation-flow .cw-launch-confirmation-card,
+.creation-flow .cw-module-section,
+.creation-flow .cw-module-toggle,
+.creation-flow .cw-sidebar-panel,
+.creation-flow .cw-dashboard-guide-card,
+.creation-flow .cw-info-list li,
+.creation-flow .cw-fy-picker,
+.creation-flow .cw-fy-month-btn,
+.creation-flow .cw-fy-day-btn,
+.creation-flow .cw-btn,
+.creation-flow .cw-topnav-back,
+.creation-flow .cw-topnav-cancel,
+.creation-flow .cw-input,
+.creation-flow .cw-select,
+.creation-flow .cw-fy-trigger,
+.creation-flow .cw-error {
+  border-radius: 0;
+}
+
+.creation-flow .cw-card,
+.creation-flow .cw-review-card,
+.creation-flow .cw-package-card,
+.creation-flow .cw-module-section,
+.creation-flow .cw-sidebar-panel,
+.creation-flow .cw-launch-confirmation-card {
+  background: var(--creation-surface);
+  border-color: var(--creation-border);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+}
+
+.creation-flow .cw-header,
+.creation-flow .cw-review-card-accent,
+.creation-flow .cw-module-section-equity,
+.creation-flow .cw-sidebar-panel-accent {
+  background: var(--creation-surface);
+  color: var(--creation-ink);
+}
+
+.creation-flow .cw-header::before {
+  display: none;
+}
+
+.creation-flow .cw-header,
+.creation-flow .cw-steps,
+.creation-flow .cw-form {
+  padding-left: clamp(20px, 4vw, 40px);
+  padding-right: clamp(20px, 4vw, 40px);
+}
+
+.creation-flow .cw-header {
+  border-bottom-color: var(--creation-border);
+}
+
+.creation-flow .cw-kicker,
+.creation-flow .cw-title,
+.creation-flow .cw-subtitle,
+.creation-flow .cw-label,
+.creation-flow .cw-launch-section-title,
+.creation-flow .cw-review-title {
+  color: var(--creation-ink);
+  font-family: inherit;
+  letter-spacing: 0;
+}
+
+.creation-flow .cw-kicker {
+  color: var(--creation-muted);
+}
+
+.creation-flow .cw-step-fields {
+  gap: var(--creation-space-3);
+}
+
+.creation-flow .cw-field {
+  gap: var(--creation-space-1);
+}
+
+.creation-flow .cw-input,
+.creation-flow .cw-select,
+.creation-flow .cw-fy-trigger {
+  box-sizing: border-box;
+  height: var(--creation-control-height);
+  border-color: var(--creation-border);
+  color: var(--creation-ink);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.creation-flow textarea.cw-input {
+  height: auto;
+  min-height: 96px;
+  padding: 12px;
+}
+
+.creation-flow .cw-input:focus,
+.creation-flow .cw-select:focus,
+.creation-flow .cw-fy-trigger:focus-visible {
+  border-color: var(--creation-focus);
+  box-shadow: 0 0 0 3px rgba(40, 120, 189, 0.14);
+}
+
+.creation-flow .cw-review-row {
+  align-items: baseline;
+  border-bottom: 1px solid var(--creation-border);
+  padding: 8px 0;
+}
+
+.creation-flow .cw-review-row:last-child {
+  border-bottom: 0;
+}
+
+.creation-flow .cw-review-note,
+.creation-flow .cw-launch-section-pill,
+.creation-flow .cw-module-count {
+  border-radius: 0;
+}
+
+.creation-flow .cw-launch-summary-grid {
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.creation-flow .cw-launch-summary-row,
+.creation-flow .cw-launch-package-card,
+.creation-flow .cw-launch-module-card {
+  align-content: start;
+  min-height: 112px;
+  padding: var(--creation-space-2);
+}
+
+.creation-flow .cw-launch-summary-row {
+  gap: 10px;
+}
+
+.creation-flow .cw-launch-summary-row strong {
+  font-size: 15px;
+  line-height: 22px;
+  overflow-wrap: anywhere;
+}
+
+.creation-flow .cw-launch-package-grid {
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.creation-flow .cw-launch-package-card {
+  align-content: start;
+  gap: 10px;
+  min-height: 144px;
+  padding: 18px;
+}
+
+.creation-flow .cw-launch-package-title {
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.creation-flow .cw-launch-package-desc {
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.creation-flow .cw-launch-module-grid {
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.creation-flow .cw-launch-module-card {
+  min-height: 152px;
+  padding: 18px;
+}
+
+.creation-flow .cw-launch-module-card strong {
+  font-size: 18px;
+  line-height: 24px;
+}
+
+.creation-flow .cw-launch-confirmation-card {
+  align-items: start;
+  justify-items: stretch;
+  padding: 24px;
+  text-align: left;
+}
+
+.creation-flow .cw-launch-section-header--center {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.creation-flow .cw-launch-confirmation-copy {
+  max-width: 72ch;
+}
+
+.creation-flow .cw-launch-confirmation-copy strong {
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.creation-flow .cw-launch-confirmation-actions {
+  justify-content: flex-start;
+}
+
+.creation-flow .cw-launch-package-card,
+.creation-flow .cw-launch-module-card {
+  box-shadow: none;
+}
+
+.creation-flow .cw-launch-package-card:hover,
+.creation-flow .cw-launch-package-card.selected {
+  border-color: var(--creation-focus);
+  box-shadow: inset 3px 0 0 var(--creation-focus);
+  transform: none;
+}
+
+.creation-flow .cw-btn-create,
+.creation-flow .cw-btn-primary {
+  background: var(--creation-focus);
+  box-shadow: none;
+}
+
+.creation-flow .cw-btn-create:hover:not(:disabled),
+.creation-flow .cw-btn-primary:hover:not(:disabled) {
+  background: var(--color-blue-700, #1f5f96);
+  box-shadow: none;
+}
+
+@media (max-width: 720px) {
+  .creation-flow .cw-card {
+    border-left: 0;
+    border-right: 0;
+  }
+
+  .creation-flow .cw-launch-summary-row,
+  .creation-flow .cw-launch-package-card,
+  .creation-flow .cw-launch-module-card {
+    min-height: 0;
+  }
+
+  .creation-flow .cw-launch-summary-grid,
+  .creation-flow .cw-launch-package-grid,
+  .creation-flow .cw-launch-module-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .creation-flow .cw-launch-confirmation-card {
+    padding: 20px;
+  }
+}
+
 .cw-btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;

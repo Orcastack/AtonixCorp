@@ -9,7 +9,8 @@ The stylesheet spine is loaded from `app/src/index.js`:
 1. `styles/theme.css` provides compatibility aliases.
 2. `styles/globals.css` loads tokens, base elements, components, and layout rules.
 3. Page-specific styles provide local layout details.
-4. `styles/unified.css` is loaded last and enforces the shared visual contract.
+4. `styles/unified.css` enforces the shared visual contract.
+5. `styles/creation-system.css` is loaded after the unified baseline and defines the provisioning-flow contract.
 
 New feature styles should use the existing tokens and should not introduce a second font, palette, spacing scale, or button system.
 
@@ -47,6 +48,18 @@ Use the shared classes when they apply:
 - `.ui-table`
 
 Forms inherit consistent input sizing, focus rings, labels, and borders from `globals.css` and `unified.css`.
+
+## Creation Flows
+
+Organization, company, department, entity, and workspace creation flows use `styles/creation-system.css`. Apply `.creation-flow` to the page root and compose its reusable primitives with local layout classes:
+
+- `.creation-card` for a primary step surface.
+- `.creation-summary-card` for review, license, user, package, or module summaries.
+- `.creation-option-card` and `.creation-module-card` for selectable cards.
+- `.creation-field`, `.creation-label`, and `.creation-control` for form controls.
+- `.creation-description` for helper or supporting copy.
+
+Creation surfaces and controls are deliberately square: `--creation-radius` is `0`. All text uses IBM Plex Sans, controls are 44px high, labels are 13px semibold, helper text is 13px with a 20px line height, and spacing uses 8px, 16px, 24px, and 32px increments. Do not add gradients, decorative shapes, pills, or a local card/input system to these flows.
 
 ## Adding a module
 

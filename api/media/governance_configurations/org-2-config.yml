@@ -1,0 +1,17 @@
+schema_version: v1
+document_type: atonixcorp_governance_configuration
+generated_at: '2026-07-20T18:37:56.574182+00:00'
+organization:
+  id: 2
+  name: Directory Check Two
+  slug: directory-check-two
+  description: ''
+  industry: ''
+  subscription_tier: enterprise
+  primary_country: US
+  primary_currency: USD
+  settings: {}
+entities: []
+offices: []
+governance_policies: []
+workflows: []

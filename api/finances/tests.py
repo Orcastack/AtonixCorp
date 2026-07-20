@@ -8,6 +8,7 @@ from unittest.mock import patch
 from django.contrib.auth.models import User
 from django.core import mail
 from django.core.files.base import ContentFile
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.test import TestCase
 from django.test import override_settings
@@ -55,6 +56,7 @@ from .models import (
     OAuthApplication,
     PlatformAuditEvent,
     PlatformTask,
+    Permission,
     BookkeepingAccount,
     BookkeepingCategory,
     PayrollBankPaymentFile,
@@ -1682,6 +1684,209 @@ class CoreFinancialAPIV1Tests(TestCase):
         )
         self.assertEqual(deliveries_response.status_code, 200)
         self.assertGreaterEqual(len(deliveries_response.data), 2)
+
+
+class GovernanceConfigurationAPITests(TestCase):
+    @override_settings(MEDIA_ROOT=tempfile.gettempdir())
+    def test_export_and_import_restore_governance_structure(self):
+        owner = User.objects.create_user(username='governance-owner', password='pass')
+        organization = Organization.objects.create(
+            owner=owner,
+            name='Recovery Org',
+            slug='recovery-org',
+            primary_country='US',
+            primary_currency='USD',
+        )
+        entity = Entity.objects.create(
+            organization=organization,
+            name='Recovery Company',
+            country='US',
+            entity_type='corporation',
+            local_currency='USD',
+        )
+        department = EntityDepartment.objects.create(
+            entity=entity,
+            name='Finance Office',
+            code='REC-FIN',
+        )
+        permission = Permission.objects.create(code='manage_org_settings')
+        role = EntityRole.objects.create(
+            entity=entity,
+            department=department,
+            name='Chief Financial Officer',
+            code='REC-CFO',
+        )
+        role.permissions.add(permission)
+
+        client = APIClient()
+        client.force_authenticate(owner)
+        export_response = client.get(f'/api/organizations/{organization.id}/export_governance_yaml/')
+
+        self.assertEqual(export_response.status_code, 200)
+        exported_yaml = b''.join(export_response.streaming_content)
+        self.assertIn(b'schema_version: v1', exported_yaml)
+        self.assertIn(b'Finance Office', exported_yaml)
+
+        department.delete()
+        self.assertFalse(EntityDepartment.objects.filter(entity=entity, code='REC-FIN').exists())
+
+        import_response = client.post(
+            f'/api/organizations/{organization.id}/import_governance_yaml/',
+            {'file': SimpleUploadedFile('org-config.yml', exported_yaml, content_type='application/x-yaml')},
+            format='multipart',
+        )
+
+        self.assertEqual(import_response.status_code, 200)
+        restored_department = EntityDepartment.objects.get(entity=entity, code='REC-FIN')
+        restored_role = EntityRole.objects.get(entity=entity, code='REC-CFO')
+        self.assertEqual(restored_role.department, restored_department)
+        self.assertTrue(restored_role.permissions.filter(code='manage_org_settings').exists())
+        self.assertGreater(organization.governance_configuration.revision, 0)
+
+
+class OrganizationDirectoryAPITests(TestCase):
+    @override_settings(MEDIA_ROOT=tempfile.gettempdir())
+    def test_directory_role_assignment_is_owner_controlled_and_company_scoped(self):
+        owner = User.objects.create_user(username='directory-owner', email='owner@example.com', password='pass')
+        member_user = User.objects.create_user(username='directory-member', email='member@example.com', password='pass')
+        organization = Organization.objects.create(
+            owner=owner,
+            name='Directory Organization',
+            slug='directory-organization',
+            primary_country='US',
+        )
+        other_organization = Organization.objects.create(
+            owner=User.objects.create_user(username='other-owner', password='pass'),
+            name='Other Organization',
+            slug='other-organization',
+            primary_country='US',
+        )
+        entity = Entity.objects.create(
+            organization=organization,
+            name='Directory Entity',
+            country='US',
+            entity_type='corporation',
+        )
+
+        client = APIClient()
+        client.force_authenticate(owner)
+        assignment_response = client.post(
+            f'/api/organizations/{organization.id}/assign_directory_role/',
+            {'user_id': member_user.id, 'role_code': 'CEO', 'scoped_entity_ids': [entity.id]},
+            format='json',
+        )
+
+        self.assertEqual(assignment_response.status_code, 201)
+        member = TeamMember.objects.get(organization=organization, user=member_user)
+        self.assertEqual(member.role.code, 'CEO')
+        self.assertEqual(list(member.scoped_entities.values_list('id', flat=True)), [entity.id])
+        founder_entry = organization.directory_entries.get(source_type='founder')
+        member_entry = organization.directory_entries.get(source_type='team_member', source_id=str(member.id))
+        self.assertEqual(founder_entry.role_code, 'FOUNDER')
+        self.assertEqual(member_entry.uid, member_user.profile.secure_user_id)
+        self.assertTrue(PlatformAuditEvent.objects.filter(
+            organization=organization,
+            event_type='directory.role_assigned',
+            resource_id=str(member.id),
+        ).exists())
+
+        client.force_authenticate(member_user)
+        self.assertEqual(client.get(f'/api/organizations/{organization.id}/directory/').status_code, 200)
+        self.assertEqual(client.get(f'/api/organizations/{other_organization.id}/directory/').status_code, 404)
+        self.assertEqual(client.post(
+            f'/api/organizations/{organization.id}/assign_directory_role/',
+            {'user_id': owner.id, 'role_code': 'CTO'},
+            format='json',
+        ).status_code, 403)
+
+    @override_settings(MEDIA_ROOT=tempfile.gettempdir())
+    def test_workspace_and_group_are_projected_as_office_and_unit(self):
+        from workspaces.models import Workspace, WorkspaceGroup
+
+        owner = User.objects.create_user(username='workspace-directory-owner', password='pass')
+        organization = Organization.objects.create(
+            owner=owner,
+            name='Workspace Directory Organization',
+            slug='workspace-directory-organization',
+            primary_country='US',
+        )
+        entity = Entity.objects.create(
+            organization=organization,
+            name='Workspace Directory Entity',
+            country='US',
+            entity_type='corporation',
+        )
+        workspace = Workspace.objects.create(owner=owner, linked_entity=entity, name='Technology Office')
+        group = WorkspaceGroup.objects.create(workspace=workspace, name='Platform Engineering')
+
+        office = organization.directory_entries.get(source_type='workspace', source_id=str(workspace.id))
+        unit = organization.directory_entries.get(source_type='workspace_group', source_id=str(group.id))
+        self.assertEqual(office.node_type, 'office')
+        self.assertEqual(unit.node_type, 'unit')
+        self.assertEqual(unit.parent_id, office.id)
+
+
+class CompanyIdentityAPITests(TestCase):
+    def test_company_identity_is_required_normalized_unique_and_audited(self):
+        founder = User.objects.create_user(username='company-founder', password='pass')
+        other_user = User.objects.create_user(username='company-other-user', password='pass')
+        client = APIClient()
+        client.force_authenticate(founder)
+
+        missing_identity_response = client.post('/api/organizations/', {
+            'name': 'Missing Identity Company',
+            'primary_country': 'ZA',
+            'primary_currency': 'ZAR',
+        }, format='json')
+        self.assertEqual(missing_identity_response.status_code, 400)
+        self.assertIn('registration_number', missing_identity_response.data)
+
+        create_response = client.post('/api/organizations/', {
+            'name': 'Atonix Governance Holdings',
+            'registration_number': 'za-2024 / 123456',
+            'primary_country': 'ZA',
+            'primary_currency': 'ZAR',
+        }, format='json')
+        self.assertEqual(create_response.status_code, 201)
+        organization = Organization.objects.get(pk=create_response.data['id'])
+        self.assertEqual(organization.registration_number, 'ZA2024123456')
+        self.assertTrue(PlatformAuditEvent.objects.filter(
+            organization=organization,
+            event_type='company.created',
+            metadata__registration_number='ZA2024123456',
+        ).exists())
+        self.assertEqual(
+            organization.directory_entries.get(source_type='founder').attributes['company_registration_number'],
+            'ZA2024123456',
+        )
+        self.assertIn('o=za2024123456,dc=atonixcorp', organization.directory_entries.get(source_type='organization').dn)
+
+        client.force_authenticate(other_user)
+        duplicate_number_response = client.post('/api/organizations/', {
+            'name': 'Different Company Name',
+            'registration_number': 'ZA 2024-123456',
+            'primary_country': 'ZA',
+            'primary_currency': 'ZAR',
+        }, format='json')
+        self.assertEqual(duplicate_number_response.status_code, 400)
+        self.assertIn('registration_number', duplicate_number_response.data)
+
+        duplicate_name_response = client.post('/api/organizations/', {
+            'name': 'atonix governance holdings',
+            'registration_number': 'ZA-2024-654321',
+            'primary_country': 'ZA',
+            'primary_currency': 'ZAR',
+        }, format='json')
+        self.assertEqual(duplicate_name_response.status_code, 400)
+        self.assertIn('name', duplicate_name_response.data)
+
+        verification_response = client.post('/api/organizations/verify_registration_number/', {
+            'registration_number': 'ZA-2024-123456',
+        }, format='json')
+        self.assertEqual(verification_response.status_code, 200)
+        self.assertTrue(verification_response.data['valid'])
+        self.assertFalse(verification_response.data['available'])
+        self.assertFalse(verification_response.data['external_registry_verified'])
 
 
 class EntityViewSetTests(TestCase):

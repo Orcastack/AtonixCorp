@@ -1,17 +1,17 @@
-FROM node:20-alpine
+FROM node:20-bookworm-slim
 
 # Security scan example (run outside the container build):
-# grype node:20-alpine --vex vex.json
+# grype node:20-bookworm-slim --vex vex.json
 
 # Set working directory
 WORKDIR /app
 
-# Install dependencies
 COPY package.json package-lock.json ./
-RUN npm ci --legacy-peer-deps
 
 # Copy app source
 COPY . .
+
+RUN npm ci --legacy-peer-deps
 
 # Expose React dev server port
 EXPOSE 3000
