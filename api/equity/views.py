@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.dateparse import parse_date
 
 from finances.models import Entity
+from finances.enterprise_views import _accessible_entities_queryset
 
 from .models import (
     EquityDeliveryLog,
@@ -93,7 +94,10 @@ class WorkspaceScopedViewSet(viewsets.ModelViewSet):
     workspace_lookup_kwarg = 'workspace_id'
 
     def get_workspace(self):
-        return get_object_or_404(Entity, pk=self.kwargs[self.workspace_lookup_kwarg])
+        return get_object_or_404(
+            _accessible_entities_queryset(self.request.user),
+            pk=self.kwargs[self.workspace_lookup_kwarg],
+        )
 
     def get_queryset(self):
         return self.queryset.filter(workspace_id=self.kwargs[self.workspace_lookup_kwarg])
@@ -115,7 +119,10 @@ class WorkspaceScopedActionViewSet(viewsets.ViewSet):
     workspace_lookup_kwarg = 'workspace_id'
 
     def get_workspace(self):
-        return get_object_or_404(Entity, pk=self.kwargs[self.workspace_lookup_kwarg])
+        return get_object_or_404(
+            _accessible_entities_queryset(self.request.user),
+            pk=self.kwargs[self.workspace_lookup_kwarg],
+        )
 
 
 class WorkspaceEquityProfileViewSet(WorkspaceScopedViewSet):

@@ -391,10 +391,19 @@ class FolderCreateSerializer(serializers.Serializer):
 
 
 class FileUploadSerializer(serializers.Serializer):
-    name      = serializers.CharField(max_length=255)
-    size      = serializers.IntegerField(min_value=0)
+    content   = serializers.FileField(write_only=True)
+    name      = serializers.CharField(max_length=255, required=False, allow_blank=True)
     mime_type = serializers.CharField(max_length=127, required=False, default='')
     folder_id = serializers.UUIDField(required=False, allow_null=True)
+
+    def validate(self, data):
+        content = data['content']
+        if content.size <= 0:
+            raise serializers.ValidationError({'content': 'Uploaded files cannot be empty.'})
+        data['name'] = data.get('name') or content.name
+        if not data.get('mime_type'):
+            data['mime_type'] = getattr(content, 'content_type', '') or 'application/octet-stream'
+        return data
 
 
 # ─────────────────────────────────────────────────────────────────────────────

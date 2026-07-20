@@ -4,6 +4,7 @@ import { useEnterprise } from '../../context/EnterpriseContext';
 import AtonixCorpLogo from '../../components/branding/AtonixCorpLogo';
 import { countryDropdownOptions } from '../../utils/countryDropdowns';
 import { getWorkspaceTypeDefinition, WORKSPACE_TYPE_OPTIONS } from '../../utils/workspaceTypeRegistry';
+import EnterpriseDepartmentSelector from '../../components/EnterpriseDepartmentSelector';
 import './CreateWorkspace.css';
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -26,6 +27,7 @@ const EMPTY_FORM = {
   teams: '',
   staffCount: '',
   ownershipHierarchy: '',
+  departmentSelections: [],
   enabledModules: [],
 };
 
@@ -142,6 +144,7 @@ export default function CreateWorkspaceFlow() {
         teams: form.teams.trim(),
         staff_count: Number(form.staffCount) || 0,
         ownership_hierarchy: form.ownershipHierarchy.trim(),
+        department_selections: form.departmentSelections,
         enabled_modules: form.enabledModules,
         status: 'active',
       };
@@ -311,6 +314,12 @@ export default function CreateWorkspaceFlow() {
         />
         <span className="cw-hint">Briefly describe the reporting or ownership structure.</span>
       </div>
+      <div className="cw-field cw-field-wide">
+        <EnterpriseDepartmentSelector
+          value={form.departmentSelections}
+          onChange={(departmentSelections) => update('departmentSelections', departmentSelections)}
+        />
+      </div>
       {selectedType && (
         <div className="cw-field cw-field-wide">
           <span className="cw-hint">Template hierarchy: {availableBranches.map((branch) => `${branch.label} (${branch.children.join(', ')})`).join(' • ')}</span>
@@ -351,7 +360,7 @@ export default function CreateWorkspaceFlow() {
   const stepContent = [null, renderStep1, renderStep2, renderStep3, renderStep4];
 
   return (
-    <div className="cw-page">
+    <div className="cw-page cw-workspace-creation">
       {/* Top Nav */}
       <nav className="cw-topnav">
         <div className="cw-topnav-brand">
@@ -364,7 +373,7 @@ export default function CreateWorkspaceFlow() {
       </nav>
 
       {/* Step progress */}
-      <div className="cw-progress-bar">
+      <div className="cw-progress-bar cw-workspace-progress">
         {STEPS.map((s) => (
           <div key={s.number} className={`cw-progress-step${step >= s.number ? ' cw-progress-step--done' : ''}${step === s.number ? ' cw-progress-step--active' : ''}`}>
             <span className="cw-progress-num">{step > s.number ? '✓' : s.number}</span>
@@ -374,9 +383,9 @@ export default function CreateWorkspaceFlow() {
       </div>
 
       {/* Form body */}
-      <main className="cw-main">
-        <form className="cw-card" onSubmit={handleSubmit}>
-          <div className="cw-step-header">
+      <main className="cw-main cw-workspace-main">
+        <form className="cw-card cw-workspace-card" onSubmit={handleSubmit}>
+          <div className="cw-step-header cw-workspace-step-header">
             <span className="cw-step-eyebrow">Step {step} of {TOTAL_STEPS}</span>
             <h2 className="cw-step-title">{STEPS[step - 1].label}</h2>
           </div>
@@ -385,7 +394,7 @@ export default function CreateWorkspaceFlow() {
 
           {error && <p className="cw-error">{error}</p>}
 
-          <div className="cw-actions">
+          <div className="cw-actions cw-workspace-actions">
             {step > 1 && (
               <button type="button" className="cw-btn cw-btn--ghost" onClick={handleBack}>
                 Back

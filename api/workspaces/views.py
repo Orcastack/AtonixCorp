@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from django.http import FileResponse
 from rest_framework.views import APIView
 from rest_framework.exceptions import NotFound
 
@@ -362,7 +363,7 @@ class WorkspaceFileListView(APIView):
         d = ser.validated_data
         wf = FileService.upload_file(
             workspace_id, request.user,
-            d.get('folder_id'), d['name'], d['size'], d.get('mime_type', '')
+            d.get('folder_id'), d['name'], d['content'], d.get('mime_type', '')
         )
         return Response(WorkspaceFileSerializer(wf).data, status=status.HTTP_201_CREATED)
 
@@ -373,6 +374,13 @@ class WorkspaceFileListView(APIView):
 
 class WorkspaceFileDetailView(APIView):
     permission_classes = [IsAuthenticated]
+
+    def get(self, request, workspace_id, file_id):
+        workspace_id = _resolve_workspace_id_or_404(workspace_id)
+        content, workspace_file = FileService.download_file(workspace_id, request.user, file_id)
+        response = FileResponse(content, content_type=workspace_file.mime_type or 'application/octet-stream')
+        response['Content-Disposition'] = f'attachment; filename="{workspace_file.name}"'
+        return response
 
     def delete(self, request, workspace_id, file_id):
         workspace_id = _resolve_workspace_id_or_404(workspace_id)

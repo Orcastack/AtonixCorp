@@ -707,6 +707,41 @@ export const EnterpriseProvider = ({ children }) => {
     URL.revokeObjectURL(url);
   }, [apiUrl, buildAuthHeaders]);
 
+  const exportGovernanceConfigurationToCloud = useCallback(async (orgId, destination) => {
+    if (!orgId) throw new Error('Organization id is required');
+    const response = await fetch(apiUrl(`/api/organizations/${orgId}/export_governance_cloud/`), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...buildAuthHeaders(),
+      },
+      body: JSON.stringify(destination || {}),
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      const message = errorData?.detail
+        || errorData?.destination?.[0]
+        || errorData?.oauth_access_token?.[0]
+        || errorData?.presigned_url?.[0]
+        || errorData?.provider?.[0]
+        || 'Failed to export governance configuration to cloud storage';
+      throw new Error(message);
+    }
+    return response.json();
+  }, [apiUrl, buildAuthHeaders]);
+
+  const fetchGovernanceCloudExports = useCallback(async (orgId) => {
+    if (!orgId) throw new Error('Organization id is required');
+    const response = await fetch(apiUrl(`/api/organizations/${orgId}/governance_cloud_exports/`), {
+      headers: buildAuthHeaders(),
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      throw new Error(errorData?.detail || 'Failed to load cloud export history');
+    }
+    return response.json();
+  }, [apiUrl, buildAuthHeaders]);
+
   const importGovernanceConfiguration = useCallback(async (orgId, file) => {
     if (!orgId || !file) throw new Error('A governance configuration file is required');
     const formData = new FormData();
@@ -896,6 +931,7 @@ export const EnterpriseProvider = ({ children }) => {
       dashboard_config: workspaceData.dashboard_config || workspaceData.dashboardConfig || {},
       rbac_config: workspaceData.rbac_config || workspaceData.rbacConfig || {},
       enabled_modules: workspaceData.enabled_modules || workspaceData.enabledModules || [],
+      department_selections: workspaceData.department_selections || workspaceData.departmentSelections || [],
     };
     const newEntity = await createEntity(payload);
     if (newEntity) {
@@ -1974,6 +2010,8 @@ export const EnterpriseProvider = ({ children }) => {
     updateOrganization,
     deleteOrganization,
     exportGovernanceConfiguration,
+    exportGovernanceConfigurationToCloud,
+    fetchGovernanceCloudExports,
     importGovernanceConfiguration,
     createEntity,
     deleteEntity,

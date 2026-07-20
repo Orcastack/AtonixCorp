@@ -145,6 +145,159 @@ class GovernanceConfiguration(models.Model):
         return f'{self.organization.name} governance configuration ({self.schema_version})'
 
 
+class GovernanceCloudExport(models.Model):
+    """Audit record for a portable governance YAML delivery; credentials are never stored."""
+
+    PROVIDER_CHOICES = [
+        ('google_drive', 'Google Drive'),
+        ('onedrive', 'Microsoft OneDrive'),
+        ('aws_s3', 'AWS S3'),
+        ('local_download', 'Local Download'),
+    ]
+    STATUS_CHOICES = [
+        ('completed', 'Completed'),
+        ('failed', 'Failed'),
+    ]
+
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='governance_cloud_exports')
+    requested_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='governance_cloud_exports')
+    provider = models.CharField(max_length=20, choices=PROVIDER_CHOICES)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    file_name = models.CharField(max_length=255)
+    checksum = models.CharField(max_length=64)
+    destination = models.CharField(max_length=500, blank=True)
+    remote_reference = models.CharField(max_length=500, blank=True)
+    overwrite_confirmed = models.BooleanField(default=False)
+    error_message = models.CharField(max_length=500, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.organization.name} {self.provider} export ({self.status})'
+
+
+class OrganizationEmailSubscription(models.Model):
+    """Organization-level entitlement for AtonixCorp managed outbound email."""
+
+    TIER_CHOICES = [
+        ('basic', 'Basic'),
+        ('professional', 'Professional'),
+        ('enterprise', 'Enterprise'),
+    ]
+    STATUS_CHOICES = [
+        ('active', 'Active'),
+        ('suspended', 'Suspended'),
+        ('cancelled', 'Cancelled'),
+    ]
+
+    organization = models.OneToOneField(Organization, on_delete=models.CASCADE, related_name='email_subscription')
+    tier = models.CharField(max_length=20, choices=TIER_CHOICES, default='basic')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
+    billing_reference = models.CharField(max_length=120, blank=True)
+    monthly_send_limit = models.PositiveIntegerField(default=250)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['organization__name']
+
+    def __str__(self):
+        return f'{self.organization.name} email subscription ({self.tier})'
+
+
+class OrganizationEmailAccount(models.Model):
+    """A provisioned sender identity; inbound mailbox hosting remains provider infrastructure."""
+
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='email_accounts')
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='organization_email_accounts')
+    local_part = models.CharField(max_length=64)
+    address = models.EmailField(unique=True)
+    display_name = models.CharField(max_length=160, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['address']
+        constraints = [
+            models.UniqueConstraint(fields=['organization', 'local_part'], name='unique_organization_email_local_part'),
+        ]
+
+    def __str__(self):
+        return self.address
+
+
+class OrganizationEmailCampaign(models.Model):
+    """Outbound governance, operational, or opted-in marketing email batch."""
+
+    TYPE_CHOICES = [
+        ('governance', 'Governance Notice'),
+        ('operational', 'Operational Notice'),
+        ('marketing', 'Marketing Campaign'),
+    ]
+    STATUS_CHOICES = [
+        ('draft', 'Draft'),
+        ('sending', 'Sending'),
+        ('sent', 'Sent'),
+        ('failed', 'Failed'),
+    ]
+
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='email_campaigns')
+    sender = models.ForeignKey(OrganizationEmailAccount, on_delete=models.PROTECT, related_name='campaigns')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='email_campaigns_created')
+    campaign_type = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    subject = models.CharField(max_length=255)
+    html_body = models.TextField()
+    recipients = models.JSONField(default=list)
+    consent_confirmed = models.BooleanField(default=False)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
+    sent_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.organization.name}: {self.subject}'
+
+
+class OrganizationEmailDelivery(models.Model):
+    """Immutable delivery audit record. Message bodies and SMTP credentials are never stored."""
+
+    STATUS_CHOICES = [
+        ('queued', 'Queued'),
+        ('sent', 'Sent'),
+        ('failed', 'Failed'),
+        ('suppressed', 'Suppressed'),
+    ]
+
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True, blank=True, related_name='email_deliveries')
+    campaign = models.ForeignKey(OrganizationEmailCampaign, on_delete=models.SET_NULL, null=True, blank=True, related_name='deliveries')
+    sender = models.ForeignKey(OrganizationEmailAccount, on_delete=models.SET_NULL, null=True, blank=True, related_name='deliveries')
+    recipient = models.EmailField()
+    subject = models.CharField(max_length=255)
+    event_type = models.CharField(max_length=50, default='campaign')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    provider_message_id = models.CharField(max_length=255, blank=True)
+    error_message = models.CharField(max_length=500, blank=True)
+    opened_at = models.DateTimeField(null=True, blank=True)
+    sent_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['organization', 'created_at']),
+            models.Index(fields=['campaign', 'status']),
+        ]
+
+    def __str__(self):
+        return f'{self.event_type} to {self.recipient} ({self.status})'
+
+
 class OrganizationDirectoryEntry(models.Model):
     """LDAP-compatible directory projection for organization-scoped identities."""
 

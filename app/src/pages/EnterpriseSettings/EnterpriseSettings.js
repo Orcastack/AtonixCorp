@@ -42,6 +42,8 @@ const EnterpriseSettings = () => {
     deleteOrganization,
     updateOrganization,
     exportGovernanceConfiguration,
+    exportGovernanceConfigurationToCloud,
+    fetchGovernanceCloudExports,
     importGovernanceConfiguration,
   } = useEnterprise();
   const [activeTab, setActiveTab] = useState('organization');
@@ -49,6 +51,16 @@ const EnterpriseSettings = () => {
   const [saveError, setSaveError] = useState(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
   const [governanceBusy, setGovernanceBusy] = useState(false);
+  const [cloudExport, setCloudExport] = useState({
+    provider: 'google_drive',
+    fileName: '',
+    oauthAccessToken: '',
+    folderId: '',
+    oneDrivePath: 'AtonixCorp',
+    presignedUrl: '',
+    overwrite: false,
+  });
+  const [cloudExportHistory, setCloudExportHistory] = useState([]);
 
   // Organization Settings State
   const [orgSettings, setOrgSettings] = useState({
@@ -157,6 +169,26 @@ const EnterpriseSettings = () => {
     }
   }, [currentOrganization]);
 
+  useEffect(() => {
+    if (!currentOrganization?.id) {
+      setCloudExportHistory([]);
+      return undefined;
+    }
+
+    let active = true;
+    fetchGovernanceCloudExports(currentOrganization.id)
+      .then((history) => {
+        if (active) setCloudExportHistory(history);
+      })
+      .catch(() => {
+        if (active) setCloudExportHistory([]);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [currentOrganization?.id, fetchGovernanceCloudExports]);
+
   const handleSaveSettings = async () => {
     if (!currentOrganization?.id) return;
     setSaveError(null);
@@ -245,6 +277,42 @@ const EnterpriseSettings = () => {
     } catch (err) {
       setSaveError(err.message || 'Failed to restore governance configuration');
     } finally {
+      setGovernanceBusy(false);
+    }
+  };
+
+  const handleCloudExportFieldChange = (field, value) => {
+    setCloudExport((current) => ({ ...current, [field]: value }));
+  };
+
+  const handleCloudGovernanceExport = async () => {
+    if (!currentOrganization?.id || governanceBusy) return;
+    setGovernanceBusy(true);
+    setSaveError(null);
+    try {
+      const destination = {
+        provider: cloudExport.provider,
+        file_name: cloudExport.fileName || undefined,
+        overwrite: cloudExport.overwrite,
+      };
+      if (cloudExport.provider === 'google_drive') {
+        destination.oauth_access_token = cloudExport.oauthAccessToken;
+        destination.folder_id = cloudExport.folderId || undefined;
+      } else if (cloudExport.provider === 'onedrive') {
+        destination.oauth_access_token = cloudExport.oauthAccessToken;
+        destination.path = cloudExport.oneDrivePath || undefined;
+      } else {
+        destination.presigned_url = cloudExport.presignedUrl;
+      }
+      await exportGovernanceConfigurationToCloud(currentOrganization.id, destination);
+      const history = await fetchGovernanceCloudExports(currentOrganization.id);
+      setCloudExportHistory(history);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err) {
+      setSaveError(err.message || 'Failed to export governance configuration to cloud storage');
+    } finally {
+      setCloudExport((current) => ({ ...current, oauthAccessToken: '', presignedUrl: '' }));
       setGovernanceBusy(false);
     }
   };
@@ -417,6 +485,142 @@ const EnterpriseSettings = () => {
                       style={{ display: 'none' }}
                     />
                   </label>
+                </div>
+              </div>
+
+              <div className="settings-card" style={{ marginTop: '1.5rem' }}>
+                <h3>Export Governance Data</h3>
+                <p style={{ marginBottom: '1rem', color: '#6b7280' }}>
+                  Deliver the current YAML configuration to your cloud storage. Existing remote files are protected unless you explicitly confirm replacement.
+                </p>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Destination</label>
+                    <select
+                      value={cloudExport.provider}
+                      onChange={(event) => handleCloudExportFieldChange('provider', event.target.value)}
+                      disabled={governanceBusy}
+                    >
+                      <option value="google_drive">Google Drive</option>
+                      <option value="onedrive">Microsoft OneDrive</option>
+                      <option value="aws_s3">AWS S3</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>File Name</label>
+                    <input
+                      type="text"
+                      value={cloudExport.fileName}
+                      placeholder="organization-governance.yml"
+                      onChange={(event) => handleCloudExportFieldChange('fileName', event.target.value)}
+                      disabled={governanceBusy}
+                    />
+                  </div>
+                </div>
+
+                {cloudExport.provider === 'google_drive' && (
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Google OAuth Access Token</label>
+                      <input
+                        type="password"
+                        value={cloudExport.oauthAccessToken}
+                        placeholder="Temporary Google Drive access token"
+                        onChange={(event) => handleCloudExportFieldChange('oauthAccessToken', event.target.value)}
+                        disabled={governanceBusy}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Google Drive Folder ID <span className="cw-optional">(optional)</span></label>
+                      <input
+                        type="text"
+                        value={cloudExport.folderId}
+                        placeholder="Drive root when blank"
+                        onChange={(event) => handleCloudExportFieldChange('folderId', event.target.value)}
+                        disabled={governanceBusy}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {cloudExport.provider === 'onedrive' && (
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Microsoft OAuth Access Token</label>
+                      <input
+                        type="password"
+                        value={cloudExport.oauthAccessToken}
+                        placeholder="Temporary Microsoft Graph access token"
+                        onChange={(event) => handleCloudExportFieldChange('oauthAccessToken', event.target.value)}
+                        disabled={governanceBusy}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>OneDrive Folder</label>
+                      <input
+                        type="text"
+                        value={cloudExport.oneDrivePath}
+                        placeholder="AtonixCorp"
+                        onChange={(event) => handleCloudExportFieldChange('oneDrivePath', event.target.value)}
+                        disabled={governanceBusy}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {cloudExport.provider === 'aws_s3' && (
+                  <div className="form-group">
+                    <label>AWS S3 Pre-signed Upload URL</label>
+                    <input
+                      type="password"
+                      value={cloudExport.presignedUrl}
+                      placeholder="https://bucket.s3.amazonaws.com/path/to/governance.yml?..."
+                      onChange={(event) => handleCloudExportFieldChange('presignedUrl', event.target.value)}
+                      disabled={governanceBusy}
+                    />
+                  </div>
+                )}
+
+                <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '1rem' }}>
+                  <input
+                    type="checkbox"
+                    checked={cloudExport.overwrite}
+                    onChange={(event) => handleCloudExportFieldChange('overwrite', event.target.checked)}
+                    disabled={governanceBusy}
+                  />
+                  Confirm replacement if this file already exists
+                </label>
+                <button
+                  className="btn-primary"
+                  type="button"
+                  onClick={handleCloudGovernanceExport}
+                  disabled={governanceBusy || !currentOrganization?.id}
+                >
+                  {governanceBusy ? 'Exporting...' : 'Export Governance Data'}
+                </button>
+
+                <div style={{ marginTop: '1.5rem', borderTop: '1px solid #e5e7eb', paddingTop: '1rem' }}>
+                  <h4 style={{ margin: '0 0 0.75rem' }}>Recent Deliveries</h4>
+                  {cloudExportHistory.length === 0 ? (
+                    <p style={{ margin: 0, color: '#6b7280' }}>No cloud governance deliveries have been recorded.</p>
+                  ) : (
+                    <div style={{ display: 'grid', gap: '0.5rem' }}>
+                      {cloudExportHistory.slice(0, 5).map((delivery) => (
+                        <div
+                          key={delivery.id}
+                          style={{ display: 'grid', gridTemplateColumns: 'minmax(120px, 1fr) minmax(0, 2fr) auto', gap: '0.75rem', alignItems: 'center', border: '1px solid #e5e7eb', padding: '0.75rem' }}
+                        >
+                          <span style={{ fontWeight: 600 }}>{delivery.provider.replace('_', ' ')}</span>
+                          <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={delivery.destination || delivery.file_name}>
+                            {delivery.destination || delivery.file_name}
+                          </span>
+                          <span style={{ color: delivery.status === 'completed' ? '#047857' : '#b91c1c', textTransform: 'capitalize' }}>
+                            {delivery.status} · {new Date(delivery.created_at).toLocaleString()}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 

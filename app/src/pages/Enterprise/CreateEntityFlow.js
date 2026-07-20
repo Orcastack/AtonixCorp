@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEnterprise } from '../../context/EnterpriseContext';
 import AtonixCorpLogo from '../../components/branding/AtonixCorpLogo';
 import { countryDropdownOptions } from '../../utils/countryDropdowns';
+import EnterpriseDepartmentSelector from '../../components/EnterpriseDepartmentSelector';
 import '../Workspace/CreateWorkspace.css';
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -52,6 +53,7 @@ const EMPTY_FORM = {
   shareholders: '',
   ownershipPercentages: '',
   votingRights: '',
+  departmentSelections: [],
   // Step 4 — Financial Structure
   bankAccounts: '',
   capitalStructure: '',
@@ -109,6 +111,7 @@ export default function CreateEntityFlow() {
         shareholders: form.shareholders.trim(),
         ownership_percentages: form.ownershipPercentages.trim(),
         voting_rights: form.votingRights.trim(),
+        department_selections: form.departmentSelections,
         bank_accounts: form.bankAccounts.trim(),
         capital_structure: form.capitalStructure.trim(),
         local_currency: form.reportingCurrency,
@@ -262,6 +265,12 @@ export default function CreateEntityFlow() {
           onChange={(e) => update('votingRights', e.target.value)}
         />
       </div>
+      <div className="cw-field cw-field-wide">
+        <EnterpriseDepartmentSelector
+          value={form.departmentSelections}
+          onChange={(departmentSelections) => update('departmentSelections', departmentSelections)}
+        />
+      </div>
     </div>
   );
 
@@ -303,7 +312,7 @@ export default function CreateEntityFlow() {
   const stepContent = [null, renderStep1, renderStep2, renderStep3, renderStep4];
 
   return (
-    <div className="cw-page">
+    <div className="cw-page cw-entity-creation">
       <nav className="cw-topnav">
         <div className="cw-topnav-brand">
           <AtonixCorpLogo variant="white" size={28} withText={false} />
@@ -314,7 +323,7 @@ export default function CreateEntityFlow() {
         </button>
       </nav>
 
-      <div className="cw-progress-bar">
+      <div className="cw-progress-bar cw-specialized-progress">
         {STEPS.map((s) => (
           <div key={s.number} className={`cw-progress-step${step >= s.number ? ' cw-progress-step--done' : ''}${step === s.number ? ' cw-progress-step--active' : ''}`}>
             <span className="cw-progress-num">{step > s.number ? '✓' : s.number}</span>
@@ -323,9 +332,9 @@ export default function CreateEntityFlow() {
         ))}
       </div>
 
-      <main className="cw-main">
-        <form className="cw-card" onSubmit={handleSubmit}>
-          <div className="cw-step-header">
+      <main className="cw-main cw-specialized-main">
+        <form className="cw-card cw-specialized-card" onSubmit={handleSubmit}>
+          <div className="cw-step-header cw-specialized-step-header">
             <span className="cw-step-eyebrow">Step {step} of {TOTAL_STEPS}</span>
             <h2 className="cw-step-title">{STEPS[step - 1].label}</h2>
           </div>
@@ -346,7 +355,7 @@ export default function CreateEntityFlow() {
             </div>
           )}
 
-          <div className="cw-actions">
+          <div className="cw-actions cw-specialized-actions">
             {step > 1 && (
               <button type="button" className="cw-btn cw-btn--ghost" onClick={handleBack}>
                 Back

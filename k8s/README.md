@@ -11,7 +11,7 @@ The stack is deployed as Kubernetes-native workloads:
 - `banking-sync` Deployment for recurring banking synchronization
 - `approval-digest` Deployment for recurring approval digest delivery
 - `app` React/nginx Deployment exposed through `app` ClusterIP Service
-- `Ingress` routing `/api` to the backend and `/` to the web app
+- `Ingress` routing the public web origin to the app and the API origin to Django
 - `ConfigMap` and `Secret` objects for runtime configuration
 - `Role` and `RoleBinding` for namespace-scoped deploy access
 
@@ -137,6 +137,22 @@ Production uses the same flow:
 kubectl diff -k k8s/overlays/production
 kubectl apply -k k8s/overlays/production
 ```
+
+## Production Domains And TLS
+
+The production overlay serves `https://atonixcorp.com` as the canonical web origin and `https://api.atonixcorp.com` as the API origin. `https://www.atonixcorp.com` permanently redirects to the canonical web origin. The NGINX Ingress `ssl-redirect` annotation redirects all plain HTTP requests to HTTPS; HTTP is not an application origin and must not be added to CORS or CSRF allowlists.
+
+Before applying the production overlay, point these DNS records at the NGINX Ingress load balancer:
+
+- `atonixcorp.com`
+- `www.atonixcorp.com`
+- `api.atonixcorp.com`
+
+Provision `atonixcorp-production-tls` in the `production` namespace with a certificate containing all three names. The manifests reference this secret but do not issue certificates because the cluster's certificate authority and issuer are infrastructure-owned.
+
+The frontend production build reads `app/.env.production`, which compiles `https://api.atonixcorp.com/api` into the React bundle. Build and publish the frontend image after domain changes.
+
+Set the Brevo SMTP key in the deployment secret before enabling email delivery. The backend reads the non-secret relay settings from the ConfigMap and `EMAIL_HOST_PASSWORD` from `atonixcorp-app-secrets` key `brevo-smtp-key`.
 
 ## Scaling And Updates
 

@@ -297,9 +297,14 @@ export const organizationsAPI = {
   create: (data) => api.post('/organizations/', data),
   update: (id, data) => api.put(`/organizations/${id}/`, data),
   delete: (id) => api.delete(`/organizations/${id}/`),
+  verifyIdentity: (data) => api.post('/organizations/verify_registration_number/', data),
   getMyOrganizations: () => api.get('/organizations/my_organizations/'),
   getOverview: (id) => api.get(`/organizations/${id}/overview/`),
   getPermissionContext: (id) => api.get(`/organizations/${id}/permission_context/`),
+  getEmailService: (id) => api.get(`/organizations/${id}/email_service/`),
+  configureEmailSubscription: (id, data) => api.post(`/organizations/${id}/configure_email_subscription/`, data),
+  provisionEmailAccount: (id, data) => api.post(`/organizations/${id}/provision_email_account/`, data),
+  sendEmailCampaign: (id, data) => api.post(`/organizations/${id}/send_email_campaign/`, data),
 };
 
 // Entities API

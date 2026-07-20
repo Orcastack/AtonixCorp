@@ -152,8 +152,14 @@ import EquityTransactions from './pages/Equity/modules/EquityTransactions';
 import GovernanceReporting from './pages/Equity/modules/GovernanceReporting';
 
 function App() {
-  const routerBasename = process.env.NODE_ENV === 'production'
-    ? (process.env.PUBLIC_URL || '/')
+  const configuredBasename = process.env.PUBLIC_URL
+    ? new URL(process.env.PUBLIC_URL, window.location.origin).pathname.replace(/\/$/, '')
+    : '';
+  const isPrefixedLocalRoute = typeof window !== 'undefined'
+    && configuredBasename
+    && window.location.pathname.startsWith(`${configuredBasename}/`);
+  const routerBasename = process.env.NODE_ENV === 'production' || isPrefixedLocalRoute
+    ? configuredBasename
     : '/';
 
   // Console module routes — open inside the AtonixCorp Console (Layout with sidebar).

@@ -16,6 +16,13 @@
   gap: 16px;
 }
 
+.security-save-message {
+  color: #047857;
+  font-size: 13px;
+  font-weight: 700;
+  margin: 16px 0 0;
+}
+
 .security-option {
   justify-content: space-between;
   padding: 12px 0;

@@ -1,0 +1,264 @@
+schema_version: v1
+document_type: atonixcorp_governance_configuration
+generated_at: '2026-07-20T22:00:03.818426+00:00'
+organization:
+  id: 1
+  name: AtonixCorp Holdings
+  registration_number: null
+  slug: atonixcorp-holdings
+  description: ''
+  industry: ''
+  subscription_tier: enterprise
+  primary_country: US
+  primary_currency: USD
+  settings: {}
+entities:
+- id: 1
+  name: Department Provisioning Entity
+  country: US
+  entity_type: corporation
+  status: active
+  registration_number: ''
+  local_currency: USD
+  main_bank: ''
+  tax_authority_url: ''
+  fiscal_year_end: null
+  next_filing_date: null
+  workspace_mode: accounting
+  industry: ''
+  workspace_type: ''
+  workspace_template_key: ''
+  hierarchy_metadata: {}
+  dashboard_config: {}
+  rbac_config: {}
+  enabled_modules:
+  - overview
+  - members
+  - groups
+  - meetings
+  - calendar
+  - files
+  - permissions
+  - settings
+  - email
+  - marketing
+  parent_entity_id: null
+  departments:
+  - name: Finance
+    code: FIN_1
+    description: Financial Operations and Accounting
+    budget: null
+    currency: USD
+    is_active: true
+  - name: Human Resources
+    code: HR_1
+    description: Human Resources and Personnel Management
+    budget: null
+    currency: USD
+    is_active: true
+  - name: IT
+    code: IT_1
+    description: Information Technology
+    budget: null
+    currency: USD
+    is_active: true
+  - name: Legal
+    code: LEGAL_1
+    description: Legal and Compliance
+    budget: null
+    currency: USD
+    is_active: true
+  - name: Operations
+    code: OPS_1
+    description: Business Operations
+    budget: null
+    currency: USD
+    is_active: true
+  roles:
+  - name: Accountant
+    code: ACC_1
+    description: Accountant
+    department_code: FIN_1
+    salary_range_min: null
+    salary_range_max: null
+    currency: USD
+    is_active: true
+    permissions: []
+  - name: CFO
+    code: CFO_1
+    description: Chief Financial Officer
+    department_code: FIN_1
+    salary_range_min: null
+    salary_range_max: null
+    currency: USD
+    is_active: true
+    permissions: []
+  - name: Finance Manager
+    code: FM_1
+    description: Finance Manager
+    department_code: FIN_1
+    salary_range_min: null
+    salary_range_max: null
+    currency: USD
+    is_active: true
+    permissions: []
+  - name: HR Manager
+    code: HRM_1
+    description: Human Resources Manager
+    department_code: HR_1
+    salary_range_min: null
+    salary_range_max: null
+    currency: USD
+    is_active: true
+    permissions: []
+  - name: IT Manager
+    code: ITM_1
+    description: IT Manager
+    department_code: IT_1
+    salary_range_min: null
+    salary_range_max: null
+    currency: USD
+    is_active: true
+    permissions: []
+  - name: CEO
+    code: CEO_1
+    description: Chief Executive Officer
+    department_code: OPS_1
+    salary_range_min: null
+    salary_range_max: null
+    currency: USD
+    is_active: true
+    permissions: []
+  - name: Operations Manager
+    code: OM_1
+    description: Operations Manager
+    department_code: OPS_1
+    salary_range_min: null
+    salary_range_max: null
+    currency: USD
+    is_active: true
+    permissions: []
+offices: []
+governance_policies: []
+workflows: []
+ldap_directory:
+- uid: null
+  dn: o=atonixcorp-holdings,dc=atonixcorp
+  cn: AtonixCorp Holdings
+  node_type: organization
+  role_code: ''
+  permissions: []
+  source_type: organization
+  attributes:
+    company_id: 1
+    registration_number: null
+    subscription_tier: enterprise
+  is_active: true
+- uid: null
+  dn: ou=fin_1,ou=finance,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Finance
+  node_type: department
+  role_code: ''
+  permissions: []
+  source_type: entity_department
+  attributes:
+    department_code: FIN_1
+    entity_id: 1
+  is_active: true
+- uid: null
+  dn: ou=finance,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Finance
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: finance
+  is_active: true
+- uid: null
+  dn: ou=governance,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Governance
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: governance
+  is_active: true
+- uid: null
+  dn: ou=hr_1,ou=governance,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Human Resources
+  node_type: department
+  role_code: ''
+  permissions: []
+  source_type: entity_department
+  attributes:
+    department_code: HR_1
+    entity_id: 1
+  is_active: true
+- uid: null
+  dn: ou=it_1,ou=governance,o=atonixcorp-holdings,dc=atonixcorp
+  cn: IT
+  node_type: department
+  role_code: ''
+  permissions: []
+  source_type: entity_department
+  attributes:
+    department_code: IT_1
+    entity_id: 1
+  is_active: true
+- uid: null
+  dn: ou=legal_1,ou=governance,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Legal
+  node_type: department
+  role_code: ''
+  permissions: []
+  source_type: entity_department
+  attributes:
+    department_code: LEGAL_1
+    entity_id: 1
+  is_active: true
+- uid: null
+  dn: ou=ops_1,ou=governance,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Operations
+  node_type: department
+  role_code: ''
+  permissions: []
+  source_type: entity_department
+  attributes:
+    department_code: OPS_1
+    entity_id: 1
+  is_active: true
+- uid: null
+  dn: ou=security,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Security
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: security
+  is_active: true
+- uid: null
+  dn: ou=technology,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Technology
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: technology
+  is_active: true
+- uid: '1393668873'
+  dn: uid=1393668873,ou=people,o=atonixcorp-holdings,dc=atonixcorp
+  cn: entity-owner
+  node_type: user
+  role_code: FOUNDER
+  permissions: []
+  source_type: founder
+  attributes:
+    email: entity-owner@example.com
+    company_id: 1
+    company_registration_number: null
+    is_founder: true
+  is_active: true

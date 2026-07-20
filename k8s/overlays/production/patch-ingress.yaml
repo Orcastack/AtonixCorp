@@ -5,7 +5,28 @@ metadata:
 spec:
   tls:
     - hosts:
-        - app.atonixcorp.com
+        - atonixcorp.com
+        - www.atonixcorp.com
+        - api.atonixcorp.com
       secretName: atonixcorp-production-tls
   rules:
-    - host: app.atonixcorp.com
+    - host: atonixcorp.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: app
+                port:
+                  number: 80
+    - host: api.atonixcorp.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 8000

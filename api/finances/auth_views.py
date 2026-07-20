@@ -9,6 +9,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from .developer_portal_common import DeveloperFacingAPIView
 from .models import Organization, UserProfile, ACCOUNT_TYPE_ENTERPRISE, ACCOUNT_TYPE_PERSONAL
+from .organization_email_service import send_system_notification
 
 
 User = get_user_model()
@@ -100,6 +101,14 @@ class RegisterView(DeveloperFacingAPIView):
             except (TypeError, ValueError):
                 pass
         profile.save(update_fields=['tax_type', 'tax_rate', 'updated_at'])
+
+        send_system_notification(
+            recipient=user.email,
+            subject='Welcome to AtonixCorp',
+            title='Welcome to AtonixCorp',
+            message='Your account is ready. Verify your email address through your organization administrator before enabling outbound workspace email.',
+            event_type='account_registration',
+        )
 
         # Optional: create a first organization for enterprise accounts.
         if account_type == ACCOUNT_TYPE_ENTERPRISE and org_name:

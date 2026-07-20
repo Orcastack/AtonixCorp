@@ -33,7 +33,7 @@
   align-items: stretch;
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 35, 40, 0.98) 48%, rgba(17, 24, 39, 0.98) 100%);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 28px;
+  border-radius: 8px;
   box-shadow: 0 28px 70px rgba(15, 23, 42, 0.24);
   display: grid;
   gap: 24px;
@@ -119,7 +119,7 @@
   align-items: center;
   background: rgba(255, 255, 255, 0.7);
   border: 1px solid rgba(30, 35, 40, 0.08);
-  border-radius: 18px;
+  border-radius: 8px;
   box-shadow: 0 16px 40px rgba(30, 35, 40, 0.08);
   display: flex;
   justify-content: center;
@@ -200,7 +200,7 @@
 .ws-selector-secondary {
   background: #1e2328;
   border: none;
-  border-radius: 999px;
+  border-radius: 6px;
   color: #fff;
   cursor: pointer;
   font-size: 13px;
@@ -224,7 +224,7 @@
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 249, 251, 0.92) 100%);
   border: 1px solid rgba(30, 35, 40, 0.08);
-  border-radius: 18px;
+  border-radius: 8px;
   box-shadow: 0 16px 36px rgba(30, 35, 40, 0.08);
   display: grid;
   gap: 14px;
@@ -265,7 +265,7 @@
 .ws-selector-card-logo {
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(30, 35, 40, 0.08);
-  border-radius: 18px;
+  border-radius: 8px;
   box-shadow: 0 10px 24px rgba(30, 35, 40, 0.08);
   display: block;
   height: 56px;
@@ -302,7 +302,7 @@
   align-items: center;
   background: rgba(10, 132, 255, 0.1);
   border: 1px solid rgba(10, 132, 255, 0.14);
-  border-radius: 999px;
+  border-radius: 4px;
   color: #0a84ff;
   display: inline-flex;
   flex-shrink: 0;
@@ -323,7 +323,7 @@
 .ws-selector-card-field {
   background: rgba(255, 255, 255, 0.6);
   border: 1px solid rgba(30, 35, 40, 0.06);
-  border-radius: 14px;
+  border-radius: 6px;
   display: grid;
   gap: 5px;
   min-height: 62px;
@@ -354,7 +354,7 @@
 .ws-selector-open {
   background: linear-gradient(135deg, #0a84ff 0%, #096fe0 100%);
   border: none;
-  border-radius: 14px;
+  border-radius: 6px;
   box-shadow: 0 14px 26px rgba(10, 132, 255, 0.18);
   color: #fff;
   cursor: pointer;

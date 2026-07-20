@@ -117,6 +117,28 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+WORKSPACE_FILE_ENCRYPTION_KEY = os.getenv('WORKSPACE_FILE_ENCRYPTION_KEY', '')
+WORKSPACE_FILE_MAX_BYTES = int(os.getenv('WORKSPACE_FILE_MAX_BYTES', str(25 * 1024 * 1024)))
+WORKSPACE_FILE_STORAGE_BACKEND = os.getenv('WORKSPACE_FILE_STORAGE_BACKEND', 'django.core.files.storage.FileSystemStorage')
+if not DEBUG and not WORKSPACE_FILE_ENCRYPTION_KEY:
+    raise RuntimeError('WORKSPACE_FILE_ENCRYPTION_KEY is required when DJANGO_DEBUG is false.')
+STORAGES = {
+    'default': {
+        'BACKEND': WORKSPACE_FILE_STORAGE_BACKEND,
+        'OPTIONS': {},
+    },
+    'staticfiles': {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage'},
+}
+if WORKSPACE_FILE_STORAGE_BACKEND == 'storages.backends.s3.S3Storage':
+    STORAGES['default']['OPTIONS'] = {
+        'bucket_name': os.getenv('AWS_STORAGE_BUCKET_NAME', ''),
+        'region_name': os.getenv('AWS_S3_REGION_NAME', ''),
+        'access_key': os.getenv('AWS_ACCESS_KEY_ID', ''),
+        'secret_key': os.getenv('AWS_SECRET_ACCESS_KEY', ''),
+        'default_acl': None,
+        'querystring_auth': True,
+        'file_overwrite': False,
+    }
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -192,9 +214,14 @@ EMAIL_HOST = os.getenv('EMAIL_HOST', 'localhost')
 EMAIL_PORT = int(os.getenv('EMAIL_PORT', '25'))
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
-EMAIL_USE_TLS = env_bool('EMAIL_USE_TLS', False)
+EMAIL_USE_TLS = env_bool('EMAIL_USE_TLS', not DEBUG)
 EMAIL_USE_SSL = env_bool('EMAIL_USE_SSL', False)
+if EMAIL_USE_TLS and EMAIL_USE_SSL:
+    raise RuntimeError('EMAIL_USE_TLS and EMAIL_USE_SSL cannot both be enabled.')
+if not DEBUG and EMAIL_BACKEND == 'django.core.mail.backends.smtp.EmailBackend' and not (EMAIL_USE_TLS or EMAIL_USE_SSL):
+    raise RuntimeError('Production SMTP delivery requires EMAIL_USE_TLS or EMAIL_USE_SSL.')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'no-reply@atonixcorp.local')
+ORGANIZATION_EMAIL_DOMAIN = os.getenv('ORGANIZATION_EMAIL_DOMAIN', 'atonixcorp.local')
 EMAIL_BRAND_NAME = os.getenv('EMAIL_BRAND_NAME', 'AtonixCorp')
 EMAIL_BRAND_TITLE = os.getenv('EMAIL_BRAND_TITLE', 'Institutional Finance Operations')
 EMAIL_BRAND_FOOTER = os.getenv(

@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useEnterprise } from '../../context/EnterpriseContext';
 import AtonixCorpLogo from '../../components/branding/AtonixCorpLogo';
+import { organizationsAPI } from '../../services/api';
 import { countryDropdownOptions } from '../../utils/countryDropdowns';
 import {
-  ACCOUNTING_MODULE_KEYS,
   WORKSPACE_MODE_LABELS,
-  EQUITY_MODULE_KEYS,
   WORKSPACE_PACKAGE_OPTIONS,
 } from '../../utils/workspaceModules';
 import './CreateWorkspace.css';
@@ -130,7 +129,8 @@ const STEPS = [
   { id: 1, label: 'Company Identity' },
   { id: 2, label: 'Jurisdiction & Currency' },
   { id: 3, label: 'Fiscal & Structure' },
-  { id: 4, label: 'Modules & Launch' },
+  { id: 4, label: 'Modules & License' },
+  { id: 5, label: 'Launch' },
 ];
 
 const EMPTY_FORM = {
@@ -150,7 +150,14 @@ const EMPTY_FORM = {
   taxRegime: '',
   workspaceMode: '',
   enabledModules: [],
+  subscriptionTier: 'professional',
 };
+
+const SUBSCRIPTION_TIERS = [
+  { id: 'basic', label: 'Basic', detail: 'Core governance workspace and system notices.' },
+  { id: 'professional', label: 'Professional', detail: 'Operational sender identities and 2,500 monthly sends.' },
+  { id: 'enterprise', label: 'Enterprise', detail: 'Marketing controls and 25,000 monthly sends.' },
+];
 
 const ACCOUNTING_MODULE_OPTIONS = [
   { key: 'overview', label: 'Organization Overview', detail: 'Home dashboard and entity launchpad.' },
@@ -192,6 +199,8 @@ const CreateWorkspace = () => {
   const [form, setForm] = useState(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [identityStatus, setIdentityStatus] = useState(null);
+  const [verifyingIdentity, setVerifyingIdentity] = useState(false);
   const [fyOpen, setFyOpen] = useState(false);
   const [fyMonth, setFyMonth] = useState(null);
   const fyRef = React.useRef(null);
@@ -215,7 +224,41 @@ const CreateWorkspace = () => {
     return () => document.removeEventListener('mousedown', handler);
   }, [fyOpen]);
 
-  const update = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
+  const update = (field, value) => {
+    if (field === 'name' || field === 'registrationNumber') setIdentityStatus(null);
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const verifyIdentity = async () => {
+    if (!form.name.trim() || !form.registrationNumber.trim()) {
+      setError('Enter the company name and registration number before verification.');
+      return false;
+    }
+    setVerifyingIdentity(true);
+    setError(null);
+    try {
+      const response = await organizationsAPI.verifyIdentity({
+        name: form.name.trim(),
+        registration_number: form.registrationNumber.trim(),
+      });
+      const result = response.data;
+      setIdentityStatus(result);
+      if (!result.name_available || !result.available) {
+        setError(!result.name_available
+          ? 'A company with this name already exists.'
+          : 'This company registration number is already in use.');
+        return false;
+      }
+      setForm((previous) => ({ ...previous, registrationNumber: result.registration_number }));
+      return true;
+    } catch (requestError) {
+      const details = requestError.response?.data;
+      setError(details?.name || details?.registration_number || 'Company identity could not be verified.');
+      return false;
+    } finally {
+      setVerifyingIdentity(false);
+    }
+  };
 
   // Parse current MM-DD value
   const [fySelMonth, fySelDay] = form.fiscalYearEnd.split('-').map(Number);
@@ -228,18 +271,6 @@ const CreateWorkspace = () => {
   const MONTH_FULL  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const daysInMonth = (m) => new Date(2000, m, 0).getDate(); // m is 1-based
 
-  const toggleModule = (moduleKey) => {
-    setForm((prev) => {
-      const next = new Set(prev.enabledModules);
-      if (next.has(moduleKey)) {
-        next.delete(moduleKey);
-      } else {
-        next.add(moduleKey);
-      }
-      return { ...prev, enabledModules: Array.from(next) };
-    });
-  };
-
   const selectPackage = (mode) => {
     const selected = WORKSPACE_PACKAGE_OPTIONS.find((option) => option.id === mode);
     setForm((prev) => ({
@@ -250,9 +281,13 @@ const CreateWorkspace = () => {
   };
 
   const canGoNext = () => {
-    if (step === 1) return form.name.trim().length >= 2 && (!isOrgCreate || form.registrationNumber.trim().length >= 4);
+    if (step === 1) {
+      return form.name.trim().length >= 2
+        && (!isOrgCreate || form.registrationNumber.trim().length >= 4)
+        && (!isOrgCreate || (identityStatus?.available && identityStatus?.name_available));
+    }
     if (step === 2) return !!form.country && !!form.currency;
-    if (step === 4) return !!form.workspaceMode && (form.enabledModules.length > 0 || form.workspaceMode === 'standalone');
+    if (step === 4) return !!form.workspaceMode && !!form.subscriptionTier && (form.enabledModules.length > 0 || form.workspaceMode === 'standalone');
     return true;
   };
 
@@ -285,6 +320,7 @@ const CreateWorkspace = () => {
             address: form.address.trim(),
             service_time: form.serviceTime.trim(),
             tax_regime: form.taxRegime.trim(),
+            subscription_tier: form.subscriptionTier,
           },
         });
         if (newOrg) {
@@ -345,6 +381,14 @@ const CreateWorkspace = () => {
           onChange={(e) => update('name', e.target.value)}
           autoFocus
         />
+        {isOrgCreate && (
+          <div className={`cw-identity-status${identityStatus?.available && identityStatus?.name_available ? ' is-verified' : ''}`}>
+            <span>{identityStatus?.available && identityStatus?.name_available ? 'Identity available and normalized' : 'Verify identity before continuing'}</span>
+            <button type="button" className="cw-verify-btn" onClick={verifyIdentity} disabled={verifyingIdentity}>
+              {verifyingIdentity ? 'Verifying...' : 'Verify company identity'}
+            </button>
+          </div>
+        )}
         <span className="cw-hint">This will be displayed as the organization name throughout AtonixCorp.</span>
       </div>
       <div className="cw-field">
@@ -618,6 +662,20 @@ const CreateWorkspace = () => {
               </button>
             ))}
           </div>
+          <div className="cw-tier-grid" aria-label="Subscription tiers">
+            {SUBSCRIPTION_TIERS.map((tier) => (
+              <button
+                key={tier.id}
+                type="button"
+                className={`cw-tier-card${form.subscriptionTier === tier.id ? ' selected' : ''}`}
+                onClick={() => update('subscriptionTier', tier.id)}
+                aria-pressed={form.subscriptionTier === tier.id}
+              >
+                <span>{tier.label}</span>
+                <small>{tier.detail}</small>
+              </button>
+            ))}
+          </div>
         </section>
 
         <section className="cw-launch-section cw-launch-section--modules">
@@ -647,39 +705,38 @@ const CreateWorkspace = () => {
           </div>
         </section>
 
-        <section className="cw-launch-section cw-launch-section--confirmation">
-          <div className="cw-launch-confirmation-card">
-            <div className="cw-launch-section-header cw-launch-section-header--center">
-              <div>
-                <h4 className="cw-launch-section-title">Launch Confirmation</h4>
-                <p className="cw-launch-section-subtitle">Review the final preview, then create the organization.</p>
-              </div>
-            </div>
-
-            <div className="cw-launch-confirmation-copy">
-              <span>Launch Preview</span>
-              <strong>{selectedPackage?.description || 'Pick a package to preview how this organization will be configured.'}</strong>
-            </div>
-
-            <div className="cw-launch-confirmation-actions">
-              <button
-                type="submit"
-                className="cw-btn cw-btn-create"
-                disabled={submitting || !form.name || !form.country || !form.workspaceMode || (!isOrgCreate && !currentOrganization?.id)}
-              >
-                {submitting ? `Creating ${flowLabel}…` : `Create ${flowLabel}`}
-              </button>
-            </div>
-          </div>
-        </section>
       </div>
     );
   };
 
-  const selectedPackage = WORKSPACE_PACKAGE_OPTIONS.find((option) => option.id === form.workspaceMode) || null;
-  const accountingCount = form.enabledModules.filter((moduleKey) => ACCOUNTING_MODULE_KEYS.includes(moduleKey)).length;
-  const equityCount = form.enabledModules.filter((moduleKey) => EQUITY_MODULE_KEYS.includes(moduleKey)).length;
+  const renderStep5 = () => {
+    const selectedTier = SUBSCRIPTION_TIERS.find((tier) => tier.id === form.subscriptionTier);
+    return (
+      <section className="cw-launch-confirmation-card cw-launch-review">
+        <div className="cw-launch-section-header cw-launch-section-header--center">
+          <div>
+            <h4 className="cw-launch-section-title">Launch Review</h4>
+            <p className="cw-launch-section-subtitle">Confirm the company identity, operating configuration, modules, and license.</p>
+          </div>
+        </div>
+        <div className="cw-final-summary-grid">
+          <div><span>Company</span><strong>{form.name}</strong></div>
+          <div><span>Registration</span><strong>{form.registrationNumber}</strong></div>
+          <div><span>Jurisdiction</span><strong>{COUNTRIES.find((country) => country.code === form.country)?.name || form.country}</strong></div>
+          <div><span>Currency</span><strong>{form.currency}</strong></div>
+          <div><span>Package</span><strong>{selectedPackage?.title || 'Not selected'}</strong></div>
+          <div><span>License</span><strong>{selectedTier?.label || 'Not selected'}</strong></div>
+        </div>
+        <div className="cw-launch-confirmation-actions">
+          <button type="submit" className="cw-btn cw-btn-create" disabled={submitting || !canGoNext() || (!isOrgCreate && !currentOrganization?.id)}>
+            {submitting ? `Creating ${flowLabel}...` : `Launch ${flowLabel}`}
+          </button>
+        </div>
+      </section>
+    );
+  };
 
+  const selectedPackage = WORKSPACE_PACKAGE_OPTIONS.find((option) => option.id === form.workspaceMode) || null;
   const dashboardGuide = isEntityCreate ? [
     {
       title: 'Returns to Organization Dashboard',
@@ -758,9 +815,10 @@ const CreateWorkspace = () => {
           {step === 2 && renderStep2()}
           {step === 3 && renderStep3()}
           {step === 4 && renderStep4()}
+          {step === 5 && renderStep5()}
 
           {/* Navigation */}
-          {step < 4 && (
+          {step < 5 && (
             <div className="cw-nav">
               {step > 1 && (
                 <button type="button" className="cw-btn cw-btn-secondary" onClick={() => setStep(step - 1)}>
@@ -771,7 +829,10 @@ const CreateWorkspace = () => {
               <button
                 type="button"
                 className="cw-btn cw-btn-primary"
-                onClick={() => setStep(step + 1)}
+                onClick={async () => {
+                  if (step === 1 && isOrgCreate && !(await verifyIdentity())) return;
+                  setStep(step + 1);
+                }}
                 disabled={!canGoNext()}
               >
                 Next →
@@ -783,6 +844,17 @@ const CreateWorkspace = () => {
 
       {/* Info sidebar */}
       <aside className="cw-sidebar">
+        <section className="cw-org-summary" aria-label="Organization summary">
+          <div className="cw-org-summary-head">
+            <span>Organization Summary</span>
+            <strong>Step {step} of {STEPS.length}</strong>
+          </div>
+          <div className="cw-org-summary-row"><span>Company</span><strong>{form.name || 'Not entered'}</strong></div>
+          <div className="cw-org-summary-row"><span>Registration</span><strong>{form.registrationNumber || 'Not entered'}</strong></div>
+          <div className="cw-org-summary-row"><span>Jurisdiction</span><strong>{COUNTRIES.find((country) => country.code === form.country)?.name || 'Not selected'}</strong></div>
+          <div className="cw-org-summary-row"><span>Modules</span><strong>{form.enabledModules.length || 'None'}</strong></div>
+          <div className="cw-org-summary-row"><span>License</span><strong>{SUBSCRIPTION_TIERS.find((tier) => tier.id === form.subscriptionTier)?.label}</strong></div>
+        </section>
         <h3>What happens next</h3>
         <ul className="cw-info-list">
           <li>

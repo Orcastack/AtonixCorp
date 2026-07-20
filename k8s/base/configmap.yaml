@@ -14,6 +14,14 @@ data:
   PYTHONUNBUFFERED: "1"
   FRONTEND_BASE_URL: "https://app.atonixcorp.local"
   APPROVAL_NOTIFICATION_BASE_URL: "https://app.atonixcorp.local"
+  EMAIL_BACKEND: django.core.mail.backends.smtp.EmailBackend
+  EMAIL_HOST: smtp-relay.brevo.com
+  EMAIL_PORT: "587"
+  EMAIL_HOST_USER: b2acdf001@smtp-brevo.com
+  EMAIL_USE_TLS: "true"
+  EMAIL_USE_SSL: "false"
+  DEFAULT_FROM_EMAIL: no-reply@atonixcorp.com
+  ORGANIZATION_EMAIL_DOMAIN: atonixcorp.com
   AI_ENABLE_EXTERNAL_MODELS: "0"
   ANTHROPIC_API_BASE_URL: "https://api.anthropic.com"
   CLAUDE_OPUS_MODEL: claude-opus-4-1

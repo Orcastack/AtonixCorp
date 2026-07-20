@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -137,3 +138,38 @@ class WorkspaceDepartmentAndMeetingAPITests(APITestCase):
 
         delete_response = self.client.delete(f'/api/v1/workspaces/{self.workspace.id}/meetings/{meeting_id}')
         self.assertEqual(delete_response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_file_and_folder_names_reject_path_traversal(self):
+        folder_response = self.client.post(
+            f'/api/v1/workspaces/{self.workspace.id}/folders',
+            {'name': '../private'},
+            format='json',
+        )
+        file_response = self.client.post(
+            f'/api/v1/workspaces/{self.workspace.id}/files',
+            {
+                'name': 'folder/financials.pdf',
+                'content': SimpleUploadedFile('financials.pdf', b'confidential report', content_type='application/pdf'),
+                'mime_type': 'application/pdf',
+            },
+            format='multipart',
+        )
+
+        self.assertEqual(folder_response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(file_response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_file_upload_download_encrypts_stored_content_and_is_audited(self):
+        payload = b'confidential board material'
+        upload_response = self.client.post(
+            f'/api/v1/workspaces/{self.workspace.id}/files',
+            {'content': SimpleUploadedFile('board-pack.pdf', payload, content_type='application/pdf')},
+            format='multipart',
+        )
+
+        self.assertEqual(upload_response.status_code, status.HTTP_201_CREATED)
+        download_response = self.client.get(
+            f'/api/v1/workspaces/{self.workspace.id}/files/{upload_response.data["id"]}'
+        )
+
+        self.assertEqual(download_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(b''.join(download_response.streaming_content), payload)

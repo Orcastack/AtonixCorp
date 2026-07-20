@@ -3,10 +3,10 @@ kind: ConfigMap
 metadata:
   name: atonixcorp-config
 data:
-  DJANGO_ALLOWED_HOSTS: "api.atonixcorp.com"
-  CORS_ALLOWED_ORIGINS: "https://app.atonixcorp.com"
-  CSRF_TRUSTED_ORIGINS: "https://app.atonixcorp.com"
-  FRONTEND_BASE_URL: "https://app.atonixcorp.com"
-  APPROVAL_NOTIFICATION_BASE_URL: "https://app.atonixcorp.com"
+  DJANGO_ALLOWED_HOSTS: "api.atonixcorp.com,atonixcorp.com,www.atonixcorp.com"
+  CORS_ALLOWED_ORIGINS: "https://atonixcorp.com,https://www.atonixcorp.com"
+  CSRF_TRUSTED_ORIGINS: "https://atonixcorp.com,https://www.atonixcorp.com"
+  FRONTEND_BASE_URL: "https://atonixcorp.com"
+  APPROVAL_NOTIFICATION_BASE_URL: "https://atonixcorp.com"
   DEPLOYMENT_ENVIRONMENT: production
   APP_VERSION: production

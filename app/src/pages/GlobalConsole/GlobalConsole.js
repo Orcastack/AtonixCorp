@@ -100,6 +100,7 @@ const GlobalConsole = () => {
     teamMembers,
     loading,
     complianceDeadlines,
+    hasPermission,
   } = useEnterprise();
 
   const [search, setSearch] = useState('');
@@ -180,9 +181,11 @@ const GlobalConsole = () => {
   const pendingInvitations = Array.isArray(teamMembers)
     ? teamMembers.filter((member) => member?.accepted_at == null || member?.invitation_status === 'pending' || member?.status === 'pending').length
     : 0;
-  const workspaceSelectOptions = organizations.map((org) => ({
+  const ownedOrganizationOptions = organizations.filter((org) => (
+    org.owner_email && org.owner_email === user?.email
+  )).map((org) => ({
     value: String(org.id),
-    label: org.name,
+    label: `${org.name} (${org.registration_number || 'Registration pending'})`,
   }));
 
   const handleInviteUser = async () => {
@@ -190,21 +193,21 @@ const GlobalConsole = () => {
     setInviteSuccess('');
 
     const workspaceId = String(inviteForm.workspaceId || '').trim();
-    const invitee = String(inviteForm.invitee || '').trim();
+    const invitee = String(inviteForm.invitee || '').trim().toLowerCase();
 
     if (!workspaceId || !invitee) {
       setInviteError('Organization and invitee are required.');
       return;
     }
 
+    if (!/^\S+@\S+\.\S+$/.test(invitee)) {
+      setInviteError('Enter a valid email address for the invitation.');
+      return;
+    }
+
     setInviteSaving(true);
     try {
-      const payload = { workspace_id: workspaceId };
-      if (/^\d+$/.test(invitee)) {
-        payload.user_id = Number(invitee);
-      } else {
-        payload.email = invitee.toLowerCase();
-      }
+      const payload = { organization_id: Number(workspaceId), email: invitee, role_code: 'VIEWER' };
       await globalInviteAPI.create(payload);
       setInviteSuccess('Organization invitation sent.');
       setInviteForm({ invitee: '', workspaceId: '' });
@@ -333,6 +336,11 @@ const GlobalConsole = () => {
   const activeOrganizationCount = organizations.length;
   const complianceAlertCount = notifs.filter((item) => item.severity === 'critical' || item.severity === 'high').length;
   const pendingCapitalTasks = tasks.length;
+  const isCurrentOrganizationOwner = Boolean(
+    currentOrganization?.owner_email && currentOrganization.owner_email === user?.email
+  );
+  const contactReadiness = currentOrganization?.email && currentOrganization?.address ? 'Ready' : 'Profile incomplete';
+  const healthStatus = complianceAlertCount > 0 ? 'Review required' : 'Current';
   const marketPulse = [
     { label: 'Global Equity Index', value: 'No data connected', tone: 'muted' },
     { label: 'Volatility Index', value: 'Stable', tone: 'positive' },
@@ -446,7 +454,7 @@ const GlobalConsole = () => {
               New Organization
             </button>
             <button className="gc-action-btn gc-action-secondary gc-action-btn--ribbon" onClick={() => setInviteModalOpen(true)}>
-              New Organization
+              Invite Member
             </button>
             <button className="gc-action-btn gc-action-secondary gc-action-btn--ribbon" onClick={scrollToWorkspaces}>
               Portfolio Organizations
@@ -474,6 +482,48 @@ const GlobalConsole = () => {
                 <strong>{pendingCapitalTasks}</strong>
               </article>
             </div>
+          </section>
+
+          <section className="gc-center-grid" aria-label="Organization health and security centers">
+            <article className="gc-center-card">
+              <div className="gc-section-header gc-section-header--tight">
+                <div>
+                  <p className="gc-center-eyebrow">Health Center</p>
+                  <h2>Operational Readiness</h2>
+                  <p>Organization-level governance signals</p>
+                </div>
+                <span className={`gc-center-status ${healthStatus === 'Current' ? 'is-healthy' : 'is-review'}`}>{healthStatus}</span>
+              </div>
+              <div className="gc-center-checks">
+                <div><span>Registration identity</span><strong>{currentOrganization?.registration_number || 'Missing'}</strong></div>
+                <div><span>Compliance posture</span><strong>{healthStatus}</strong></div>
+                <div><span>Contact readiness</span><strong>{contactReadiness}</strong></div>
+                <div><span>Pending invitations</span><strong>{pendingInvitations}</strong></div>
+              </div>
+              <button className="gc-center-link" onClick={() => navigate('/app/enterprise/org-overview')}>Open organization health</button>
+            </article>
+
+            <article className="gc-center-card">
+              <div className="gc-section-header gc-section-header--tight">
+                <div>
+                  <p className="gc-center-eyebrow">Security Center</p>
+                  <h2>Access & Policy Controls</h2>
+                  <p>Security posture for the active organization</p>
+                </div>
+                <span className={`gc-center-status ${hasPermission('manage_org_settings') ? 'is-healthy' : 'is-review'}`}>
+                  {hasPermission('manage_org_settings') ? 'Manage' : 'View only'}
+                </span>
+              </div>
+              <div className="gc-center-checks">
+                <div><span>Owner oversight</span><strong>{isCurrentOrganizationOwner ? 'Active' : 'Delegated'}</strong></div>
+                <div><span>Role-based access</span><strong>Enforced</strong></div>
+                <div><span>Audit logging</span><strong>Active</strong></div>
+                <div><span>Policy administration</span><strong>{hasPermission('manage_org_settings') ? 'Available' : 'Restricted'}</strong></div>
+              </div>
+              <button className="gc-center-link" onClick={() => navigate('/security-center')} disabled={!hasPermission('manage_org_settings')}>
+                Open Security Center
+              </button>
+            </article>
           </section>
 
           <div className="gc-main-grid">
@@ -562,16 +612,16 @@ const GlobalConsole = () => {
               </button>
             </div>
             <p className="gc-modal-copy">
-              Use a user ID to attach someone to an organization. Department, role, and module access stay inside that organization environment.
+              Invite an email address to an organization you own. The invitation is assigned a Viewer role, recorded in the organization audit trail, and remains pending until accepted.
             </p>
             <div className="gc-modal-grid">
               <label className="gc-modal-field">
-                <span>Email or User ID</span>
+                <span>Invitee Email</span>
                 <input
                   type="text"
                   value={inviteForm.invitee}
                   onChange={(event) => setInviteForm((current) => ({ ...current, invitee: event.target.value }))}
-                  placeholder="e.g. ada@example.com or 42"
+                  placeholder="e.g. ada@example.com"
                 />
               </label>
               <label className="gc-modal-field">
@@ -581,7 +631,7 @@ const GlobalConsole = () => {
                   onChange={(event) => setInviteForm((current) => ({ ...current, workspaceId: event.target.value }))}
                 >
                   <option value="">Select an organization</option>
-                  {workspaceSelectOptions.map((workspace) => (
+                  {ownedOrganizationOptions.map((workspace) => (
                     <option key={workspace.value} value={workspace.value}>{workspace.label}</option>
                   ))}
                 </select>

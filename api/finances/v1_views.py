@@ -1290,6 +1290,57 @@ class GlobalWorkspaceInviteView(V1BaseAPIView):
     @transaction.atomic
     def post(self, request):
         payload = request.data or {}
+        organization_ref = payload.get('organization_id')
+        if organization_ref not in [None, '']:
+            organization = get_object_or_404(_accessible_organizations_queryset(request.user), pk=organization_ref)
+            if organization.owner_id != request.user.id:
+                return Response({'detail': 'Only the organization owner can invite team members.'}, status=status.HTTP_403_FORBIDDEN)
+
+            email = (payload.get('email') or '').strip().lower()
+            role_code = (payload.get('role_code') or 'VIEWER').strip()
+            if not email:
+                return Response({'detail': 'email is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            Role.get_or_create_default_roles()
+            role = get_object_or_404(Role, code=role_code)
+            user = User.objects.filter(email=email).first()
+            if user is None:
+                base_username = slugify(email.split('@')[0]) or 'user'
+                username = base_username
+                suffix = 1
+                while User.objects.filter(username=username).exists():
+                    suffix += 1
+                    username = f'{base_username}-{suffix}'
+                user = User.objects.create_user(username=username, email=email, password=secrets.token_urlsafe(16))
+                user.set_unusable_password()
+                user.save(update_fields=['password'])
+
+            member, created = TeamMember.objects.get_or_create(
+                organization=organization,
+                user=user,
+                defaults={'role': role, 'is_active': True, 'accepted_at': None},
+            )
+            if not created and member.is_active and member.accepted_at:
+                return Response({'detail': 'This user is already an active team member.'}, status=status.HTTP_400_BAD_REQUEST)
+            if not created:
+                member.role = role
+                member.is_active = True
+                member.accepted_at = None
+                member.save(update_fields=['role', 'is_active', 'accepted_at', 'updated_at'])
+
+            _audit(organization, request.user, 'invite', 'TeamMember', member.pk, {
+                'email': user.email,
+                'role_code': role.code,
+                'invitation_target': 'organization',
+            })
+            return Response({
+                'organization_id': organization.id,
+                'registration_number': organization.registration_number,
+                'user': {'id': user.id, 'email': user.email, 'username': user.username},
+                'role': role.code,
+                'invitation_sent': True,
+            }, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
+
         workspace_ref = payload.get('workspace_id')
         workspace_id = WorkspaceService.resolve_workspace_id(workspace_ref)
         PermissionService.assert_owner_or_admin(workspace_id, request.user)

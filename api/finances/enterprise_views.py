@@ -21,10 +21,13 @@ from django.utils import timezone
 from workspaces.models import Workspace
 
 from .governance_configurations import restore_governance_document
+from .governance_cloud_exports import export_governance_yaml
 from .company_identity import normalize_registration_number
+from .department_provisioning import provision_selected_departments, validate_department_selections
+from .organization_email_service import provision_email_account, send_campaign, set_subscription_tier, subscription_summary
 
 from .models import (
-    Organization, OrganizationDirectoryEntry, Entity, TeamMember, Role, Permission, TaxExposure, ROLE_ORG_OWNER, ROLE_CFO,
+    Organization, OrganizationDirectoryEntry, GovernanceCloudExport, OrganizationEmailAccount, OrganizationEmailCampaign, OrganizationEmailDelivery, Entity, TeamMember, Role, Permission, TaxExposure, ROLE_ORG_OWNER, ROLE_CFO,
     ROLE_FINANCE_ANALYST, ROLE_VIEWER, ROLE_EXTERNAL_ADVISOR,
     TaxProfile, TaxRegimeRegistry, TaxCalculation, TaxFiling, TaxAuditLog, TaxRuleSetVersion, TaxRiskAlert, ComplianceDeadline, CashflowForecast, AuditLog, PlatformAuditEvent, PlatformTask, EntityDepartment,
     GovernancePolicy, GovernanceAmendment, GovernanceVote, GovernanceCommissionPlan, GovernanceCommissionEntry,
@@ -256,6 +259,19 @@ def _filter_queryset_by_entity_scope(queryset, user, entity_relation='entity'):
     return queryset.filter(**{f'{entity_relation}__in': _accessible_entities_queryset(user)}).distinct()
 
 
+def _assert_can_manage_entity_departments(user, entity):
+    if entity.organization.owner_id == user.id:
+        return
+    membership = TeamMember.objects.filter(
+        organization=entity.organization,
+        user=user,
+        is_active=True,
+    ).select_related('role').first()
+    permission_codes = _resolve_permission_codes(membership.role.code, membership.role) if membership else []
+    if 'edit_entity' not in permission_codes:
+        raise PermissionDenied('Department management requires entity management access.')
+
+
 def _request_ip(request):
     forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR', '')
     if forwarded_for:
@@ -295,6 +311,9 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Create organization with current user as owner"""
         organization = serializer.save(owner=self.request.user)
+        selected_tier = (organization.settings or {}).get('subscription_tier', 'basic')
+        if selected_tier in {'basic', 'professional', 'enterprise'}:
+            set_subscription_tier(organization, selected_tier)
         log_platform_audit_event(
             domain='identity',
             event_type='company.created',
@@ -305,7 +324,11 @@ class OrganizationViewSet(viewsets.ModelViewSet):
             resource_id=str(organization.id),
             resource_name=organization.name,
             summary=f'Created company {organization.name}',
-            metadata={'registration_number': organization.registration_number, 'founder_id': self.request.user.id},
+            metadata={
+                'registration_number': organization.registration_number,
+                'founder_id': self.request.user.id,
+                'subscription_tier': selected_tier,
+            },
         )
 
     @action(detail=False, methods=['post'])
@@ -315,7 +338,12 @@ class OrganizationViewSet(viewsets.ModelViewSet):
             registration_number = normalize_registration_number(request.data.get('registration_number'))
         except Exception as error:
             raise ValidationError({'registration_number': str(error)})
+        company_name = str(request.data.get('name') or '').strip()
+        if not company_name:
+            raise ValidationError({'name': 'Company name is required for identity verification.'})
         return Response({
+            'name': company_name,
+            'name_available': not Organization.objects.filter(name__iexact=company_name).exists(),
             'registration_number': registration_number,
             'valid': True,
             'available': not Organization.objects.filter(registration_number=registration_number).exists(),
@@ -519,9 +547,168 @@ class OrganizationViewSet(viewsets.ModelViewSet):
 
         sync_organization_directory(organization)
         configuration = refresh_governance_configuration(organization)
+        GovernanceCloudExport.objects.create(
+            organization=organization,
+            requested_by=request.user,
+            provider='local_download',
+            status='completed',
+            file_name=f'org-{organization.id}-config.yml',
+            checksum=configuration.checksum,
+            destination='Local download',
+        )
+        log_platform_audit_event(
+            domain='governance', event_type='governance.exported', action='governance_exported',
+            actor=request.user, organization=organization, resource_type='GovernanceConfiguration',
+            resource_id=str(configuration.id), resource_name=configuration.configuration_file.name,
+            summary=f'Exported governance YAML for {organization.name}', metadata={'provider': 'local_download'},
+        )
         response = FileResponse(configuration.configuration_file.open('rb'), content_type='application/x-yaml')
         response['Content-Disposition'] = f'attachment; filename="org-{organization.id}-config.yml"'
         return response
+
+    @action(detail=True, methods=['post'])
+    def export_governance_cloud(self, request, pk=None):
+        organization = self.get_object()
+        self._require_governance_configuration_owner(organization, request.user)
+        from .directory_service import sync_organization_directory
+
+        sync_organization_directory(organization)
+        export_record = export_governance_yaml(organization, request.user, request.data or {})
+        log_platform_audit_event(
+            domain='governance', event_type='governance.cloud_exported', action='governance_cloud_exported',
+            actor=request.user, organization=organization, resource_type='GovernanceCloudExport',
+            resource_id=str(export_record.id), resource_name=export_record.file_name,
+            summary=f'Exported governance YAML to {export_record.get_provider_display()}',
+            metadata={'provider': export_record.provider, 'destination': export_record.destination, 'checksum': export_record.checksum},
+        )
+        return Response({
+            'id': export_record.id,
+            'provider': export_record.provider,
+            'file_name': export_record.file_name,
+            'destination': export_record.destination,
+            'remote_reference': export_record.remote_reference,
+            'checksum': export_record.checksum,
+            'created_at': export_record.created_at,
+        }, status=drf_status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['get'])
+    def governance_cloud_exports(self, request, pk=None):
+        organization = self.get_object()
+        self._require_governance_configuration_owner(organization, request.user)
+        return Response([
+            {
+                'id': export_record.id,
+                'provider': export_record.provider,
+                'status': export_record.status,
+                'file_name': export_record.file_name,
+                'destination': export_record.destination,
+                'remote_reference': export_record.remote_reference,
+                'overwrite_confirmed': export_record.overwrite_confirmed,
+                'created_at': export_record.created_at,
+            }
+            for export_record in organization.governance_cloud_exports.select_related('requested_by')[:50]
+        ])
+
+    @action(detail=True, methods=['get'])
+    def email_service(self, request, pk=None):
+        organization = self.get_object()
+        self._require_governance_configuration_owner(organization, request.user)
+        accounts = organization.email_accounts.filter(is_active=True)
+        campaigns = organization.email_campaigns.select_related('sender').all()[:25]
+        deliveries = organization.email_deliveries.select_related('campaign', 'sender').all()[:50]
+        return Response({
+            'subscription': subscription_summary(organization),
+            'accounts': [
+                {
+                    'id': account.id,
+                    'address': account.address,
+                    'display_name': account.display_name,
+                    'is_active': account.is_active,
+                    'created_at': account.created_at,
+                }
+                for account in accounts
+            ],
+            'campaigns': [
+                {
+                    'id': campaign.id,
+                    'campaign_type': campaign.campaign_type,
+                    'sender_id': campaign.sender_id,
+                    'sender_address': campaign.sender.address,
+                    'subject': campaign.subject,
+                    'recipient_count': len(campaign.recipients or []),
+                    'consent_confirmed': campaign.consent_confirmed,
+                    'status': campaign.status,
+                    'sent_at': campaign.sent_at,
+                    'created_at': campaign.created_at,
+                }
+                for campaign in campaigns
+            ],
+            'deliveries': [
+                {
+                    'id': delivery.id,
+                    'campaign_id': delivery.campaign_id,
+                    'sender_address': delivery.sender.address if delivery.sender else '',
+                    'recipient': delivery.recipient,
+                    'subject': delivery.subject,
+                    'event_type': delivery.event_type,
+                    'status': delivery.status,
+                    'opened_at': delivery.opened_at,
+                    'sent_at': delivery.sent_at,
+                    'created_at': delivery.created_at,
+                }
+                for delivery in deliveries
+            ],
+        })
+
+    @action(detail=True, methods=['post'])
+    def configure_email_subscription(self, request, pk=None):
+        organization = self.get_object()
+        self._require_governance_configuration_owner(organization, request.user)
+        subscription = set_subscription_tier(
+            organization,
+            str(request.data.get('tier') or '').lower(),
+            request.data.get('billing_reference'),
+        )
+        log_platform_audit_event(
+            domain='email', event_type='email.subscription_configured', action='email_subscription_configured',
+            actor=request.user, organization=organization, resource_type='OrganizationEmailSubscription',
+            resource_id=str(subscription.id), resource_name=subscription.get_tier_display(),
+            summary=f'Configured {subscription.get_tier_display()} email service tier',
+            metadata={'tier': subscription.tier, 'billing_reference_present': bool(subscription.billing_reference)},
+        )
+        return Response({'subscription': subscription_summary(organization)})
+
+    @action(detail=True, methods=['post'])
+    def provision_email_account(self, request, pk=None):
+        organization = self.get_object()
+        self._require_governance_configuration_owner(organization, request.user)
+        account = provision_email_account(
+            organization,
+            request.user,
+            request.data.get('local_part'),
+            request.data.get('display_name'),
+        )
+        return Response({
+            'id': account.id,
+            'address': account.address,
+            'display_name': account.display_name,
+            'is_active': account.is_active,
+            'created_at': account.created_at,
+        }, status=drf_status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['post'])
+    def send_email_campaign(self, request, pk=None):
+        organization = self.get_object()
+        self._require_governance_configuration_owner(organization, request.user)
+        campaign, deliveries = send_campaign(organization, request.user, request.data or {})
+        return Response({
+            'id': campaign.id,
+            'status': campaign.status,
+            'recipient_count': len(deliveries),
+            'sent_count': sum(delivery.status == 'sent' for delivery in deliveries),
+            'failed_count': sum(delivery.status == 'failed' for delivery in deliveries),
+            'sent_at': campaign.sent_at,
+        }, status=drf_status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['post'])
     def import_governance_yaml(self, request, pk=None):
@@ -1704,6 +1891,7 @@ class EntityViewSet(viewsets.ModelViewSet):
 
         requested_workspace_type = (self.request.data.get('workspace_type') or '').strip()
         workspace_type_definition = get_workspace_type_definition(requested_workspace_type)
+        department_selections = validate_department_selections(self.request.data.get('department_selections'))
 
         enabled_modules = self.request.data.get('enabled_modules') or [
             'overview', 'members', 'groups', 'meetings', 'calendar',
@@ -1754,6 +1942,7 @@ class EntityViewSet(viewsets.ModelViewSet):
             # Create default structure for the new entity
             entity.create_default_structure()
             WorkspaceService.ensure_workspace_for_entity(entity)
+            provision_selected_departments(entity, self.request.user, department_selections)
 
             # Create a default tax profile for the entity country
             regime_defaults = build_regime_rules(entity.country)
@@ -2453,7 +2642,40 @@ class EntityDepartmentViewSet(viewsets.ModelViewSet):
         """Create department for entity"""
         entity_id = self.request.data.get('entity')
         entity = _get_accessible_entity_or_404(self.request.user, entity_id)
-        serializer.save(entity=entity)
+        _assert_can_manage_entity_departments(self.request.user, entity)
+        department = serializer.save(entity=entity)
+        log_platform_audit_event(
+            domain='governance', event_type='department.created', action='department_created',
+            actor=self.request.user, organization=entity.organization, entity=entity,
+            resource_type='EntityDepartment', resource_id=str(department.id), resource_name=department.name,
+            summary=f'Created department {department.name} for {entity.name}', metadata={'code': department.code},
+        )
+
+    def perform_update(self, serializer):
+        department = serializer.instance
+        _assert_can_manage_entity_departments(self.request.user, department.entity)
+        previous_values = {'name': department.name, 'code': department.code, 'is_active': department.is_active}
+        department = serializer.save()
+        log_platform_audit_event(
+            domain='governance', event_type='department.updated', action='department_updated',
+            actor=self.request.user, organization=department.entity.organization, entity=department.entity,
+            resource_type='EntityDepartment', resource_id=str(department.id), resource_name=department.name,
+            summary=f'Updated department {department.name} for {department.entity.name}',
+            metadata={'before': previous_values, 'after': {'name': department.name, 'code': department.code, 'is_active': department.is_active}},
+        )
+
+    def perform_destroy(self, instance):
+        _assert_can_manage_entity_departments(self.request.user, instance.entity)
+        entity = instance.entity
+        department_name = instance.name
+        department_id = instance.id
+        instance.delete()
+        log_platform_audit_event(
+            domain='governance', event_type='department.deleted', action='department_deleted',
+            actor=self.request.user, organization=entity.organization, entity=entity,
+            resource_type='EntityDepartment', resource_id=str(department_id), resource_name=department_name,
+            summary=f'Removed department {department_name} from {entity.name}', metadata={},
+        )
 
 
 class EntityRoleViewSet(viewsets.ModelViewSet):

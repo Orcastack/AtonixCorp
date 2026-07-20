@@ -69,6 +69,10 @@ from .models import (
     Role,
     ROLE_COMPLIANCE_OFFICER,
     Organization,
+    OrganizationEmailAccount,
+    OrganizationEmailCampaign,
+    OrganizationEmailDelivery,
+    OrganizationEmailSubscription,
     LeaveBalance,
     LeaveRequest,
     LeaveType,
@@ -943,6 +947,60 @@ class CoreFinancialAPIV1Tests(TestCase):
         membership = WorkspaceMember.objects.get(workspace=workspace, user=invitee)
         self.assertEqual(membership.status, 'invited')
         self.assertIsNone(membership.role)
+
+    def test_global_organization_invite_requires_owner_and_records_audit(self):
+        invitee = User.objects.create_user(
+            username='global-org-invitee',
+            email='global-org-invitee@example.com',
+            password='strong-pass-123',
+        )
+
+        response = self.client.post(
+            '/api/global/invite',
+            {
+                'email': invitee.email,
+                'organization_id': self.organization.id,
+                'role_code': 'VIEWER',
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['organization_id'], self.organization.id)
+        self.assertTrue(response.data['invitation_sent'])
+        membership = TeamMember.objects.get(organization=self.organization, user=invitee)
+        self.assertEqual(membership.role.code, 'VIEWER')
+        self.assertIsNone(membership.accepted_at)
+        self.assertTrue(AuditLog.objects.filter(
+            organization=self.organization,
+            action='invite',
+            model_name='TeamMember',
+            object_id=str(membership.pk),
+        ).exists())
+
+    def test_global_organization_invite_rejects_non_owner(self):
+        non_owner = User.objects.create_user(
+            username='global-org-non-owner',
+            email='global-org-non-owner@example.com',
+            password='strong-pass-123',
+        )
+        client = APIClient()
+        client.force_authenticate(non_owner)
+
+        response = client.post(
+            '/api/global/invite',
+            {
+                'email': 'blocked-invitee@example.com',
+                'organization_id': self.organization.id,
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 404)
+        self.assertFalse(TeamMember.objects.filter(
+            organization=self.organization,
+            user__email='blocked-invitee@example.com',
+        ).exists())
 
     def test_cli_login_refresh_and_me_endpoints(self):
         create_response = self.client.post(
@@ -1881,12 +1939,258 @@ class CompanyIdentityAPITests(TestCase):
         self.assertIn('name', duplicate_name_response.data)
 
         verification_response = client.post('/api/organizations/verify_registration_number/', {
+            'name': 'Atonix Governance Holdings',
             'registration_number': 'ZA-2024-123456',
         }, format='json')
         self.assertEqual(verification_response.status_code, 200)
         self.assertTrue(verification_response.data['valid'])
+        self.assertFalse(verification_response.data['name_available'])
         self.assertFalse(verification_response.data['available'])
         self.assertFalse(verification_response.data['external_registry_verified'])
+
+
+class GovernanceCloudExportAPITests(TestCase):
+    @override_settings(MEDIA_ROOT=tempfile.gettempdir())
+    @patch('finances.governance_cloud_exports.urlopen')
+    def test_owner_can_export_to_s3_presigned_url_and_audit_delivery(self, mocked_urlopen):
+        owner = User.objects.create_user(username='cloud-export-owner', password='pass')
+        organization = Organization.objects.create(
+            owner=owner,
+            name='Cloud Export Organization',
+            registration_number='US-2026-778899',
+            slug='cloud-export-organization',
+            primary_country='US',
+        )
+        mocked_urlopen.return_value.__enter__.return_value.read.return_value = b''
+        mocked_urlopen.return_value.__enter__.return_value.headers = {}
+        client = APIClient()
+        client.force_authenticate(owner)
+
+        response = client.post(
+            f'/api/organizations/{organization.id}/export_governance_cloud/',
+            {
+                'provider': 'aws_s3',
+                'file_name': 'governance-export.yml',
+                'presigned_url': 'https://example-bucket.s3.amazonaws.com/governance-export.yml?X-Amz-Signature=secret',
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['provider'], 'aws_s3')
+        self.assertNotIn('X-Amz-Signature', response.data['remote_reference'])
+        export_record = organization.governance_cloud_exports.get(pk=response.data['id'])
+        self.assertEqual(export_record.status, 'completed')
+        self.assertFalse(export_record.overwrite_confirmed)
+        self.assertTrue(PlatformAuditEvent.objects.filter(
+            organization=organization,
+            event_type='governance.cloud_exported',
+            resource_id=str(export_record.id),
+        ).exists())
+        self.assertEqual(client.get(f'/api/organizations/{organization.id}/governance_cloud_exports/').status_code, 200)
+
+    @override_settings(MEDIA_ROOT=tempfile.gettempdir())
+    @patch('finances.governance_cloud_exports._json_request')
+    def test_google_drive_export_rejects_existing_file_without_overwrite(self, mocked_json_request):
+        owner = User.objects.create_user(username='cloud-overwrite-owner', password='pass')
+        organization = Organization.objects.create(
+            owner=owner,
+            name='Cloud Overwrite Organization',
+            registration_number='US-2026-998877',
+            slug='cloud-overwrite-organization',
+            primary_country='US',
+        )
+        mocked_json_request.return_value = {'files': [{'id': 'existing-drive-file'}]}
+        client = APIClient()
+        client.force_authenticate(owner)
+
+        response = client.post(
+            f'/api/organizations/{organization.id}/export_governance_cloud/',
+            {'provider': 'google_drive', 'oauth_access_token': 'temporary-token'},
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('destination', response.data)
+        export_record = organization.governance_cloud_exports.get(provider='google_drive')
+        self.assertEqual(export_record.status, 'failed')
+        self.assertNotIn('temporary-token', export_record.error_message)
+
+    def test_user_outside_company_cannot_export_governance_data(self):
+        owner = User.objects.create_user(username='cloud-owner-access', password='pass')
+        outsider = User.objects.create_user(username='cloud-outsider-access', password='pass')
+        organization = Organization.objects.create(
+            owner=owner,
+            name='Cloud Access Organization',
+            registration_number='US-2026-110022',
+            slug='cloud-access-organization',
+            primary_country='US',
+        )
+        client = APIClient()
+        client.force_authenticate(outsider)
+
+        response = client.post(
+            f'/api/organizations/{organization.id}/export_governance_cloud/',
+            {'provider': 'aws_s3', 'presigned_url': 'https://example.s3.amazonaws.com/export.yml'},
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 404)
+        self.assertFalse(organization.governance_cloud_exports.exists())
+
+
+@override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
+class OrganizationEmailServiceAPITests(TestCase):
+    def setUp(self):
+        self.owner = User.objects.create_user(
+            username='email-service-owner',
+            email='email-service-owner@example.com',
+            password='strong-pass-123',
+        )
+        self.organization = Organization.objects.create(
+            owner=self.owner,
+            name='Email Service Organization',
+            registration_number='US-2026-441122',
+            slug='email-service-organization',
+            primary_country='US',
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(self.owner)
+
+    def test_tiers_enforce_sender_provisioning_marketing_consent_and_delivery_audit(self):
+        basic_provision = self.client.post(
+            f'/api/organizations/{self.organization.id}/provision_email_account/',
+            {'local_part': 'governance'},
+            format='json',
+        )
+        self.assertEqual(basic_provision.status_code, 400)
+
+        tier_response = self.client.post(
+            f'/api/organizations/{self.organization.id}/configure_email_subscription/',
+            {'tier': 'professional', 'billing_reference': 'test-email-plan'},
+            format='json',
+        )
+        self.assertEqual(tier_response.status_code, 200)
+        self.assertEqual(tier_response.data['subscription']['tier'], 'professional')
+
+        provision_response = self.client.post(
+            f'/api/organizations/{self.organization.id}/provision_email_account/',
+            {'local_part': 'governance', 'display_name': 'Governance Office'},
+            format='json',
+        )
+        self.assertEqual(provision_response.status_code, 201)
+        account = OrganizationEmailAccount.objects.get(pk=provision_response.data['id'])
+        email_count_before_campaign = len(mail.outbox)
+
+        marketing_response = self.client.post(
+            f'/api/organizations/{self.organization.id}/send_email_campaign/',
+            {
+                'sender_id': account.id,
+                'campaign_type': 'marketing',
+                'recipients': ['recipient@example.com'],
+                'subject': 'Marketing update',
+                'html_body': '<p>Update</p>',
+                'consent_confirmed': True,
+            },
+            format='json',
+        )
+        self.assertEqual(marketing_response.status_code, 400)
+
+        self.client.post(
+            f'/api/organizations/{self.organization.id}/configure_email_subscription/',
+            {'tier': 'enterprise'},
+            format='json',
+        )
+        missing_consent_response = self.client.post(
+            f'/api/organizations/{self.organization.id}/send_email_campaign/',
+            {
+                'sender_id': account.id,
+                'campaign_type': 'marketing',
+                'recipients': ['recipient@example.com'],
+                'subject': 'Marketing update',
+                'html_body': '<p>Update</p>',
+                'consent_confirmed': False,
+            },
+            format='json',
+        )
+        self.assertEqual(missing_consent_response.status_code, 400)
+
+        send_response = self.client.post(
+            f'/api/organizations/{self.organization.id}/send_email_campaign/',
+            {
+                'sender_id': account.id,
+                'campaign_type': 'marketing',
+                'recipients': ['recipient@example.com'],
+                'subject': 'Approved marketing update',
+                'html_body': '<p>Update</p>',
+                'consent_confirmed': True,
+            },
+            format='json',
+        )
+        self.assertEqual(send_response.status_code, 201)
+        self.assertEqual(send_response.data['sent_count'], 1)
+        self.assertEqual(len(mail.outbox), email_count_before_campaign + 1)
+        campaign = OrganizationEmailCampaign.objects.get(pk=send_response.data['id'])
+        self.assertEqual(campaign.status, 'sent')
+        self.assertTrue(OrganizationEmailDelivery.objects.filter(campaign=campaign, status='sent').exists())
+        self.assertTrue(PlatformAuditEvent.objects.filter(
+            organization=self.organization,
+            event_type='email.campaign_sent',
+            resource_id=str(campaign.id),
+        ).exists())
+        self.assertEqual(OrganizationEmailSubscription.objects.get(organization=self.organization).tier, 'enterprise')
+
+    def test_non_owner_cannot_access_email_service(self):
+        outsider = User.objects.create_user(username='email-service-outsider', password='strong-pass-123')
+        client = APIClient()
+        client.force_authenticate(outsider)
+
+        response = client.get(f'/api/organizations/{self.organization.id}/email_service/')
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_workspace_creation_and_role_change_send_system_notifications(self):
+        from workspaces.models import Workspace
+
+        mail.outbox.clear()
+        entity = Entity.objects.create(
+            organization=self.organization,
+            name='Email Service Entity',
+            country='US',
+            entity_type='corporation',
+        )
+        Workspace.objects.create(
+            owner=self.owner,
+            linked_entity=entity,
+            name='Email Service Workspace',
+        )
+        self.assertTrue(OrganizationEmailDelivery.objects.filter(
+            organization=self.organization,
+            recipient=self.owner.email,
+            event_type='workspace_created',
+            status='sent',
+        ).exists())
+
+        Role.get_or_create_default_roles()
+        team_user = User.objects.create_user(
+            username='email-service-team-member',
+            email='email-service-team-member@example.com',
+            password='strong-pass-123',
+        )
+        member = TeamMember.objects.create(
+            organization=self.organization,
+            user=team_user,
+            role=Role.objects.get(code='VIEWER'),
+        )
+        member.role = Role.objects.get(code='CFO')
+        member.save(update_fields=['role', 'updated_at'])
+
+        self.assertEqual(OrganizationEmailDelivery.objects.filter(
+            organization=self.organization,
+            recipient=team_user.email,
+            event_type='role_assignment',
+            status='sent',
+        ).count(), 2)
 
 
 class EntityViewSetTests(TestCase):
@@ -1925,6 +2229,76 @@ class EntityViewSetTests(TestCase):
         self.assertTrue(
             Entity.objects.filter(name='AtonixCorp Parent Co', entity_type='holding_company').exists()
         )
+
+    def test_selected_departments_are_provisioned_audited_and_exportable(self):
+        response = self.client.post(
+            '/api/entities/',
+            {
+                'organization_id': self.organization.id,
+                'name': 'Department Provisioning Entity',
+                'country': 'US',
+                'entity_type': 'corporation',
+                'status': 'active',
+                'local_currency': 'USD',
+                'department_selections': ['equity_governance', 'risk_audit'],
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 201)
+        entity = Entity.objects.get(pk=response.data['id'])
+        self.assertTrue(entity.departments.filter(name='Equity and Governance').exists())
+        self.assertTrue(entity.departments.filter(name='Risk and Audit').exists())
+        self.assertTrue(entity.linked_workspace.groups.filter(name='Equity and Governance').exists())
+        self.assertTrue(PlatformAuditEvent.objects.filter(
+            organization=self.organization,
+            event_type='department.provisioned',
+            resource_id=str(entity.id),
+        ).exists())
+
+        from finances.governance_configurations import build_governance_document
+
+        document = build_governance_document(self.organization)
+        export_entity = next(item for item in document['entities'] if item['id'] == entity.id)
+        self.assertIn('Equity and Governance', [department['name'] for department in export_entity['departments']])
+
+    def test_department_mutation_requires_entity_management_access(self):
+        entity = Entity.objects.create(
+            organization=self.organization,
+            name='Department Security Entity',
+            country='US',
+            entity_type='corporation',
+            local_currency='USD',
+        )
+        viewer = User.objects.create_user(username='department-viewer', password='strong-pass-123')
+        Role.get_or_create_default_roles()
+        TeamMember.objects.create(
+            organization=self.organization,
+            user=viewer,
+            role=Role.objects.get(code='VIEWER'),
+        )
+        viewer_client = APIClient(HTTP_HOST='localhost')
+        viewer_client.force_authenticate(viewer)
+
+        response = viewer_client.post(
+            '/api/entity-departments/',
+            {'entity': entity.id, 'name': 'Restricted Department', 'code': 'RESTRICTED'},
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(entity.departments.filter(code='RESTRICTED').exists())
+
+    def test_equity_scenario_endpoints_reject_users_without_entity_access(self):
+        outsider = User.objects.create_user(username='equity-scenario-outsider', password='strong-pass-123')
+        outsider_client = APIClient(HTTP_HOST='localhost')
+        outsider_client.force_authenticate(outsider)
+
+        response = outsider_client.get(
+            f'/api/entities/{Entity.objects.create(organization=self.organization, name="Restricted Equity Entity", country="US", entity_type="corporation").id}/equity/scenarios/overview'
+        )
+
+        self.assertEqual(response.status_code, 404)
 
     def test_permission_context_grants_owner_entity_access_without_seeded_permissions(self):
         response = self.client.get(f'/api/organizations/{self.organization.id}/permission_context/')
@@ -2717,6 +3091,7 @@ class EnterpriseReportingDashboardAPITests(TestCase):
 
     @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
     def test_scheduled_automation_workflow_delivers_reporting_pack(self):
+        mail.outbox.clear()
         workflow = AutomationWorkflow.objects.create(
             organization=self.organization,
             entity=self.entity,

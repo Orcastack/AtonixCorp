@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEnterprise } from '../../context/EnterpriseContext';
 import AtonixCorpLogo from '../../components/branding/AtonixCorpLogo';
 import { countryDropdownOptions } from '../../utils/countryDropdowns';
+import EnterpriseDepartmentSelector from '../../components/EnterpriseDepartmentSelector';
 import '../Workspace/CreateWorkspace.css';
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -29,6 +30,7 @@ const EMPTY_FORM = {
   country: '',
   // Step 2 — Shareholders
   shareholders: [{ name: '', email: '', role: 'Founder', percentage: '', shareClass: '' }],
+  departmentSelections: [],
   // Step 3 — Capital
   totalShares: '',
   issuedShares: '',
@@ -115,6 +117,7 @@ export default function CreateEquityFlow() {
         // Pass equity detail as extra context (backend ignores unknown fields gracefully)
         equity_type: form.equityType,
         shareholders: form.shareholders.filter((s) => s.name.trim()),
+        department_selections: form.departmentSelections,
         total_shares: Number(form.totalShares) || 0,
         issued_shares: Number(form.issuedShares) || 0,
         valuation: form.valuation.trim(),
@@ -241,6 +244,13 @@ export default function CreateEquityFlow() {
       <button type="button" className="cw-btn cw-btn--ghost cw-add-shareholder-btn" onClick={addShareholder}>
         + Add Shareholder
       </button>
+      <div className="cw-field cw-field-wide">
+        <EnterpriseDepartmentSelector
+          value={form.departmentSelections}
+          onChange={(departmentSelections) => update('departmentSelections', departmentSelections)}
+          equityOnly
+        />
+      </div>
     </div>
   );
 
@@ -304,7 +314,7 @@ export default function CreateEquityFlow() {
   const stepContent = [null, renderStep1, renderStep2, renderStep3];
 
   return (
-    <div className="cw-page">
+    <div className="cw-page cw-equity-creation">
       <nav className="cw-topnav">
         <div className="cw-topnav-brand">
           <AtonixCorpLogo variant="white" size={28} withText={false} />
@@ -315,7 +325,7 @@ export default function CreateEquityFlow() {
         </button>
       </nav>
 
-      <div className="cw-progress-bar">
+      <div className="cw-progress-bar cw-specialized-progress">
         {STEPS.map((s) => (
           <div key={s.number} className={`cw-progress-step${step >= s.number ? ' cw-progress-step--done' : ''}${step === s.number ? ' cw-progress-step--active' : ''}`}>
             <span className="cw-progress-num">{step > s.number ? '✓' : s.number}</span>
@@ -324,9 +334,9 @@ export default function CreateEquityFlow() {
         ))}
       </div>
 
-      <main className="cw-main">
-        <form className="cw-card" onSubmit={handleSubmit}>
-          <div className="cw-step-header">
+      <main className="cw-main cw-specialized-main">
+        <form className="cw-card cw-specialized-card" onSubmit={handleSubmit}>
+          <div className="cw-step-header cw-specialized-step-header">
             <span className="cw-step-eyebrow">Step {step} of {TOTAL_STEPS}</span>
             <h2 className="cw-step-title">{STEPS[step - 1].label}</h2>
           </div>
@@ -335,7 +345,7 @@ export default function CreateEquityFlow() {
 
           {error && <p className="cw-error">{error}</p>}
 
-          <div className="cw-actions">
+          <div className="cw-actions cw-specialized-actions">
             {step > 1 && (
               <button type="button" className="cw-btn cw-btn--ghost" onClick={handleBack}>
                 Back

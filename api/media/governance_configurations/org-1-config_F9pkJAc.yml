@@ -1,0 +1,106 @@
+schema_version: v1
+document_type: atonixcorp_governance_configuration
+generated_at: '2026-07-20T22:04:59.848604+00:00'
+organization:
+  id: 1
+  name: Platform Org
+  registration_number: null
+  slug: platform-org
+  description: ''
+  industry: ''
+  subscription_tier: enterprise
+  primary_country: US
+  primary_currency: USD
+  settings: {}
+entities:
+- id: 1
+  name: Platform Entity
+  country: US
+  entity_type: corporation
+  status: active
+  registration_number: ''
+  local_currency: USD
+  main_bank: ''
+  tax_authority_url: ''
+  fiscal_year_end: null
+  next_filing_date: null
+  workspace_mode: combined
+  industry: ''
+  workspace_type: ''
+  workspace_template_key: ''
+  hierarchy_metadata: {}
+  dashboard_config: {}
+  rbac_config: {}
+  enabled_modules: []
+  parent_entity_id: null
+  departments: []
+  roles: []
+offices: []
+governance_policies: []
+workflows: []
+ldap_directory:
+- uid: null
+  dn: o=platform-org,dc=atonixcorp
+  cn: Platform Org
+  node_type: organization
+  role_code: ''
+  permissions: []
+  source_type: organization
+  attributes:
+    company_id: 1
+    registration_number: null
+    subscription_tier: enterprise
+  is_active: true
+- uid: null
+  dn: ou=finance,o=platform-org,dc=atonixcorp
+  cn: Finance
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: finance
+  is_active: true
+- uid: null
+  dn: ou=governance,o=platform-org,dc=atonixcorp
+  cn: Governance
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: governance
+  is_active: true
+- uid: null
+  dn: ou=security,o=platform-org,dc=atonixcorp
+  cn: Security
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: security
+  is_active: true
+- uid: null
+  dn: ou=technology,o=platform-org,dc=atonixcorp
+  cn: Technology
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: technology
+  is_active: true
+- uid: '1119177111'
+  dn: uid=1119177111,ou=people,o=platform-org,dc=atonixcorp
+  cn: platform-owner
+  node_type: user
+  role_code: FOUNDER
+  permissions: []
+  source_type: founder
+  attributes:
+    email: platform-owner@example.com
+    company_id: 1
+    company_registration_number: null
+    is_founder: true
+  is_active: true

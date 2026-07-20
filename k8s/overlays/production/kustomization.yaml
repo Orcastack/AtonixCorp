@@ -6,6 +6,7 @@ namespace: production
 resources:
   - ../../base
   - namespace.yaml
+  - ingress-www-redirect.yaml
 
 patchesStrategicMerge:
   - patch-config.yaml

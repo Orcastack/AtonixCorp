@@ -1,12 +1,68 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PageHeader, Card, Button } from '../../components/ui';
 import StandaloneModuleShell from '../../components/StandaloneModuleShell';
+import { useEnterprise } from '../../context/EnterpriseContext';
 import './Security.css';
 
 export default function Security() {
   const [mfa, setMfa] = useState(true);
   const [ipRestrict, setIpRestrict] = useState(false);
   const [sessionTimeout, setSessionTimeout] = useState('60');
+  const [saving, setSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState('');
+  const [permissionContext, setPermissionContext] = useState(null);
+  const { currentOrganization, updateOrganization, fetchPermissionContext } = useEnterprise();
+
+  useEffect(() => {
+    const securitySettings = currentOrganization?.settings?.security;
+    if (!securitySettings) return;
+    setMfa(Boolean(securitySettings.twoFactorAuth));
+    setIpRestrict(Boolean(securitySettings.ipWhitelist));
+    setSessionTimeout(String(securitySettings.sessionTimeout || '60'));
+  }, [currentOrganization]);
+
+  useEffect(() => {
+    if (!currentOrganization?.id) {
+      setPermissionContext(null);
+      return;
+    }
+    let active = true;
+    fetchPermissionContext(currentOrganization.id)
+      .then((context) => {
+        if (active) setPermissionContext(context);
+      })
+      .catch(() => {
+        if (active) setPermissionContext(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, [currentOrganization?.id, fetchPermissionContext]);
+
+  const saveSecuritySettings = async () => {
+    if (!currentOrganization?.id || saving) return;
+    setSaving(true);
+    setSaveMessage('');
+    try {
+      await updateOrganization(currentOrganization.id, {
+        settings: {
+          ...(currentOrganization.settings || {}),
+          security: {
+            ...(currentOrganization.settings?.security || {}),
+            twoFactorAuth: mfa,
+            ipWhitelist: ipRestrict,
+            sessionTimeout,
+            auditLogging: true,
+          },
+        },
+      });
+      setSaveMessage('Security policies saved.');
+    } catch (error) {
+      setSaveMessage(error.message || 'Unable to save security policies.');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <StandaloneModuleShell title="Security" eyebrow="Admin Surface" backLabel="Return to Console">
@@ -15,7 +71,9 @@ export default function Security() {
           title="Security"
           subtitle="Configure authentication, session management, and access policies"
           actions={
-            <Button variant="primary" size="small">Save Security Settings</Button>
+            <Button variant="primary" size="small" onClick={saveSecuritySettings} disabled={saving || !currentOrganization?.id}>
+              {saving ? 'Saving...' : 'Save Security Settings'}
+            </Button>
           }
         />
 
@@ -74,7 +132,24 @@ export default function Security() {
             ))}
             </div>
           </Card>
+
+          <Card title="Access Control Validation">
+            <div className="security-summary-list">
+              <div className="security-summary-item">
+                <span className="security-summary-label is-ok">Effective role: {permissionContext?.role_name || 'Loading'}</span>
+              </div>
+              <div className="security-summary-item">
+                <span className={`security-summary-label ${permissionContext?.permission_codes?.includes('manage_org_settings') ? 'is-ok' : 'is-muted'}`}>
+                  Organization security administration {permissionContext?.permission_codes?.includes('manage_org_settings') ? 'granted' : 'not granted'}
+                </span>
+              </div>
+              <div className="security-summary-item">
+                <span className="security-summary-label is-ok">Audit logging enforced for organization changes</span>
+              </div>
+            </div>
+          </Card>
         </div>
+        {saveMessage && <p className="security-save-message">{saveMessage}</p>}
       </div>
     </StandaloneModuleShell>
   );

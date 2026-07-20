@@ -11,6 +11,7 @@ psycopg
 # Production serving
 gunicorn
 cryptography
+django-storages[boto3]
 
 # Reporting and document generation
 python-dateutil

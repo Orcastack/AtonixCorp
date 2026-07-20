@@ -217,9 +217,9 @@ const EnterpriseEntities = () => {
   };
 
   const statusColors = {
-    active:    { bg: 'rgba(238, 108, 77, 0.12)', color: '#EE6C4D', dot: '#EE6C4D' },
-    dormant:   { bg: 'rgba(0, 0, 0, 0.08)', color: '#000000', dot: '#000000' },
-    wind_down: { bg: 'rgba(0, 0, 0, 0.08)', color: '#000000', dot: '#EE6C4D' },
+    active:    { bg: 'rgba(23, 105, 224, 0.12)', color: '#1458bd', dot: '#1769e0' },
+    dormant:   { bg: 'rgba(71, 85, 105, 0.10)', color: '#475569', dot: '#64748b' },
+    wind_down: { bg: 'rgba(161, 98, 7, 0.12)', color: '#92400e', dot: '#b45309' },
   };
 
   const getStatusStyle = (status) => statusColors[status] || { bg: 'rgba(0, 0, 0, 0.06)', color: '#000000', dot: '#000000' };
@@ -255,9 +255,9 @@ const EnterpriseEntities = () => {
 
   const kpis = [
     { label: 'Total Business Suites', value: entities.length, accent: '#000000' },
-    { label: 'Active', value: entities.filter(e => e.status === 'active').length, accent: '#EE6C4D' },
+    { label: 'Active', value: entities.filter(e => e.status === 'active').length, accent: '#1769e0' },
     { label: 'Countries', value: new Set(entities.map(e => e.country)).size, accent: '#000000' },
-    { label: 'Currencies', value: new Set(entities.map(e => e.local_currency)).size, accent: '#EE6C4D' },
+    { label: 'Currencies', value: new Set(entities.map(e => e.local_currency)).size, accent: '#1769e0' },
   ];
 
   const creationActions = [

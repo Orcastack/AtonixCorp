@@ -45,6 +45,11 @@ spec:
                 secretKeyRef:
                   name: atonixcorp-app-secrets
                   key: banking-token-encryption-key
+            - name: EMAIL_HOST_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: atonixcorp-app-secrets
+                  key: brevo-smtp-key
             - name: ANTHROPIC_API_KEY
               valueFrom:
                 secretKeyRef:

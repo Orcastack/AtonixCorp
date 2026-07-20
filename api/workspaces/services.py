@@ -5,7 +5,13 @@ Every write generates a WorkspaceLog entry via LogService.
 Selected workspace activity is mirrored into the shared platform audit stream.
 """
 import secrets
+import base64
+import hashlib
+from io import BytesIO
 from django.apps import apps
+from django.conf import settings
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.db import transaction
 from django.db.models import Count, Q
 from django.contrib.auth.models import User
@@ -833,16 +839,32 @@ class CalendarService:
 class FileService:
 
     @staticmethod
+    def _cipher():
+        from cryptography.fernet import Fernet
+
+        key = settings.WORKSPACE_FILE_ENCRYPTION_KEY
+        if not key:
+            key = base64.urlsafe_b64encode(hashlib.sha256(settings.SECRET_KEY.encode('utf-8')).digest()).decode('ascii')
+        return Fernet(key.encode('ascii'))
+
+    @staticmethod
+    def _validate_name(name: str, field_name: str) -> str:
+        name = str(name or '').strip()
+        if not name:
+            raise ValidationError({field_name: f'{field_name.replace("_", " ").capitalize()} is required.'})
+        if name in {'.', '..'} or any(character in name for character in ('/', '\\', '\x00')):
+            raise ValidationError({field_name: 'Names cannot contain path separators or traversal segments.'})
+        return name
+
+    @staticmethod
     def _build_path(workspace_id, file_id) -> str:
-        return f'/workspace/{workspace_id}/files/{file_id}'
+        return f'workspaces/{workspace_id}/files/{file_id}.bin'
 
     @staticmethod
     @transaction.atomic
     def create_folder(workspace_id, actor: User, parent_id, name: str) -> WorkspaceFolder:
         PermissionService.assert_permission(workspace_id, actor, 'manage_files')
-        name = name.strip()
-        if not name:
-            raise ValidationError({'name': 'Folder name is required.'})
+        name = FileService._validate_name(name, 'name')
         parent = None
         if parent_id:
             try:
@@ -857,12 +879,13 @@ class FileService:
 
     @staticmethod
     @transaction.atomic
-    def upload_file(workspace_id, actor: User, folder_id, name: str, size: int, mime_type: str) -> WorkspaceFile:
-        """
-        Creates the metadata record. Actual binary upload to S3/Blob is
-        handled by the view layer (pre-signed URL or multipart).
-        """
+    def upload_file(workspace_id, actor: User, folder_id, name: str, content, mime_type: str) -> WorkspaceFile:
+        """Encrypt and persist uploaded binary content with governed metadata."""
         PermissionService.assert_permission(workspace_id, actor, 'manage_files')
+        name = FileService._validate_name(name, 'name')
+        size = content.size
+        if size > settings.WORKSPACE_FILE_MAX_BYTES:
+            raise ValidationError({'content': f'Files may not exceed {settings.WORKSPACE_FILE_MAX_BYTES} bytes.'})
         folder = None
         if folder_id:
             try:
@@ -872,18 +895,34 @@ class FileService:
         # Reserve a UUID so the path can reference the id before save
         file_id = __import__('uuid').uuid4()
         path = FileService._build_path(workspace_id, file_id)
+        encrypted_content = FileService._cipher().encrypt(content.read())
+        default_storage.save(path, ContentFile(encrypted_content))
         wf = WorkspaceFile.objects.create(
             id=file_id,
             workspace_id=workspace_id,
             folder=folder,
-            name=name.strip(),
+            name=name,
             path=path,
             size=size,
             mime_type=mime_type,
             uploaded_by=actor,
         )
-        LogService.log(workspace_id, actor, 'file.uploaded', {'file_id': str(wf.pk), 'name': name})
+        LogService.log(workspace_id, actor, 'file.uploaded', {'file_id': str(wf.pk), 'name': name, 'size': size, 'encrypted': True})
         return wf
+
+    @staticmethod
+    def download_file(workspace_id, actor: User, file_id):
+        PermissionService.assert_workspace_section(workspace_id, actor, 'files')
+        try:
+            workspace_file = WorkspaceFile.objects.get(pk=file_id, workspace_id=workspace_id)
+        except WorkspaceFile.DoesNotExist:
+            raise NotFound('File not found.')
+        if not default_storage.exists(workspace_file.path):
+            raise NotFound('File content is unavailable.')
+        with default_storage.open(workspace_file.path, 'rb') as stored_file:
+            decrypted_content = FileService._cipher().decrypt(stored_file.read())
+        LogService.log(workspace_id, actor, 'file.downloaded', {'file_id': str(workspace_file.pk), 'name': workspace_file.name})
+        return BytesIO(decrypted_content), workspace_file
 
     @staticmethod
     @transaction.atomic
@@ -893,6 +932,8 @@ class FileService:
             wf = WorkspaceFile.objects.get(pk=file_id, workspace_id=workspace_id)
         except WorkspaceFile.DoesNotExist:
             raise NotFound('File not found.')
+        if default_storage.exists(wf.path):
+            default_storage.delete(wf.path)
         wf.delete()
         LogService.log(workspace_id, actor, 'file.deleted', {'file_id': str(file_id)})
 

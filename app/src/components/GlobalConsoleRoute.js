@@ -5,10 +5,10 @@ import { useEnterprise } from '../context/EnterpriseContext';
 
 const GlobalConsoleRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
-  const { getDefaultDashboardPath, hasPermission, isRoleResolved, loading: enterpriseLoading } = useEnterprise();
+  const { getDefaultDashboardPath, hasPermission, loading: enterpriseLoading } = useEnterprise();
   const location = useLocation();
 
-  if (loading || enterpriseLoading || !isRoleResolved) {
+  if (loading || enterpriseLoading) {
     return (
       <div style={{
         display: 'flex',

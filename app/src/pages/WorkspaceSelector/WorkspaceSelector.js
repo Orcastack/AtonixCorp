@@ -124,6 +124,14 @@ const WorkspaceSelector = () => {
                       </div>
 
                       <div className="ws-selector-card-fields">
+                        <div className="ws-selector-card-field ws-selector-card-field--compact">
+                          <span>Registration Number</span>
+                          <strong>{workspace.registration_number || 'Verification required'}</strong>
+                        </div>
+                        <div className="ws-selector-card-field ws-selector-card-field--compact">
+                          <span>Organization Owner</span>
+                          <strong>{workspace.owner_name || workspace.owner_email || 'Owner record unavailable'}</strong>
+                        </div>
                         <div className="ws-selector-card-field">
                           <span>Industry</span>
                           <strong>{workspace.industry || 'Not Set'}</strong>

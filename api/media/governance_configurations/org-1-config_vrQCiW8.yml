@@ -1,0 +1,517 @@
+schema_version: v1
+document_type: atonixcorp_governance_configuration
+generated_at: '2026-07-20T21:41:34.257935+00:00'
+organization:
+  id: 1
+  name: AtonixCorp Holdings
+  registration_number: null
+  slug: atonixcorp-holdings
+  description: ''
+  industry: ''
+  subscription_tier: enterprise
+  primary_country: US
+  primary_currency: USD
+  settings: {}
+entities:
+- id: 1
+  name: Department Provisioning Entity
+  country: US
+  entity_type: corporation
+  status: active
+  registration_number: ''
+  local_currency: USD
+  main_bank: ''
+  tax_authority_url: ''
+  fiscal_year_end: null
+  next_filing_date: null
+  workspace_mode: accounting
+  industry: ''
+  workspace_type: ''
+  workspace_template_key: ''
+  hierarchy_metadata: {}
+  dashboard_config: {}
+  rbac_config: {}
+  enabled_modules:
+  - overview
+  - members
+  - groups
+  - meetings
+  - calendar
+  - files
+  - permissions
+  - settings
+  - email
+  - marketing
+  parent_entity_id: null
+  departments:
+  - name: Equity and Governance
+    code: EQUITY_GOV_1
+    description: Shareholder records, equity administration, board governance, and
+      reporting.
+    budget: null
+    currency: USD
+    is_active: true
+  - name: Finance
+    code: FIN_1
+    description: Financial Operations and Accounting
+    budget: null
+    currency: USD
+    is_active: true
+  - name: Human Resources
+    code: HR_1
+    description: Human Resources and Personnel Management
+    budget: null
+    currency: USD
+    is_active: true
+  - name: IT
+    code: IT_1
+    description: Information Technology
+    budget: null
+    currency: USD
+    is_active: true
+  - name: Legal
+    code: LEGAL_1
+    description: Legal and Compliance
+    budget: null
+    currency: USD
+    is_active: true
+  - name: Operations
+    code: OPS_1
+    description: Business Operations
+    budget: null
+    currency: USD
+    is_active: true
+  - name: Risk and Audit
+    code: RISK_AUDIT_1
+    description: Enterprise risk, internal audit, control testing, and assurance.
+    budget: null
+    currency: USD
+    is_active: true
+  roles:
+  - name: Accountant
+    code: ACC_1
+    description: Accountant
+    department_code: FIN_1
+    salary_range_min: null
+    salary_range_max: null
+    currency: USD
+    is_active: true
+    permissions: []
+  - name: CFO
+    code: CFO_1
+    description: Chief Financial Officer
+    department_code: FIN_1
+    salary_range_min: null
+    salary_range_max: null
+    currency: USD
+    is_active: true
+    permissions: []
+  - name: Finance Manager
+    code: FM_1
+    description: Finance Manager
+    department_code: FIN_1
+    salary_range_min: null
+    salary_range_max: null
+    currency: USD
+    is_active: true
+    permissions: []
+  - name: HR Assistant
+    code: HRA_1
+    description: HR Assistant
+    department_code: HR_1
+    salary_range_min: null
+    salary_range_max: null
+    currency: USD
+    is_active: true
+    permissions: []
+  - name: HR Manager
+    code: HRM_1
+    description: Human Resources Manager
+    department_code: HR_1
+    salary_range_min: null
+    salary_range_max: null
+    currency: USD
+    is_active: true
+    permissions: []
+  - name: IT Manager
+    code: ITM_1
+    description: IT Manager
+    department_code: IT_1
+    salary_range_min: null
+    salary_range_max: null
+    currency: USD
+    is_active: true
+    permissions: []
+  - name: CEO
+    code: CEO_1
+    description: Chief Executive Officer
+    department_code: OPS_1
+    salary_range_min: null
+    salary_range_max: null
+    currency: USD
+    is_active: true
+    permissions: []
+  - name: Operations Manager
+    code: OM_1
+    description: Operations Manager
+    department_code: OPS_1
+    salary_range_min: null
+    salary_range_max: null
+    currency: USD
+    is_active: true
+    permissions: []
+offices:
+- entity_id: 1
+  name: Department Provisioning Entity
+  description: Collaboration workspace for Department Provisioning Entity
+  tier: free
+  status: active
+  departments:
+  - name: Accounts Payable
+    description: Runs supplier operations, invoice workflows, payment approvals, and
+      outbound obligations.
+    cost_center: FIN-AP-110
+  - name: Accounts Receivable
+    description: Manages customer billing, collections, receivables aging, and cash
+      application.
+    cost_center: FIN-AR-120
+  - name: Controllership
+    description: Owns accounting policy, chart of accounts governance, journal oversight,
+      and close quality.
+    cost_center: FIN-CTRL-100
+  - name: Equity and Governance
+    description: Shareholder records, equity administration, board governance, and
+      reporting.
+    cost_center: EQY-100
+  - name: FP&A
+    description: Drives budgeting, forecasting, planning cycles, management targets,
+      and variance analysis.
+    cost_center: FIN-FPA-160
+  - name: Financial Reporting
+    description: Produces statements, management packs, analytics, board reporting,
+      and formal financial outputs.
+    cost_center: FIN-REP-170
+  - name: Intercompany and Consolidation
+    description: Coordinates intercompany operations, eliminations, consolidation
+      control, and multi-entity reporting.
+    cost_center: FIN-CONS-190
+  - name: Payroll
+    description: Coordinates payroll operations, pay runs, banking outputs, and payroll-linked
+      obligations.
+    cost_center: FIN-PAY-140
+  - name: Risk and Audit
+    description: Enterprise risk, internal audit, control testing, and assurance.
+    cost_center: RSK-100
+  - name: Risk, Audit, and Compliance
+    description: Owns audit readiness, compliance controls, risk visibility, approvals,
+      and close governance.
+    cost_center: FIN-RISK-180
+  - name: Tax
+    description: Oversees tax calculations, monitoring, filings, deadlines, and cross-jurisdiction
+      compliance.
+    cost_center: FIN-TAX-150
+  - name: Treasury
+    description: Handles cash positioning, liquidity planning, banking operations,
+      and payment execution.
+    cost_center: FIN-TRSY-130
+governance_policies: []
+workflows: []
+ldap_directory:
+- uid: null
+  dn: o=atonixcorp-holdings,dc=atonixcorp
+  cn: AtonixCorp Holdings
+  node_type: organization
+  role_code: ''
+  permissions: []
+  source_type: organization
+  attributes:
+    company_id: 1
+    registration_number: null
+    subscription_tier: enterprise
+  is_active: true
+- uid: null
+  dn: ou=accounts-payable-04d8f504,ou=department-provisioning-entity-a3f6f742,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Accounts Payable
+  node_type: unit
+  role_code: ''
+  permissions: []
+  source_type: workspace_group
+  attributes:
+    workspace_id: a3f6f742-70f7-46dd-867b-22c12a217270
+    cost_center: FIN-AP-110
+    owner_id: 1
+  is_active: true
+- uid: null
+  dn: ou=accounts-receivable-7a8ac59e,ou=department-provisioning-entity-a3f6f742,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Accounts Receivable
+  node_type: unit
+  role_code: ''
+  permissions: []
+  source_type: workspace_group
+  attributes:
+    workspace_id: a3f6f742-70f7-46dd-867b-22c12a217270
+    cost_center: FIN-AR-120
+    owner_id: 1
+  is_active: true
+- uid: null
+  dn: ou=controllership-15717363,ou=department-provisioning-entity-a3f6f742,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Controllership
+  node_type: unit
+  role_code: ''
+  permissions: []
+  source_type: workspace_group
+  attributes:
+    workspace_id: a3f6f742-70f7-46dd-867b-22c12a217270
+    cost_center: FIN-CTRL-100
+    owner_id: 1
+  is_active: true
+- uid: null
+  dn: ou=department-provisioning-entity-a3f6f742,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Department Provisioning Entity
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: workspace
+  attributes:
+    workspace_id: a3f6f742-70f7-46dd-867b-22c12a217270
+    entity_id: 1
+    tier: free
+  is_active: true
+- uid: null
+  dn: ou=equity-and-governance-d7873f1c,ou=department-provisioning-entity-a3f6f742,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Equity and Governance
+  node_type: unit
+  role_code: ''
+  permissions: []
+  source_type: workspace_group
+  attributes:
+    workspace_id: a3f6f742-70f7-46dd-867b-22c12a217270
+    cost_center: EQY-100
+    owner_id: 1
+  is_active: true
+- uid: null
+  dn: ou=equity_gov_1,ou=governance,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Equity and Governance
+  node_type: department
+  role_code: ''
+  permissions: []
+  source_type: entity_department
+  attributes:
+    department_code: EQUITY_GOV_1
+    entity_id: 1
+  is_active: true
+- uid: null
+  dn: ou=fin_1,ou=finance,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Finance
+  node_type: department
+  role_code: ''
+  permissions: []
+  source_type: entity_department
+  attributes:
+    department_code: FIN_1
+    entity_id: 1
+  is_active: true
+- uid: null
+  dn: ou=finance,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Finance
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: finance
+  is_active: true
+- uid: null
+  dn: ou=financial-reporting-f387f5a6,ou=department-provisioning-entity-a3f6f742,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Financial Reporting
+  node_type: unit
+  role_code: ''
+  permissions: []
+  source_type: workspace_group
+  attributes:
+    workspace_id: a3f6f742-70f7-46dd-867b-22c12a217270
+    cost_center: FIN-REP-170
+    owner_id: 1
+  is_active: true
+- uid: null
+  dn: ou=fpa-a156d93f,ou=department-provisioning-entity-a3f6f742,o=atonixcorp-holdings,dc=atonixcorp
+  cn: FP&A
+  node_type: unit
+  role_code: ''
+  permissions: []
+  source_type: workspace_group
+  attributes:
+    workspace_id: a3f6f742-70f7-46dd-867b-22c12a217270
+    cost_center: FIN-FPA-160
+    owner_id: 1
+  is_active: true
+- uid: null
+  dn: ou=governance,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Governance
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: governance
+  is_active: true
+- uid: null
+  dn: ou=hr_1,ou=governance,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Human Resources
+  node_type: department
+  role_code: ''
+  permissions: []
+  source_type: entity_department
+  attributes:
+    department_code: HR_1
+    entity_id: 1
+  is_active: true
+- uid: null
+  dn: ou=intercompany-and-consolidation-a1a5ca90,ou=department-provisioning-entity-a3f6f742,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Intercompany and Consolidation
+  node_type: unit
+  role_code: ''
+  permissions: []
+  source_type: workspace_group
+  attributes:
+    workspace_id: a3f6f742-70f7-46dd-867b-22c12a217270
+    cost_center: FIN-CONS-190
+    owner_id: 1
+  is_active: true
+- uid: null
+  dn: ou=it_1,ou=governance,o=atonixcorp-holdings,dc=atonixcorp
+  cn: IT
+  node_type: department
+  role_code: ''
+  permissions: []
+  source_type: entity_department
+  attributes:
+    department_code: IT_1
+    entity_id: 1
+  is_active: true
+- uid: null
+  dn: ou=legal_1,ou=governance,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Legal
+  node_type: department
+  role_code: ''
+  permissions: []
+  source_type: entity_department
+  attributes:
+    department_code: LEGAL_1
+    entity_id: 1
+  is_active: true
+- uid: null
+  dn: ou=ops_1,ou=governance,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Operations
+  node_type: department
+  role_code: ''
+  permissions: []
+  source_type: entity_department
+  attributes:
+    department_code: OPS_1
+    entity_id: 1
+  is_active: true
+- uid: null
+  dn: ou=payroll-da565238,ou=department-provisioning-entity-a3f6f742,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Payroll
+  node_type: unit
+  role_code: ''
+  permissions: []
+  source_type: workspace_group
+  attributes:
+    workspace_id: a3f6f742-70f7-46dd-867b-22c12a217270
+    cost_center: FIN-PAY-140
+    owner_id: 1
+  is_active: true
+- uid: null
+  dn: ou=risk-and-audit-079dcebc,ou=department-provisioning-entity-a3f6f742,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Risk and Audit
+  node_type: unit
+  role_code: ''
+  permissions: []
+  source_type: workspace_group
+  attributes:
+    workspace_id: a3f6f742-70f7-46dd-867b-22c12a217270
+    cost_center: RSK-100
+    owner_id: 1
+  is_active: true
+- uid: null
+  dn: ou=risk-audit-and-compliance-c397ba97,ou=department-provisioning-entity-a3f6f742,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Risk, Audit, and Compliance
+  node_type: unit
+  role_code: ''
+  permissions: []
+  source_type: workspace_group
+  attributes:
+    workspace_id: a3f6f742-70f7-46dd-867b-22c12a217270
+    cost_center: FIN-RISK-180
+    owner_id: 1
+  is_active: true
+- uid: null
+  dn: ou=risk_audit_1,ou=governance,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Risk and Audit
+  node_type: department
+  role_code: ''
+  permissions: []
+  source_type: entity_department
+  attributes:
+    department_code: RISK_AUDIT_1
+    entity_id: 1
+  is_active: true
+- uid: null
+  dn: ou=security,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Security
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: security
+  is_active: true
+- uid: null
+  dn: ou=tax-25c13e51,ou=department-provisioning-entity-a3f6f742,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Tax
+  node_type: unit
+  role_code: ''
+  permissions: []
+  source_type: workspace_group
+  attributes:
+    workspace_id: a3f6f742-70f7-46dd-867b-22c12a217270
+    cost_center: FIN-TAX-150
+    owner_id: 1
+  is_active: true
+- uid: null
+  dn: ou=technology,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Technology
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: technology
+  is_active: true
+- uid: null
+  dn: ou=treasury-03731912,ou=department-provisioning-entity-a3f6f742,o=atonixcorp-holdings,dc=atonixcorp
+  cn: Treasury
+  node_type: unit
+  role_code: ''
+  permissions: []
+  source_type: workspace_group
+  attributes:
+    workspace_id: a3f6f742-70f7-46dd-867b-22c12a217270
+    cost_center: FIN-TRSY-130
+    owner_id: 1
+  is_active: true
+- uid: '6649597152'
+  dn: uid=6649597152,ou=people,o=atonixcorp-holdings,dc=atonixcorp
+  cn: entity-owner
+  node_type: user
+  role_code: FOUNDER
+  permissions: []
+  source_type: founder
+  attributes:
+    email: entity-owner@example.com
+    company_id: 1
+    company_registration_number: null
+    is_founder: true
+  is_active: true

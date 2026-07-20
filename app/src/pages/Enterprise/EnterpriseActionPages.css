@@ -342,6 +342,76 @@
   vertical-align: middle;
 }
 
+/* Entity directory uses the platform console palette rather than the public-site accent theme. */
+.entities-page {
+  --overview-hero-bg: #102a43;
+  --overview-accent: #1769e0;
+}
+
+.entities-page .action-page-hero {
+  background: #102a43;
+  border-color: #102a43;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(16, 42, 67, 0.14);
+}
+
+.entities-page .action-page-hero::after {
+  background: linear-gradient(110deg, rgba(255, 255, 255, 0.06), transparent 58%);
+}
+
+.entities-page .action-page-badge,
+.entities-page .action-page-actions button {
+  border-radius: 2px !important;
+}
+
+.entities-page .action-page-actions button {
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.entities-page .action-page-actions button:hover {
+  background: rgba(255, 255, 255, 0.16) !important;
+}
+
+.entities-page .action-page-stat,
+.entities-page .entity-card,
+.entities-page .entity-empty-state,
+.entities-page .entity-table-section {
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(16, 42, 67, 0.06);
+}
+
+.entities-page .entity-card,
+.entities-page .entity-empty-state,
+.entities-page .entity-table-section {
+  background: #ffffff;
+}
+
+.entities-page .entity-card::after {
+  background: linear-gradient(135deg, rgba(23, 105, 224, 0.10), transparent 48%);
+}
+
+.entities-page .entity-card:hover {
+  border-color: rgba(23, 105, 224, 0.45);
+  box-shadow: 0 10px 22px rgba(16, 42, 67, 0.10);
+}
+
+.entities-page .entity-card-avatar {
+  background: #eef5ff;
+  border-color: rgba(23, 105, 224, 0.22);
+  border-radius: 6px;
+  color: #1458bd;
+}
+
+.entities-page .entity-table-header {
+  background: #f8fafc;
+}
+
+.entities-page table tbody tr:hover {
+  background: #f2f7ff;
+}
+
 .team-container .permission-matrix-section h2,
 .team-container .team-members-section h2,
 .team-container .audit-log-section h2,
