@@ -1,0 +1,27 @@
+Metadata-Version: 2.4
+Name: atonixcorpsdk
+Version: 0.1.0
+Summary: Official Python SDK for the AtonixCorp Developer Console Integration API
+Author: AtonixCorp
+License: Proprietary
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+
+# AtonixCorp SDK
+
+The official Python SDK for AtonixCorp Developer Console Integration (DCI).
+
+```python
+from atonixcorpsdk import AtonixCorpClient, Credentials
+
+client = AtonixCorpClient.sandbox(credentials=Credentials(api_key="sandbox-key"))
+entity = client.create_entity({
+    "organization_id": 1,
+    "name": "Sandbox Holdings",
+    "country": "US",
+    "entity_type": "corporation",
+    "department_selections": ["finance", "equity_governance"],
+})
+```
+
+Use `AtonixCorpClient.login(api_key=..., organization_id=...)` to exchange a DCI API key for a Bearer token. The SDK supports entity, department, equity, workspace, meeting, and encrypted file operations. `AtonixCorpClient.sandbox()` defaults to the local sandbox API at `http://localhost:8000`.

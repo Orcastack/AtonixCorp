@@ -1,0 +1,9 @@
+README.md
+pyproject.toml
+atonixcorpsdk/__init__.py
+atonixcorpsdk/client.py
+atonixcorpsdk.egg-info/PKG-INFO
+atonixcorpsdk.egg-info/SOURCES.txt
+atonixcorpsdk.egg-info/dependency_links.txt
+atonixcorpsdk.egg-info/top_level.txt
+tests/test_client.py

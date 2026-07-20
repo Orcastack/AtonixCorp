@@ -1,4 +1,5 @@
 import hashlib
+import yaml
 import os
 import tempfile
 from datetime import timedelta
@@ -1800,6 +1801,31 @@ class GovernanceConfigurationAPITests(TestCase):
         self.assertEqual(restored_role.department, restored_department)
         self.assertTrue(restored_role.permissions.filter(code='manage_org_settings').exists())
         self.assertGreater(organization.governance_configuration.revision, 0)
+
+    def test_import_rejects_tampered_signed_governance_document(self):
+        owner = User.objects.create_user(username='governance-tamper-owner', password='pass')
+        organization = Organization.objects.create(
+            owner=owner,
+            name='Tamper Recovery Org',
+            slug='tamper-recovery-org',
+            primary_country='US',
+            primary_currency='USD',
+        )
+        client = APIClient()
+        client.force_authenticate(owner)
+        export_response = client.get(f'/api/organizations/{organization.id}/export_governance_yaml/')
+        document = yaml.safe_load(b''.join(export_response.streaming_content))
+        document['organization']['name'] = 'Tampered Organization'
+
+        import_response = client.post(
+            f'/api/organizations/{organization.id}/import_governance_yaml/',
+            {'file': SimpleUploadedFile('tampered.yml', yaml.safe_dump(document).encode('utf-8'), content_type='application/x-yaml')},
+            format='multipart',
+        )
+
+        self.assertEqual(import_response.status_code, 400)
+        organization.refresh_from_db()
+        self.assertEqual(organization.name, 'Tamper Recovery Org')
 
 
 class OrganizationDirectoryAPITests(TestCase):

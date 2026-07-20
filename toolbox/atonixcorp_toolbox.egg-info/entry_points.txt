@@ -1,0 +1,2 @@
+[console_scripts]
+atonixcorp-toolbox = atonixcorp_toolbox.main:main

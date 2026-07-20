@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import { FiDownload, FiMonitor } from 'react-icons/fi';
-import { FaApple } from 'react-icons/fa';
-import { SiGoogleplay } from 'react-icons/si';
 
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
@@ -124,13 +121,6 @@ const dashboardTabs = {
 
 const subscriptionTiers = ['Basic', 'Professional', 'Enterprise', 'Institutional'];
 
-const downloads = [
-  { label: 'Mac', detail: 'Desktop client', icon: FiMonitor },
-  { label: 'Windows', detail: 'Desktop client', icon: FiDownload },
-  { label: 'Google Play', detail: 'Android app', icon: SiGoogleplay },
-  { label: 'App Store', detail: 'iOS app', icon: FaApple },
-];
-
 const Landing = () => {
   const { isAuthenticated, loading } = useAuth();
   const [activeDashboard, setActiveDashboard] = useState('Governance');
@@ -168,18 +158,6 @@ const Landing = () => {
                 <Link to="/features" className="landing-button landing-button--secondary">Review Modules</Link>
                 <Link to="/developers" className="landing-button landing-button--secondary">Developer Portal</Link>
               </div>
-
-              <div className="landing-downloads" aria-label="AtonixCorp downloads">
-                {downloads.map(({ label, detail, icon: DownloadIcon }) => (
-                  <a className="landing-download" href="#downloads" key={label}>
-                    <DownloadIcon aria-hidden="true" />
-                    <span><strong>{label}</strong><small>{detail}</small></span>
-                  </a>
-                ))}
-              </div>
-              <p className="landing-hero__microcopy">
-                Available across desktop and mobile for secure work wherever decisions are made.
-              </p>
             </div>
 
             <aside className="landing-dashboard-preview" aria-label="AtonixCorp dashboard preview">

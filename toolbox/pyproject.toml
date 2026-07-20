@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Developer utilities for AtonixCorp governance and DCI sandbox workflows"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = ["PyYAML>=6.0", "atonixcorpsdk>=0.1.0"]
+dependencies = ["cryptography>=42.0", "PyYAML>=6.0", "atonixcorpsdk>=0.1.0"]
 
 [project.scripts]
 atonixcorp-toolbox = "atonixcorp_toolbox.main:main"

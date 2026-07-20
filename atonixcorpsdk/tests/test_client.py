@@ -33,6 +33,10 @@ class ClientTests(unittest.TestCase):
         self.assertEqual(request.get_header("Authorization"), "Bearer token")
         self.assertEqual(result["id"], 42)
 
+    def test_non_local_plain_http_endpoint_is_rejected(self):
+        with self.assertRaisesRegex(RuntimeError, "require an HTTPS endpoint"):
+            AtonixCorpClient(base_url="http://api.example.test")
+
 
 if __name__ == "__main__":
     unittest.main()

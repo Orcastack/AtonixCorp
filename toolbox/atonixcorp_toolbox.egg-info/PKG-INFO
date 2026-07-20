@@ -1,0 +1,21 @@
+Metadata-Version: 2.4
+Name: atonixcorp-toolbox
+Version: 0.1.0
+Summary: Developer utilities for AtonixCorp governance and DCI sandbox workflows
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: cryptography>=42.0
+Requires-Dist: PyYAML>=6.0
+Requires-Dist: atonixcorpsdk>=0.1.0
+
+# AtonixCorp Toolbox
+
+Small utilities for AtonixCorp governance and DCI sandbox development.
+
+```bash
+pip install -e ../atonixcorpsdk -e .
+atonixcorp-toolbox sandbox-entity 1
+atonixcorp-toolbox validate-governance ./governance.yml
+```
+
+The `atonixcorp_toolbox.audit` module creates redacted diagnostic events. It never writes API keys, OAuth tokens, passwords, or client secrets into output metadata.

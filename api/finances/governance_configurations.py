@@ -11,6 +11,7 @@ from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 
 from .company_identity import normalize_registration_number
+from .crypto_foundation import sign_governance_document, verify_governance_document
 from .models import (
     AutomationWorkflow,
     Entity,
@@ -171,8 +172,10 @@ def build_governance_document(organization):
 
 
 def render_governance_yaml(organization):
+    document = build_governance_document(organization)
+    document['integrity'] = sign_governance_document(document)
     return yaml.safe_dump(
-        build_governance_document(organization),
+        document,
         allow_unicode=False,
         default_flow_style=False,
         sort_keys=False,
@@ -215,6 +218,7 @@ def _parse_date(value, key):
 @transaction.atomic
 def restore_governance_document(organization, document):
     document = _required_mapping(document, 'configuration')
+    verify_governance_document(document)
     if document.get('document_type') != 'atonixcorp_governance_configuration':
         raise ValidationError({'configuration': 'Unsupported governance configuration document.'})
     if document.get('schema_version') != SCHEMA_VERSION:

@@ -33,6 +33,7 @@ from .models import (
 )
 from .accounting_permissions import AccountingPermissionService
 from .type_registry import get_workspace_type_definition
+from finances.crypto_foundation import decrypt_aes_gcm, encrypt_aes_gcm
 
 
 FINANCE_DEPARTMENT_TEMPLATES = [
@@ -839,13 +840,17 @@ class CalendarService:
 class FileService:
 
     @staticmethod
-    def _cipher():
+    def _legacy_cipher():
         from cryptography.fernet import Fernet
 
         key = settings.WORKSPACE_FILE_ENCRYPTION_KEY
         if not key:
             key = base64.urlsafe_b64encode(hashlib.sha256(settings.SECRET_KEY.encode('utf-8')).digest()).decode('ascii')
         return Fernet(key.encode('ascii'))
+
+    @staticmethod
+    def _associated_data(workspace_id, file_id) -> bytes:
+        return f'atonixcorp.workspace-file:{workspace_id}:{file_id}'.encode('utf-8')
 
     @staticmethod
     def _validate_name(name: str, field_name: str) -> str:
@@ -895,7 +900,10 @@ class FileService:
         # Reserve a UUID so the path can reference the id before save
         file_id = __import__('uuid').uuid4()
         path = FileService._build_path(workspace_id, file_id)
-        encrypted_content = FileService._cipher().encrypt(content.read())
+        encrypted_content = encrypt_aes_gcm(
+            content.read(),
+            associated_data=FileService._associated_data(workspace_id, file_id),
+        )
         default_storage.save(path, ContentFile(encrypted_content))
         wf = WorkspaceFile.objects.create(
             id=file_id,
@@ -920,7 +928,15 @@ class FileService:
         if not default_storage.exists(workspace_file.path):
             raise NotFound('File content is unavailable.')
         with default_storage.open(workspace_file.path, 'rb') as stored_file:
-            decrypted_content = FileService._cipher().decrypt(stored_file.read())
+            encrypted_content = stored_file.read()
+            if encrypted_content.startswith(b'atc-aesgcm-v1:'):
+                decrypted_content = decrypt_aes_gcm(
+                    encrypted_content,
+                    associated_data=FileService._associated_data(workspace_id, workspace_file.id),
+                )
+            else:
+                # Files uploaded before AES-GCM adoption retain read compatibility.
+                decrypted_content = FileService._legacy_cipher().decrypt(encrypted_content)
         LogService.log(workspace_id, actor, 'file.downloaded', {'file_id': str(workspace_file.pk), 'name': workspace_file.name})
         return BytesIO(decrypted_content), workspace_file
 

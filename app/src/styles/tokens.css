@@ -33,6 +33,14 @@
   --color-warning: #9a6700;
   --color-info: var(--color-blue-700);
 
+  /* Dropdown controls and menus always declare both a surface and ink color. */
+  --color-dropdown-surface: var(--color-white);
+  --color-dropdown-text: var(--color-navy-950);
+  --color-dropdown-muted: var(--color-silver-700);
+  --color-dropdown-hover: var(--color-blue-100);
+  --color-dropdown-active: #d6e8f7;
+  --color-dropdown-border: var(--color-silver-300);
+
   /* Compatibility aliases for existing modules */
   --color-accent: var(--color-blue-600);
   --color-accent-hover: var(--color-blue-700);
@@ -166,4 +174,13 @@
   --z-modal-bg: 1200;
   --z-modal: 1201;
   --z-tooltip: 1100;
+}
+
+[data-theme='dark'] {
+  --color-dropdown-surface: var(--color-navy-900);
+  --color-dropdown-text: var(--color-white);
+  --color-dropdown-muted: var(--color-silver-200);
+  --color-dropdown-hover: var(--color-navy-800);
+  --color-dropdown-active: var(--color-blue-700);
+  --color-dropdown-border: var(--color-silver-700);
 }

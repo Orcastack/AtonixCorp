@@ -1,3 +1,15 @@
+# Dropdown Visibility and Responsive Menus
+
+All dropdowns use the `--color-dropdown-*` tokens in `app/src/styles/tokens.css`.
+Native `select`, `option`, and `optgroup` controls receive an explicit surface and
+text color in `app/src/styles/unified.css`, so they cannot inherit white text on a
+white popup. Reusable profile and workspace menus use the same contract, including
+hover, active, keyboard-focus, and touch-safe mobile target styles.
+
+For a future dark theme, set `data-theme="dark"` on the application root. The
+dropdown tokens then switch together; do not set isolated menu text or background
+colors in feature CSS.
+
 # AtonixCorp CSS System
 
 AtonixCorp uses one shared CSS contract for public pages, authenticated dashboards, subscription views, and future modules.

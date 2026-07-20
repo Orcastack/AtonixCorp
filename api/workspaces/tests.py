@@ -2,13 +2,14 @@ from datetime import timedelta
 
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.files.storage import default_storage
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from finances.models import Entity, Organization
 
-from .models import WorkspaceGroup, WorkspaceMember
+from .models import WorkspaceFile, WorkspaceGroup, WorkspaceMember
 from .services import FINANCE_DEPARTMENT_TEMPLATES, WorkspaceService
 
 
@@ -167,6 +168,12 @@ class WorkspaceDepartmentAndMeetingAPITests(APITestCase):
         )
 
         self.assertEqual(upload_response.status_code, status.HTTP_201_CREATED)
+        workspace_file = WorkspaceFile.objects.get(pk=upload_response.data['id'])
+        with default_storage.open(workspace_file.path, 'rb') as stored_file:
+            stored_content = stored_file.read()
+        self.assertTrue(stored_content.startswith(b'atc-aesgcm-v1:'))
+        self.assertNotIn(payload, stored_content)
+
         download_response = self.client.get(
             f'/api/v1/workspaces/{self.workspace.id}/files/{upload_response.data["id"]}'
         )

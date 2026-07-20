@@ -352,6 +352,15 @@
   text-decoration: none;
 }
 
+.ly-lang-select {
+  color: var(--color-white);
+}
+
+.ly-lang-select option {
+  background: var(--color-dropdown-surface);
+  color: var(--color-dropdown-text);
+}
+
 .ly-utility-bar .ly-utility-links a:hover {
   opacity: 0.8;
   color: #FFFFFF;
@@ -712,6 +721,10 @@
   top: calc(100% + 10px);
   right: 0;
   width: 230px;
+  background: var(--color-dropdown-surface);
+  border: 1px solid var(--color-dropdown-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
   z-index: 300;
 }
@@ -760,11 +773,43 @@
   padding: 12px 16px;
   background: transparent;
   border: none;
+  cursor: pointer;
   text-align: left;
+}
+
+.ws-dropdown-item:hover,
+.ws-dropdown-item:focus-visible {
+  background: var(--color-dropdown-hover);
+  color: var(--color-dropdown-text);
+  outline: none;
+}
+
+.ws-dropdown-item:active {
+  background: var(--color-dropdown-active);
 }
 
 .ws-dropdown-logout {
   color: var(--color-error);
+}
+
+[data-theme='dark'] .profile-dropdown,
+[data-theme='dark'] .ws-dropdown {
+  background: var(--color-dropdown-surface);
+  border-color: var(--color-dropdown-border);
+}
+
+[data-theme='dark'] .profile-dropdown-name,
+[data-theme='dark'] .profile-dropdown-item,
+[data-theme='dark'] .ws-dropdown-name,
+[data-theme='dark'] .ws-dropdown-ws-name,
+[data-theme='dark'] .ws-dropdown-item {
+  color: var(--color-dropdown-text);
+}
+
+[data-theme='dark'] .profile-dropdown-email,
+[data-theme='dark'] .ws-dropdown-email,
+[data-theme='dark'] .ws-dropdown-ws-label {
+  color: var(--color-dropdown-muted);
 }
 
 .ly-primary-actions {
@@ -852,6 +897,17 @@
 
   .main-content {
     overflow-y: visible;
+  }
+
+  .profile-dropdown,
+  .ws-dropdown {
+    max-width: calc(100vw - 32px);
+    min-width: min(240px, calc(100vw - 32px));
+  }
+
+  .profile-dropdown-item,
+  .ws-dropdown-item {
+    min-height: 44px;
   }
 }
 

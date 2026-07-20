@@ -5,7 +5,7 @@ import json
 from dataclasses import dataclass
 from typing import Any, BinaryIO
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse
 from urllib.request import Request, urlopen
 
 
@@ -40,8 +40,17 @@ class AtonixCorpClient:
 
     def __init__(self, *, base_url: str = SANDBOX_URL, credentials: Credentials | None = None, timeout: int = 30):
         self.base_url = base_url.rstrip("/")
+        self._validate_transport_url()
         self.credentials = credentials or Credentials()
         self.timeout = timeout
+
+    def _validate_transport_url(self) -> None:
+        parsed = urlparse(self.base_url)
+        if parsed.scheme == "https" and parsed.hostname:
+            return
+        if parsed.scheme == "http" and parsed.hostname in {"localhost", "127.0.0.1", "::1"}:
+            return
+        raise AtonixCorpError("DCI requests require an HTTPS endpoint. Plain HTTP is permitted only for the local sandbox.")
 
     @classmethod
     def sandbox(cls, **kwargs):

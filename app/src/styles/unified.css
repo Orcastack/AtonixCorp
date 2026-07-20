@@ -81,6 +81,35 @@ textarea {
   background: var(--color-white);
 }
 
+select,
+option,
+optgroup {
+  background-color: var(--color-dropdown-surface);
+  color: var(--color-dropdown-text);
+}
+
+select {
+  min-height: 44px;
+  border-color: var(--color-dropdown-border);
+  color-scheme: light;
+}
+
+select:hover {
+  border-color: var(--color-blue-600);
+}
+
+[data-theme='dark'] select {
+  background-color: var(--color-dropdown-surface);
+  border-color: var(--color-dropdown-border);
+  color: var(--color-dropdown-text);
+  color-scheme: dark;
+}
+
+option:checked {
+  background-color: var(--color-dropdown-active);
+  color: var(--color-dropdown-text);
+}
+
 input:focus,
 select:focus,
 textarea:focus {
@@ -126,6 +155,13 @@ textarea:focus {
 
 .ui-table td {
   color: var(--color-text);
+}
+
+@media (max-width: 767px) {
+  select {
+    font-size: 16px;
+    min-height: 48px;
+  }
 }
 
 .ui-table tbody tr:hover {

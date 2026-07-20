@@ -1,6 +1,7 @@
 """Django settings for finance_api project."""
 
 import os
+import sys
 from pathlib import Path
 
 import dj_database_url
@@ -117,11 +118,20 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-WORKSPACE_FILE_ENCRYPTION_KEY = os.getenv('WORKSPACE_FILE_ENCRYPTION_KEY', '')
+WORKSPACE_FILE_ENCRYPTION_KEY = os.getenv(
+    'WORKSPACE_FILE_ENCRYPTION_KEY',
+    'atonixcorp-test-workspace-encryption-key' if 'test' in sys.argv else '',
+)
+GOVERNANCE_SIGNING_KEY = os.getenv(
+    'GOVERNANCE_SIGNING_KEY',
+    'atonixcorp-test-governance-signing-key' if 'test' in sys.argv else '',
+)
 WORKSPACE_FILE_MAX_BYTES = int(os.getenv('WORKSPACE_FILE_MAX_BYTES', str(25 * 1024 * 1024)))
 WORKSPACE_FILE_STORAGE_BACKEND = os.getenv('WORKSPACE_FILE_STORAGE_BACKEND', 'django.core.files.storage.FileSystemStorage')
 if not DEBUG and not WORKSPACE_FILE_ENCRYPTION_KEY:
     raise RuntimeError('WORKSPACE_FILE_ENCRYPTION_KEY is required when DJANGO_DEBUG is false.')
+if not DEBUG and not GOVERNANCE_SIGNING_KEY:
+    raise RuntimeError('GOVERNANCE_SIGNING_KEY is required when DJANGO_DEBUG is false.')
 STORAGES = {
     'default': {
         'BACKEND': WORKSPACE_FILE_STORAGE_BACKEND,
