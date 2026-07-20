@@ -1,0 +1,223 @@
+/*
+ * AtonixCorp Unified UI
+ *
+ * Every public and authenticated surface inherits these primitives. Feature
+ * styles should define layout details only and use the tokens from tokens.css.
+ */
+:root {
+  --ui-content-max: 1280px;
+  --ui-gutter: clamp(16px, 3vw, 32px);
+  --ui-section-space: 32px;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-family);
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+h1,
+.page-title {
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-heading);
+}
+
+h2,
+.section-title {
+  font-size: clamp(20px, 2.4vw, 24px);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-heading);
+}
+
+h3,
+.card-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-heading);
+}
+
+label,
+.field-label,
+.form-label,
+.stat-label {
+  color: var(--color-silver-700);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.35;
+}
+
+button,
+.btn,
+.landing-button,
+.plan-card button {
+  min-height: 40px;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0;
+}
+
+button:hover,
+.btn:hover,
+.landing-button:hover,
+.plan-card button:hover {
+  transform: translateY(-1px);
+}
+
+input,
+select,
+textarea {
+  border-color: var(--color-silver-300);
+  border-radius: var(--radius-md);
+  color: var(--color-heading);
+  background: var(--color-white);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--color-blue-600);
+  box-shadow: 0 0 0 3px rgba(40, 120, 189, 0.14);
+}
+
+.card,
+.surface-card,
+.panel,
+.modal,
+.table-wrapper,
+.plan-card,
+.landing-system-card,
+.landing-pillar-card,
+.dashboard-stat,
+.dashboard-top-header {
+  border: 1px solid var(--color-silver-300);
+  border-radius: var(--radius-lg);
+  background: var(--color-white);
+  box-shadow: var(--shadow-sm);
+}
+
+.card:hover,
+.surface-card:hover,
+.plan-card:hover,
+.landing-system-card:hover,
+.landing-pillar-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.ui-table th {
+  background: var(--color-silver-100);
+  color: var(--color-navy-900);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ui-table td {
+  color: var(--color-text);
+}
+
+.ui-table tbody tr:hover {
+  background: var(--color-blue-100);
+}
+
+.badge,
+.status-badge,
+.pill {
+  border-radius: var(--radius-pill);
+}
+
+/* Bring existing public pages onto the same visual foundation. */
+.landing-page,
+.pricing-page,
+.product-page,
+.features-page,
+.about-page,
+.support-page {
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+.landing-page .landing-hero,
+.pricing-page .pricing-hero {
+  background: var(--color-navy-950);
+  color: var(--color-white);
+}
+
+.landing-page .landing-hero h1,
+.pricing-page .pricing-hero h1 {
+  color: var(--color-white);
+}
+
+.landing-page .landing-button--primary,
+.pricing-page .btn-primary,
+.pricing-page .plan-card button {
+  background: var(--color-blue-700);
+  border-color: var(--color-blue-700);
+  color: var(--color-white);
+}
+
+.landing-page .landing-button--primary:hover,
+.pricing-page .btn-primary:hover,
+.pricing-page .plan-card button:hover {
+  background: var(--color-blue-600);
+  border-color: var(--color-blue-600);
+}
+
+.dashboard-finance-page {
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+.dashboard-sidebar {
+  background: var(--color-navy-950);
+  border-right-color: rgba(255, 255, 255, 0.14);
+}
+
+.dashboard-sidebar-item {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.dashboard-sidebar-item:hover,
+.dashboard-sidebar-item.is-active {
+  background: var(--color-navy-800);
+  color: var(--color-white);
+}
+
+.dashboard-main-column {
+  background: var(--color-background);
+}
+
+.dashboard-top-header,
+.dashboard-stat {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 760px) {
+  .page-header {
+    display: grid;
+    gap: var(--space-base);
+  }
+
+  .dashboard-sidebar {
+    position: static;
+    width: 100%;
+  }
+
+  .dashboard-main-column {
+    margin-left: 0;
+    padding: var(--space-base);
+  }
+}
