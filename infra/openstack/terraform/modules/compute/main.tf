@@ -1,8 +1,8 @@
 # -----------------------------------------------------------------------------
-# Ledgora – OpenStack Compute Module
-# Provisions Nova instances for a named Ledgora service.
+# AtonixCorp – OpenStack Compute Module
+# Provisions Nova instances for a named AtonixCorp service.
 # Naming convention: lgx-<env>-<service>-<zero-padded-index>
-# Every instance carries the full Ledgora traceability tag set.
+# Every instance carries the full AtonixCorp traceability tag set.
 # -----------------------------------------------------------------------------
 
 terraform {
@@ -39,9 +39,9 @@ resource "openstack_compute_instance_v2" "service" {
 
   user_data = var.user_data
 
-  # Ledgora mandatory metadata tags
+  # AtonixCorp mandatory metadata tags
   metadata = {
-    system    = "ledgora"
+    system    = "atonixcorp"
     env       = var.env
     service   = var.service
     change_id = var.change_id

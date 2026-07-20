@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useEnterprise } from '../../context/EnterpriseContext';
-import AtonixCorpLogo from '../../components/branding/LedgoraLogo';
+import AtonixCorpLogo from '../../components/branding/AtonixCorpLogo';
 import { globalInviteAPI, platformAuditEventsAPI, platformTasksAPI } from '../../services/api';
 import './GlobalConsole.css';
 

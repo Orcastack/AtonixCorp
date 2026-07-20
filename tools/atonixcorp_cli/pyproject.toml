@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "atonixcorp-cli"
+version = "0.1.0"
+description = "AtonixCorp command line interface"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "cryptography>=44.0.0",
+    "keyring>=25.0.0",
+]
+
+[project.scripts]
+atonixcorp = "atonixcorp_cli.main:main"
+
+[tool.setuptools.packages.find]
+include = ["atonixcorp_cli*"]

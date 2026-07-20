@@ -2,6 +2,6 @@
 # roles/lgx-db/defaults/main.yml
 
 atc_db_port: 5432
-atc_db_data_dir: /opt/ledgora/pgdata
+atc_db_data_dir: /opt/atonixcorp/pgdata
 atc_db_image: "postgres:15-alpine"
 atc_db_container_restart_policy: unless-stopped

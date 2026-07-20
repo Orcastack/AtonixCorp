@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Ledgora – OpenStack Security Module
+# AtonixCorp – OpenStack Security Module
 # Provisions security groups for API, DB, bastion, and monitoring tiers.
 # Default posture: deny-all; only explicitly required ports are opened.
 # -----------------------------------------------------------------------------
@@ -17,7 +17,7 @@ terraform {
 
 resource "openstack_networking_secgroup_v2" "api" {
   name        = "lgx-${var.env}-sg-api"
-  description = "Ledgora API tier – HTTPS ingress only"
+  description = "AtonixCorp API tier – HTTPS ingress only"
   tags        = local.tags
 }
 
@@ -58,7 +58,7 @@ resource "openstack_networking_secgroup_rule_v2" "api_app_port" {
 
 resource "openstack_networking_secgroup_v2" "db" {
   name        = "lgx-${var.env}-sg-db"
-  description = "Ledgora database tier – backend subnet ingress only"
+  description = "AtonixCorp database tier – backend subnet ingress only"
   tags        = local.tags
 }
 
@@ -76,7 +76,7 @@ resource "openstack_networking_secgroup_rule_v2" "db_postgres" {
 
 resource "openstack_networking_secgroup_v2" "bastion" {
   name        = "lgx-${var.env}-sg-bastion"
-  description = "Ledgora bastion host – SSH from trusted CIDRs only"
+  description = "AtonixCorp bastion host – SSH from trusted CIDRs only"
   tags        = local.tags
 }
 
@@ -96,7 +96,7 @@ resource "openstack_networking_secgroup_rule_v2" "bastion_ssh" {
 
 resource "openstack_networking_secgroup_v2" "monitoring" {
   name        = "lgx-${var.env}-sg-monitoring"
-  description = "Ledgora monitoring – Prometheus scrape from backend subnet"
+  description = "AtonixCorp monitoring – Prometheus scrape from backend subnet"
   tags        = local.tags
 }
 
@@ -114,7 +114,7 @@ resource "openstack_networking_secgroup_rule_v2" "monitoring_prometheus" {
 
 locals {
   tags = [
-    "system=ledgora",
+    "system=atonixcorp",
     "env=${var.env}",
     "service=shared",
     "change_id=${var.change_id}",

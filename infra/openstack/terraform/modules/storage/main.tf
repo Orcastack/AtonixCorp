@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
-# Ledgora – OpenStack Storage Module
-# Provisions Cinder volumes for a named Ledgora service.
+# AtonixCorp – OpenStack Storage Module
+# Provisions Cinder volumes for a named AtonixCorp service.
 # Naming convention: lgx-<env>-<service>-data-<zero-padded-index>
 # Volume snapshots are managed via a separate scheduled Jenkins job.
 # -----------------------------------------------------------------------------
@@ -22,10 +22,10 @@ resource "openstack_blockstorage_volume_v3" "data" {
   name        = format("lgx-%s-%s-data-%02d", var.env, var.service, count.index + 1)
   size        = var.volume_size_gb
   volume_type = var.volume_type
-  description = "Ledgora ${var.service} data volume – ${var.env}"
+  description = "AtonixCorp ${var.service} data volume – ${var.env}"
 
   metadata = {
-    system    = "ledgora"
+    system    = "atonixcorp"
     env       = var.env
     service   = var.service
     change_id = var.change_id

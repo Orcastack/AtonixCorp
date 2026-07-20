@@ -33,7 +33,7 @@ def current_api_environment() -> str:
     return getattr(
         settings,
         'ATONIXCORP_API_ENVIRONMENT',
-        getattr(settings, 'LEDGORA_API_ENVIRONMENT', 'sandbox' if settings.DEBUG else 'production'),
+        getattr(settings, 'ATONIXCORP_API_ENVIRONMENT', 'sandbox' if settings.DEBUG else 'production'),
     )
 
 

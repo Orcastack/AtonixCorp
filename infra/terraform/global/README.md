@@ -1,4 +1,4 @@
-# Ledgora Terraform Global Conventions
+# AtonixCorp Terraform Global Conventions
 
 This directory defines the shared conventions for the Terraform stack.
 

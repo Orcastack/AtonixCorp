@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import AtonixCorpLogo from '../../components/branding/LedgoraLogo';
+import AtonixCorpLogo from '../../components/branding/AtonixCorpLogo';
 
 const Login = () => {
   const [identifier, setIdentifier] = useState('');

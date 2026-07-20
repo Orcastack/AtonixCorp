@@ -175,7 +175,7 @@ APP_VERSION = os.getenv('APP_VERSION', 'dev')
 DEPLOYMENT_ENVIRONMENT = os.getenv('DEPLOYMENT_ENVIRONMENT', 'local')
 ATONIXCORP_API_ENVIRONMENT = os.getenv(
     'ATONIXCORP_API_ENVIRONMENT',
-    os.getenv('LEDGORA_API_ENVIRONMENT', 'sandbox' if DEBUG else 'production'),
+    os.getenv('ATONIXCORP_API_ENVIRONMENT', 'sandbox' if DEBUG else 'production'),
 )
 BANKING_TOKEN_ENCRYPTION_KEY = os.getenv('BANKING_TOKEN_ENCRYPTION_KEY', '')
 FRONTEND_BASE_URL = os.getenv('FRONTEND_BASE_URL', 'http://localhost:3000')

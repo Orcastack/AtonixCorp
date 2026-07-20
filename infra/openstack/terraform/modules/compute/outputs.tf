@@ -4,7 +4,7 @@ output "instance_ids" {
 }
 
 output "instance_names" {
-  description = "Canonical Ledgora instance names (lgx-<env>-<service>-<n>)."
+  description = "Canonical AtonixCorp instance names (lgx-<env>-<service>-<n>)."
   value       = openstack_compute_instance_v2.service[*].name
 }
 

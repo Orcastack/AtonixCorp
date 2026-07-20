@@ -2,16 +2,16 @@ aws_region                = "us-east-1"
 availability_zones        = ["us-east-1a", "us-east-1b"]
 db_username               = "atc_admin"
 db_password               = "replace-in-ci"
-artifact_bucket_name      = "ledgora-dev-artifacts"
-secret_arns               = ["arn:aws:secretsmanager:us-east-1:123456789012:secret:ledgora/dev/app"]
+artifact_bucket_name      = "atonixcorp-dev-artifacts"
+secret_arns               = ["arn:aws:secretsmanager:us-east-1:123456789012:secret:atonixcorp/dev/app"]
 bitbucket_oidc_provider_arn = "arn:aws:iam::123456789012:oidc-provider/api.bitbucket.org/2.0/workspaces/your-workspace/pipelines-config/identity/oidc"
 bitbucket_oidc_subject_claim = "api.bitbucket.org/2.0/workspaces/your-workspace/pipelines-config/identity/oidc:sub"
 bitbucket_oidc_audience_claim = "api.bitbucket.org/2.0/workspaces/your-workspace/pipelines-config/identity/oidc:aud"
 bitbucket_oidc_audience    = "ari:cloud:bitbucket::workspace/your-workspace-id"
-bitbucket_oidc_subjects   = ["repo:your-workspace/ledgora:*"]
+bitbucket_oidc_subjects   = ["repo:your-workspace/atonixcorp:*"]
 ecr_repository_arns       = [
-  "arn:aws:ecr:us-east-1:123456789012:repository/ledgora/backend",
-  "arn:aws:ecr:us-east-1:123456789012:repository/ledgora/frontend",
+  "arn:aws:ecr:us-east-1:123456789012:repository/atonixcorp/backend",
+  "arn:aws:ecr:us-east-1:123456789012:repository/atonixcorp/frontend",
 ]
-state_bucket_arn          = "arn:aws:s3:::ledgora-terraform-state"
-state_lock_table_arn      = "arn:aws:dynamodb:us-east-1:123456789012:table/ledgora-terraform-locks"
+state_bucket_arn          = "arn:aws:s3:::atonixcorp-terraform-state"
+state_lock_table_arn      = "arn:aws:dynamodb:us-east-1:123456789012:table/atonixcorp-terraform-locks"

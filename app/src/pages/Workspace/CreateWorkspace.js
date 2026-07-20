@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useEnterprise } from '../../context/EnterpriseContext';
-import AtonixCorpLogo from '../../components/branding/LedgoraLogo';
+import AtonixCorpLogo from '../../components/branding/AtonixCorpLogo';
 import { countryDropdownOptions } from '../../utils/countryDropdowns';
 import {
   ACCOUNTING_MODULE_KEYS,

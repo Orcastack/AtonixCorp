@@ -118,7 +118,7 @@ services:
     environment:
       - POSTGRES_DB=atonixcorp
       - POSTGRES_USER=atonixcorp
-      - POSTGRES_PASSWORD=ledgorapassword
+      - POSTGRES_PASSWORD=atonixcorppassword
     ports:
       - "5433:5432"
     volumes:

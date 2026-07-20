@@ -1,21 +1,21 @@
 ---
 # roles/lgx-api/tasks/main.yml
-# Deploys the Ledgora API container on each api-group host.
+# Deploys the AtonixCorp API container on each api-group host.
 
 - name: Create service data directory
   ansible.builtin.file:
     path: "{{ atc_data_dir }}"
     state: directory
-    owner: "{{ ledgora_app_user }}"
-    group: "{{ ledgora_app_group }}"
+    owner: "{{ atonixcorp_app_user }}"
+    group: "{{ atonixcorp_app_group }}"
     mode: '0750'
 
 - name: Template environment file from Vault secrets
   ansible.builtin.template:
     src: lgx-api.env.j2
     dest: "{{ atc_env_file }}"
-    owner: "{{ ledgora_app_user }}"
-    group: "{{ ledgora_app_group }}"
+    owner: "{{ atonixcorp_app_user }}"
+    group: "{{ atonixcorp_app_group }}"
     mode: '0600'
   no_log: true   # Never expose env file contents in Ansible output
   notify: Restart lgx-api container
@@ -39,7 +39,7 @@
       - "{{ atc_data_dir }}:/app/data:rw"
     log_driver: journald
     labels:
-      system: "ledgora"
+      system: "atonixcorp"
       env: "{{ env }}"
       service: "{{ atc_service }}"
       change_id: "{{ gerrit_change_id | default('manual') }}"

@@ -9,7 +9,7 @@ resource "aws_db_subnet_group" "this" {
 
 resource "aws_security_group" "db" {
   name        = "${var.name_prefix}-db-sg"
-  description = "Database access for Ledgora"
+  description = "Database access for AtonixCorp"
   vpc_id      = data.aws_subnet.selected.vpc_id
 
   ingress {

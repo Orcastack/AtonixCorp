@@ -1,11 +1,11 @@
 ---
-# site.yml – Apply baseline configuration to ALL Ledgora OpenStack hosts.
+# site.yml – Apply baseline configuration to ALL AtonixCorp OpenStack hosts.
 # Run this after first provisioning or when base configuration drifts.
 #
 # Usage:
 #   ansible-playbook playbooks/site.yml --inventory inventories/<env>/hosts.yml
 
-- name: Apply Ledgora common baseline to all hosts
+- name: Apply AtonixCorp common baseline to all hosts
   hosts: all
   gather_facts: true
   roles:

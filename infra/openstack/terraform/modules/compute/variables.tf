@@ -10,7 +10,7 @@ variable "env" {
 
 variable "service" {
   type        = string
-  description = "Ledgora service name (e.g. ledger, accounts, risk, reporting, bastion)."
+  description = "AtonixCorp service name (e.g. ledger, accounts, risk, reporting, bastion)."
 }
 
 variable "instance_count" {

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useEnterprise } from '../../context/EnterpriseContext';
-import AtonixCorpLogo from '../branding/LedgoraLogo';
+import AtonixCorpLogo from '../branding/AtonixCorpLogo';
 import { getWorkspaceLandingPath } from '../../utils/workspaceModules';
 import { reportUiError } from '../../utils/errorReporting';
 import { Icon } from '../ui';

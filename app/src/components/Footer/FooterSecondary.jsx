@@ -1,5 +1,5 @@
 import React from 'react';
-import AtonixCorpLogo from '../branding/LedgoraLogo';
+import AtonixCorpLogo from '../branding/AtonixCorpLogo';
 import SocialIcons from './SocialIcons';
 import ComplianceBadges from './ComplianceBadges';
 

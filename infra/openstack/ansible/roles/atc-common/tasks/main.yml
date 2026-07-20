@@ -1,6 +1,6 @@
 ---
 # roles/lgx-common/tasks/main.yml
-# Baseline hardening and tooling applied to every Ledgora host.
+# Baseline hardening and tooling applied to every AtonixCorp host.
 
 - name: Set timezone to UTC
   community.general.timezone:
@@ -13,21 +13,21 @@
     update_cache: true
     cache_valid_time: 3600
 
-- name: Create Ledgora app user
+- name: Create AtonixCorp app user
   ansible.builtin.user:
-    name: "{{ ledgora_app_user }}"
-    group: "{{ ledgora_app_group }}"
+    name: "{{ atonixcorp_app_user }}"
+    group: "{{ atonixcorp_app_group }}"
     system: true
     shell: /bin/false
-    home: /opt/ledgora
+    home: /opt/atonixcorp
     create_home: true
 
-- name: Create Ledgora log directory
+- name: Create AtonixCorp log directory
   ansible.builtin.file:
     path: "{{ atc_log_dir }}"
     state: directory
-    owner: "{{ ledgora_app_user }}"
-    group: "{{ ledgora_app_group }}"
+    owner: "{{ atonixcorp_app_user }}"
+    group: "{{ atonixcorp_app_group }}"
     mode: '0750'
 
 - name: Configure NTP
@@ -75,13 +75,13 @@
 
 - name: Add LGX app user to docker group
   ansible.builtin.user:
-    name: "{{ ledgora_app_user }}"
+    name: "{{ atonixcorp_app_user }}"
     groups: docker
     append: true
 
 - name: Configure unattended security upgrades
   ansible.builtin.copy:
-    dest: /etc/apt/apt.conf.d/50unattended-upgrades-ledgora
+    dest: /etc/apt/apt.conf.d/50unattended-upgrades-atonixcorp
     content: |
       Unattended-Upgrade::Allowed-Origins {
         "${distro_id}:${distro_codename}-security";

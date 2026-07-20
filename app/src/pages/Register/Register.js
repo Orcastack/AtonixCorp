@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { countryDropdownOptions } from '../../utils/countryDropdowns';
-import AtonixCorpLogo from '../../components/branding/LedgoraLogo';
+import AtonixCorpLogo from '../../components/branding/AtonixCorpLogo';
 
 const Register = () => {
   const [step, setStep] = useState(1); // 1: email → 2: details

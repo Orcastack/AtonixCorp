@@ -1,12 +1,12 @@
 # -----------------------------------------------------------------------------
-# Ledgora – PROD environment root
+# AtonixCorp – PROD environment root
 # OpenStack Project: lgx-prod
 #
 # NON-NEGOTIABLES:
 #   - No manual changes in the OpenStack UI.
 #   - Only Jenkins with a Gerrit-approved change may apply this root.
 #   - All applies require explicit manual gate approval in the Jenkins pipeline.
-#   - Every resource carries full Ledgora traceability tags.
+#   - Every resource carries full AtonixCorp traceability tags.
 # -----------------------------------------------------------------------------
 
 provider "openstack" {

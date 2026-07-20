@@ -1,0 +1,2 @@
+[console_scripts]
+atonixcorp = atonixcorp_cli.main:main

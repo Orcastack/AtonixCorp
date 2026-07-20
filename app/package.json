@@ -1,7 +1,7 @@
 {
   "name": "atonixcorp",
   "version": "1.0.0",
-  "homepage": "https://orcadevstack.github.io/Ledgora",
+  "homepage": "https://orcadevstack.github.io/AtonixCorp",
   "private": true,
   "proxy": "http://localhost:8000",
   "engines": {
@@ -26,8 +26,8 @@
     "prestart": "node scripts/check-node-version.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "standards:check": "node scripts/enforce-ledgora-public-standards.js",
-    "standards:baseline": "node scripts/enforce-ledgora-public-standards.js --write-baseline",
+    "standards:check": "node scripts/enforce-atonixcorp-public-standards.js",
+    "standards:baseline": "node scripts/enforce-atonixcorp-public-standards.js --write-baseline",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

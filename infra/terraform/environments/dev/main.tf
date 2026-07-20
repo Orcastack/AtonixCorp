@@ -4,7 +4,7 @@ provider "aws" {
 
 locals {
   common_tags = {
-    Application = "Ledgora"
+    Application = "AtonixCorp"
     Environment = "dev"
     ManagedBy   = "Terraform"
   }
@@ -83,4 +83,5 @@ module "identity_access" {
   state_lock_table_arn       = var.state_lock_table_arn
   additional_policy_arns     = [module.secrets_management.policy_arn]
   tags                       = local.common_tags
+}s
 }

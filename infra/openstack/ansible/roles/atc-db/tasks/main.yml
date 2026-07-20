@@ -13,9 +13,9 @@
 - name: Template Postgres env file from Vault secrets
   ansible.builtin.template:
     src: postgres.env.j2
-    dest: /opt/ledgora/postgres.env
-    owner: "{{ ledgora_app_user }}"
-    group: "{{ ledgora_app_group }}"
+    dest: /opt/atonixcorp/postgres.env
+    owner: "{{ atonixcorp_app_user }}"
+    group: "{{ atonixcorp_app_group }}"
     mode: '0600'
   no_log: true
   notify: Restart postgres container
@@ -26,14 +26,14 @@
     image: "{{ atc_db_image }}"
     state: started
     restart_policy: "{{ atc_db_container_restart_policy }}"
-    env_file: /opt/ledgora/postgres.env
+    env_file: /opt/atonixcorp/postgres.env
     ports:
       - "127.0.0.1:{{ atc_db_port }}:5432"   # Bind to loopback only; SG controls external access
     volumes:
       - "{{ atc_db_data_dir }}:/var/lib/postgresql/data:rw"
     log_driver: journald
     labels:
-      system: "ledgora"
+      system: "atonixcorp"
       env: "{{ env }}"
       service: "db"
       change_id: "{{ gerrit_change_id | default('manual') }}"
@@ -43,7 +43,7 @@
     db: postgres
     login_host: 127.0.0.1
     login_port: "{{ atc_db_port }}"
-    login_user: "{{ postgres_user | default('ledgora') }}"
+    login_user: "{{ postgres_user | default('atonixcorp') }}"
     login_password: "{{ postgres_password }}"
   retries: 10
   delay: 5

@@ -29,7 +29,7 @@ cd "$environment_dir"
 
 terraform init \
   -backend-config="bucket=$TF_STATE_BUCKET" \
-  -backend-config="key=ledgora/$environment_name/terraform.tfstate" \
+  -backend-config="key=atonixcorp/$environment_name/terraform.tfstate" \
   -backend-config="region=$AWS_DEFAULT_REGION" \
   -backend-config="dynamodb_table=$TF_STATE_LOCK_TABLE" \
   -backend-config="encrypt=true"

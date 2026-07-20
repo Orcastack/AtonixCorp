@@ -1,4 +1,4 @@
-# Gerrit Setup Instructions for Ledgora
+# Gerrit Setup Instructions for AtonixCorp
 
 ## Projects to create
 
@@ -8,18 +8,18 @@ Run the following `ssh` commands against your Gerrit instance (or use the Admin 
 # Replace GERRIT_HOST and GERRIT_PORT accordingly
 GERRIT="ssh -p $GERRIT_PORT $GERRIT_HOST gerrit"
 
-$GERRIT create-project infra/openstack-ledgora \
-  --description "Ledgora OpenStack Infrastructure as Code" \
+$GERRIT create-project infra/openstack-atonixcorp \
+  --description "AtonixCorp OpenStack Infrastructure as Code" \
   --submit-type MERGE_IF_NECESSARY \
   --require-change-id
 
-$GERRIT create-project apps/ledgora-core \
-  --description "Ledgora Core Application Services" \
+$GERRIT create-project apps/atonixcorp-core \
+  --description "AtonixCorp Core Application Services" \
   --submit-type MERGE_IF_NECESSARY \
   --require-change-id
 
 $GERRIT create-project ci/jenkins-pipelines \
-  --description "Ledgora Jenkins Shared Pipeline Libraries and Jenkinsfiles" \
+  --description "AtonixCorp Jenkins Shared Pipeline Libraries and Jenkinsfiles" \
   --submit-type MERGE_IF_NECESSARY \
   --require-change-id
 ```
@@ -28,7 +28,7 @@ $GERRIT create-project ci/jenkins-pipelines \
 
 | Group name                | Purpose                                                        |
 |---------------------------|----------------------------------------------------------------|
-| Ledgora Owners        | Founder and designated owners; approve STAGE/PROD deployments |
+| AtonixCorp Owners        | Founder and designated owners; approve STAGE/PROD deployments |
 | Infra Leads               | Senior infra engineers; approve STAGE/PROD infra changes       |
 | Infra Engineers           | All infrastructure engineers                                   |
 | App Leads                 | Senior application engineers; approve STAGE/PROD app changes   |
@@ -45,18 +45,18 @@ After creating each project, push the `project.config` from this directory to th
 `refs/meta/config` ref of each Gerrit project:
 
 ```bash
-# Example for infra/openstack-ledgora
-git clone ssh://$GERRIT_HOST:$GERRIT_PORT/infra/openstack-ledgora
-cd infra-openstack-ledgora
+# Example for infra/openstack-atonixcorp
+git clone ssh://$GERRIT_HOST:$GERRIT_PORT/infra/openstack-atonixcorp
+cd infra-openstack-atonixcorp
 git fetch origin refs/meta/config:refs/meta/config
 git checkout refs/meta/config
-cp /path/to/infra-openstack-ledgora.config project.config
+cp /path/to/infra-openstack-atonixcorp.config project.config
 git add project.config
-git commit -m "Apply Ledgora governance config"
+git commit -m "Apply AtonixCorp governance config"
 git push origin HEAD:refs/meta/config
 ```
 
-Repeat for `apps/ledgora-core` and `ci/jenkins-pipelines`.
+Repeat for `apps/atonixcorp-core` and `ci/jenkins-pipelines`.
 
 ## Labels
 

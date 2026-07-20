@@ -26,10 +26,10 @@ build_image() {
 
 cd "$ROOT_DIR"
 
-API_DEV_IMAGE=$(tag_image ledgora/api-dev)
-API_PROD_IMAGE=$(tag_image ledgora/backend)
-APP_DEV_IMAGE=$(tag_image ledgora/app-dev)
-APP_PROD_IMAGE=$(tag_image ledgora/app)
+API_DEV_IMAGE=$(tag_image atonixcorp/api-dev)
+API_PROD_IMAGE=$(tag_image atonixcorp/backend)
+APP_DEV_IMAGE=$(tag_image atonixcorp/app-dev)
+APP_PROD_IMAGE=$(tag_image atonixcorp/app)
 
 build_image "$API_DEV_IMAGE" api/Dockerfile api
 build_image "$API_PROD_IMAGE" api/Dockerfile.prod api

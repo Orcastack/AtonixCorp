@@ -4,7 +4,7 @@ variable "aws_region" {
 
 variable "name_prefix" {
 	type    = string
-	default = "ledgora-dev"
+	default = "atonixcorp-dev"
 }
 
 variable "availability_zones" {
@@ -53,7 +53,7 @@ variable "node_max_size" {
 
 variable "db_name" {
 	type    = string
-	default = "ledgora"
+	default = "atonixcorp"
 }
 
 variable "db_username" {

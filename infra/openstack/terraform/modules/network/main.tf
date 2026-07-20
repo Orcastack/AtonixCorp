@@ -1,7 +1,7 @@
 # -----------------------------------------------------------------------------
-# Ledgora – OpenStack Network Module
+# AtonixCorp – OpenStack Network Module
 # Provisions: network, subnets (main + backend), router, and floating-IP pool
-# Every resource is tagged per the Ledgora traceability standard.
+# Every resource is tagged per the AtonixCorp traceability standard.
 # -----------------------------------------------------------------------------
 
 terraform {
@@ -70,10 +70,13 @@ resource "openstack_networking_router_interface_v2" "backend" {
 
 locals {
   tags = [
-    "system=ledgora",
+    "system=atonixcorp",
     "env=${var.env}",
     "service=shared",
     "change_id=${var.change_id}",
     "commit=${var.commit}",
+  ]
+}
+",
   ]
 }

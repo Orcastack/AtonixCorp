@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Ledgora – TEST environment root
+# AtonixCorp – TEST environment root
 # OpenStack Project: lgx-test
 # Applied via Jenkins promotion job after successful DEV verification.
 # TEST mirrors the production topology to ensure meaningful integration tests.

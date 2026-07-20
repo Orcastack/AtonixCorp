@@ -49,8 +49,8 @@ fi
 # Install dependencies
 echo "Installing Python dependencies..."
 "$VENV_PYTHON" -m pip install -r requirements.txt
-echo "Installing Ledgora CLI..."
-"$VENV_PYTHON" -m pip install -e ../tools/ledgora_cli
+echo "Installing AtonixCorp CLI..."
+"$VENV_PYTHON" -m pip install -e ../tools/atonixcorp_cli
 
 # Run migrations
 echo "Running database migrations..."
@@ -96,7 +96,7 @@ echo "  2. Point provider webhooks to /api/banking-integrations/webhooks/<provid
 echo "  3. Nightly fallback sync runs automatically via start.sh or docker-compose banking-sync"
 echo ""
 echo "To use the CLI after setup, run:"
-echo "  $API_DIR/$VENV_DIR/bin/ledgora profiles"
+echo "  $API_DIR/$VENV_DIR/bin/atonixcorp profiles"
 echo ""
 echo "Or start manually:"
 echo "  API:      cd $API_DIR && $VENV_DIR/bin/python manage.py runserver"
