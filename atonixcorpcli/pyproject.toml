@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "atonixcorpcli"
+version = "0.1.0"
+description = "AtonixCorp Developer Console Integration command line interface"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["click>=8.1", "atonixcorpsdk>=0.1.0"]
+
+[project.scripts]
+atonixcorp = "atonixcorpcli.main:main"
+
+[tool.setuptools.packages.find]
+include = ["atonixcorpcli*"]

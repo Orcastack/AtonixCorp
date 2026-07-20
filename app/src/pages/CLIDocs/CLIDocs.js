@@ -65,7 +65,7 @@ const CLIDocs = () => {
             <p>Bootstrap the backend environment and install the CLI into the backend virtual environment.</p>
             <pre>{`./setup.sh`}</pre>
             <p>Or install the package directly in editable mode:</p>
-            <pre>{`cd tools/atonixcorp_cli\n/home/atonixdev/atonixcorp/api/.venv/bin/python -m pip install -e .`}</pre>
+            <pre>{`python3 -m pip install -e ./atonixcorpsdk\npython3 -m pip install -e ./atonixcorpcli`}</pre>
           </article>
 
           <article className="cli-docs-card">
@@ -78,14 +78,13 @@ const CLIDocs = () => {
           </article>
 
           <article className="cli-docs-card">
-            <h2>Session Behavior</h2>
+            <h2>Authentication Behavior</h2>
             <p>
-              Each authenticated CLI request sends an <strong>Authorization</strong> bearer token,
-              <strong> X-Organization-Id</strong>, and a <strong>AtonixCorp-CLI/&lt;version&gt;</strong> user agent.
+              Each authenticated CLI request sends an <strong>Authorization</strong> bearer token or a DCI API key.
             </p>
             <p>
-              If the access token is close to expiry, or a request returns <strong>401</strong>, the CLI refreshes the session
-              automatically and retries once.
+              API keys are exchanged through the DCI login endpoint for a short-lived bearer token. Credentials remain in the
+              invoking environment and are never included in command output.
             </p>
           </article>
         </div>

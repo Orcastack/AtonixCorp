@@ -8,7 +8,7 @@ services:
     container_name: atonixcorp-api
     command: python manage.py runserver 0.0.0.0:8000
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     volumes:
       - ./api:/app
     env_file:
@@ -102,7 +102,7 @@ services:
     container_name: atonixcorp-app
     command: npm start
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     stdin_open: true
     tty: true
     volumes:
@@ -113,6 +113,21 @@ services:
     depends_on:
       - api
 
+  apache:
+    image: httpd:2.4-alpine
+    container_name: atonixcorp-apache
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/apache2/docker/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro
+      - ./deploy/apache2/docker/atonixcorp-vhosts.conf:/usr/local/apache2/conf/extra/atonixcorp-vhosts.conf:ro
+      - ${APACHE_CERTS_DIR:-/etc/letsencrypt}:/usr/local/apache2/conf/letsencrypt:ro
+    depends_on:
+      - app
+      - api
+
   db:
     image: postgres:14-alpine
     container_name: atonixcorp-db
@@ -121,7 +136,7 @@ services:
       - POSTGRES_USER=atonixcorp
       - POSTGRES_PASSWORD=atonixcorppassword
     ports:
-      - "5433:5432"
+      - "127.0.0.1:5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

@@ -49,8 +49,9 @@ fi
 # Install dependencies
 echo "Installing Python dependencies..."
 "$VENV_PYTHON" -m pip install -r requirements.txt
-echo "Installing AtonixCorp CLI..."
-"$VENV_PYTHON" -m pip install -e ../tools/atonixcorp_cli
+echo "Installing AtonixCorp SDK and CLI..."
+"$VENV_PYTHON" -m pip install -e ../atonixcorpsdk
+"$VENV_PYTHON" -m pip install -e ../atonixcorpcli
 
 # Run migrations
 echo "Running database migrations..."

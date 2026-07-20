@@ -1,0 +1,62 @@
+name: Release Desktop Developer Tools
+
+'on':
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release version (for example, 0.1.0)
+        required: true
+        type: string
+  push:
+    tags: ["desktop-v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  macos-dmg:
+    runs-on: macos-14
+    env:
+      VERSION: ${{ inputs.version || github.ref_name }}
+      APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+      APPLE_ID: ${{ secrets.APPLE_ID }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Import Apple signing certificate
+        env:
+          APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          test -n "$APPLE_CERTIFICATE_BASE64"
+          echo "$APPLE_CERTIFICATE_BASE64" | base64 --decode > certificate.p12
+          security create-keychain -p temporary build.keychain
+          security import certificate.p12 -k build.keychain -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security list-keychains -d user -s build.keychain
+          security set-keychain-settings -lut 21600 build.keychain
+          security unlock-keychain -p temporary build.keychain
+      - name: Build, sign, and notarize DMG
+        run: bash dmg/scripts/build_dmg.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: atonixcorp-macos-dmg
+          path: dmg/dist/*.dmg
+
+  windows-exe:
+    runs-on: windows-2022
+    env:
+      VERSION: ${{ inputs.version || github.ref_name }}
+      WINDOWS_CERTIFICATE_BASE64: ${{ secrets.WINDOWS_CERTIFICATE_BASE64 }}
+      WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+      - name: Build and sign installer
+        shell: pwsh
+        run: ./exe/scripts/build_exe.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: atonixcorp-windows-exe
+          path: exe/dist/*.exe
