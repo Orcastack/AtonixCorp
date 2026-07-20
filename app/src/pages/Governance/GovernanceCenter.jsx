@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { FiAlertCircle, FiCheckCircle, FiFileText, FiShield } from 'react-icons/fi';
+import { FiAlertCircle, FiCheckCircle, FiDollarSign, FiFileText, FiShield } from 'react-icons/fi';
 
 import { Card, PageHeader, Table } from '../../components/ui';
-import { governanceAmendmentsAPI, governancePoliciesAPI } from '../../services/api';
+import {
+  governanceAmendmentsAPI,
+  governanceCommissionEntriesAPI,
+  governanceCommissionPlansAPI,
+  governancePoliciesAPI,
+} from '../../services/api';
 
 const parseList = (response) => response.data.results || response.data || [];
 const thresholds = [
@@ -13,18 +18,24 @@ const thresholds = [
 export default function GovernanceCenter() {
   const [policies, setPolicies] = useState([]);
   const [amendments, setAmendments] = useState([]);
+  const [commissionPlans, setCommissionPlans] = useState([]);
+  const [commissionEntries, setCommissionEntries] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
       try {
-        const [policyResponse, amendmentResponse] = await Promise.all([
+        const [policyResponse, amendmentResponse, planResponse, entryResponse] = await Promise.all([
           governancePoliciesAPI.getAll(),
           governanceAmendmentsAPI.getAll(),
+          governanceCommissionPlansAPI.getAll(),
+          governanceCommissionEntriesAPI.getAll(),
         ]);
         setPolicies(parseList(policyResponse));
         setAmendments(parseList(amendmentResponse));
+        setCommissionPlans(parseList(planResponse));
+        setCommissionEntries(parseList(entryResponse));
       } catch (requestError) {
         setError(requestError.response?.data?.detail || 'Governance records could not be loaded.');
       } finally {
@@ -36,6 +47,9 @@ export default function GovernanceCenter() {
 
   const openVotes = amendments.filter((item) => item.status === 'voting').length;
   const reviewedPolicies = policies.filter((item) => item.status === 'active').length;
+  const accruedCommission = commissionEntries
+    .filter((item) => item.status === 'accrued' || item.status === 'approved')
+    .reduce((total, item) => total + Number(item.commission_amount || 0), 0);
 
   return (
     <div className="module-page governance-center">
@@ -48,6 +62,7 @@ export default function GovernanceCenter() {
         <Card className="stat-card"><FiFileText aria-hidden="true" /><div><span>Policy editions</span><strong>{policies.length}</strong></div></Card>
         <Card className="stat-card"><FiCheckCircle aria-hidden="true" /><div><span>Active policies</span><strong>{reviewedPolicies}</strong></div></Card>
         <Card className="stat-card"><FiShield aria-hidden="true" /><div><span>Open votes</span><strong>{openVotes}</strong></div></Card>
+        <Card className="stat-card"><FiDollarSign aria-hidden="true" /><div><span>Accrued commissions</span><strong>{accruedCommission.toLocaleString(undefined, { maximumFractionDigits: 2 })}</strong></div></Card>
       </div>
       <div className="governance-center__grid">
         <Card title="Policy Register">
@@ -84,6 +99,44 @@ export default function GovernanceCenter() {
             ]}
             data={amendments}
             emptyMessage="No amendment dossiers are currently registered."
+          />
+        )}
+      </Card>
+      <div className="governance-center__grid">
+        <Card title="Role Commission Plans">
+          {loading ? <p className="governance-center__empty">Loading commission plans...</p> : (
+            <Table
+              columns={[
+                { key: 'role_code', label: 'Role' },
+                { key: 'name', label: 'Commission rule' },
+                { key: 'trigger_type', label: 'Trigger', render: (value) => value.replaceAll('_', ' ') },
+                { key: 'rate_percent', label: 'Rate', render: (value) => `${value}%` },
+              ]}
+              data={commissionPlans}
+              emptyMessage="No role commission plans have been configured."
+            />
+          )}
+        </Card>
+        <Card title="Commission Controls">
+          <div className="governance-center__thresholds">
+            <div><span>Entries accrued</span><strong>{commissionEntries.filter((item) => item.status === 'accrued').length}</strong></div>
+            <div><span>Entries approved</span><strong>{commissionEntries.filter((item) => item.status === 'approved').length}</strong></div>
+            <div><span>Entries paid</span><strong>{commissionEntries.filter((item) => item.status === 'paid').length}</strong></div>
+          </div>
+        </Card>
+      </div>
+      <Card title="Commission Ledger">
+        {loading ? <p className="governance-center__empty">Loading calculated commissions...</p> : (
+          <Table
+            columns={[
+              { key: 'source_reference', label: 'Source' },
+              { key: 'recipient_name', label: 'Recipient' },
+              { key: 'role_code', label: 'Role' },
+              { key: 'commission_amount', label: 'Commission', render: (value, row) => `${row.currency} ${value}` },
+              { key: 'status', label: 'Status' },
+            ]}
+            data={commissionEntries}
+            emptyMessage="No commission calculations have been recorded."
           />
         )}
       </Card>

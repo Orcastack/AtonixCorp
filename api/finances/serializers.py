@@ -5,7 +5,7 @@ from django.db.models import Count
 from .models import (
     Expense, Income, Budget, UserProfile, Organization, Entity, Role, Permission,
     TeamMember, TaxExposure, TaxRegimeRegistry, TaxProfile, ComplianceDeadline, CashflowForecast, AuditLog, PlatformAuditEvent, PlatformTask,
-    GovernancePolicy, GovernanceAmendment, GovernanceVote,
+    GovernancePolicy, GovernanceAmendment, GovernanceVote, GovernanceCommissionPlan, GovernanceCommissionEntry,
     ModelTemplate, FinancialModel, Scenario, SensitivityAnalysis, AIInsight,
     CustomKPI, KPICalculation, Report, Consolidation, ConsolidationEntity,
     IntercompanyTransaction, IntercompanyEliminationEntry,
@@ -374,6 +374,59 @@ class GovernanceVoteSerializer(serializers.ModelSerializer):
 
     def get_voter_name(self, obj):
         return obj.voter.get_full_name() or obj.voter.username
+
+
+class GovernanceCommissionPlanSerializer(serializers.ModelSerializer):
+    organization_name = serializers.ReadOnlyField(source='organization.name')
+    created_by_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = GovernanceCommissionPlan
+        fields = [
+            'id', 'organization', 'organization_name', 'role_code', 'name', 'trigger_type', 'rate_percent',
+            'is_active', 'created_by', 'created_by_name', 'created_at', 'updated_at',
+        ]
+        read_only_fields = ['created_by', 'created_at', 'updated_at']
+
+    def validate_rate_percent(self, value):
+        if value < 0 or value > 100:
+            raise serializers.ValidationError('Commission rate must be between 0 and 100 percent.')
+        return value
+
+    def get_created_by_name(self, obj):
+        return obj.created_by.get_full_name() if obj.created_by else ''
+
+
+class GovernanceCommissionEntrySerializer(serializers.ModelSerializer):
+    plan_name = serializers.ReadOnlyField(source='plan.name')
+    role_code = serializers.ReadOnlyField(source='plan.role_code')
+    recipient_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = GovernanceCommissionEntry
+        fields = [
+            'id', 'plan', 'plan_name', 'role_code', 'recipient', 'recipient_name', 'source_reference',
+            'source_description', 'base_amount', 'commission_amount', 'currency', 'status', 'calculated_by',
+            'calculated_at', 'paid_at',
+        ]
+        read_only_fields = [
+            'plan', 'recipient', 'source_reference', 'source_description', 'base_amount', 'commission_amount',
+            'currency', 'calculated_by', 'calculated_at', 'paid_at',
+        ]
+
+    def get_recipient_name(self, obj):
+        return obj.recipient.get_full_name() or obj.recipient.username
+
+
+class GovernanceCommissionCalculationSerializer(serializers.Serializer):
+    recipient = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    source_reference = serializers.CharField(max_length=100)
+    source_description = serializers.CharField(max_length=255, required=False, allow_blank=True)
+    base_amount = serializers.DecimalField(max_digits=18, decimal_places=2, min_value=0)
+    currency = serializers.CharField(max_length=3, default='USD')
+
+    def validate_currency(self, value):
+        return value.upper()
 
 
 # ============ Dashboard Summary Serializers ============

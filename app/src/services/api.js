@@ -121,6 +121,18 @@ export const governanceVotesAPI = {
   create: (data) => api.post('/governance-votes/', data),
 };
 
+export const governanceCommissionPlansAPI = {
+  getAll: () => api.get('/governance-commission-plans/'),
+  create: (data) => api.post('/governance-commission-plans/', data),
+  update: (id, data) => api.patch(`/governance-commission-plans/${id}/`, data),
+  calculate: (id, data) => api.post(`/governance-commission-plans/${id}/calculate/`, data),
+};
+
+export const governanceCommissionEntriesAPI = {
+  getAll: () => api.get('/governance-commission-entries/'),
+  update: (id, data) => api.patch(`/governance-commission-entries/${id}/`, data),
+};
+
 // Tax countries API
 export const taxAPI = {
   list: () => api.get('/tax/countries/'),

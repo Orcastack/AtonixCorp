@@ -13,7 +13,7 @@ from .enterprise_views import (
     OrganizationViewSet, EntityViewSet, TeamMemberViewSet,
     TaxExposureViewSet, TaxProfileViewSet, TaxRegimeRegistryViewSet, TaxCalculationHistoryViewSet, TaxFilingViewSet, TaxAuditLogViewSet, ComplianceDeadlineViewSet, CashflowForecastViewSet,
     TaxRuleSetVersionViewSet, TaxRiskAlertViewSet, GovernancePolicyViewSet,
-    GovernanceAmendmentViewSet, GovernanceVoteViewSet,
+    GovernanceAmendmentViewSet, GovernanceVoteViewSet, GovernanceCommissionPlanViewSet, GovernanceCommissionEntryViewSet,
     RoleViewSet, PermissionViewSet, AuditLogViewSet, PlatformAuditEventViewSet,
     EntityDepartmentViewSet, EntityRoleViewSet, EntityStaffViewSet,
     StaffPayrollProfileViewSet, PayrollComponentViewSet, StaffPayrollComponentAssignmentViewSet,
@@ -89,6 +89,8 @@ router.register(r'platform-audit-events', PlatformAuditEventViewSet, basename='p
 router.register(r'governance-policies', GovernancePolicyViewSet, basename='governance-policy')
 router.register(r'governance-amendments', GovernanceAmendmentViewSet, basename='governance-amendment')
 router.register(r'governance-votes', GovernanceVoteViewSet, basename='governance-vote')
+router.register(r'governance-commission-plans', GovernanceCommissionPlanViewSet, basename='governance-commission-plan')
+router.register(r'governance-commission-entries', GovernanceCommissionEntryViewSet, basename='governance-commission-entry')
 
 # Entity-specific endpoints
 router.register(r'entity-departments', EntityDepartmentViewSet, basename='entity-department')

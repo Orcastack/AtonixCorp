@@ -1545,6 +1545,69 @@ class GovernanceVote(models.Model):
         return f"{self.amendment.amendment_number} - {self.voter} ({self.decision})"
 
 
+GOVERNANCE_COMMISSION_TRIGGER_CHOICES = [
+    ('organization_activity', 'Organization Activity'),
+    ('financial_transaction', 'Financial Transaction'),
+    ('infrastructure_deployment', 'Infrastructure Deployment'),
+    ('compliance_enforcement', 'Compliance Enforcement'),
+    ('governance_approval', 'Governance Approval'),
+]
+GOVERNANCE_COMMISSION_STATUS_CHOICES = [
+    ('accrued', 'Accrued'), ('approved', 'Approved'), ('paid', 'Paid'), ('void', 'Void'),
+]
+
+
+class GovernanceCommissionPlan(models.Model):
+    """Role-based commission policy for an organization's governance model."""
+
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='governance_commission_plans')
+    role_code = models.CharField(max_length=50)
+    name = models.CharField(max_length=255)
+    trigger_type = models.CharField(max_length=40, choices=GOVERNANCE_COMMISSION_TRIGGER_CHOICES)
+    rate_percent = models.DecimalField(max_digits=7, decimal_places=4)
+    is_active = models.BooleanField(default=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='governance_commission_plans_created')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['role_code', 'trigger_type', 'name']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['organization', 'role_code', 'trigger_type', 'name'],
+                name='unique_governance_commission_plan',
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.organization.name}: {self.role_code} / {self.name}"
+
+
+class GovernanceCommissionEntry(models.Model):
+    """Auditable calculated commission entry. Calculation inputs cannot change after creation."""
+
+    plan = models.ForeignKey(GovernanceCommissionPlan, on_delete=models.PROTECT, related_name='entries')
+    recipient = models.ForeignKey(User, on_delete=models.PROTECT, related_name='governance_commission_entries')
+    source_reference = models.CharField(max_length=100)
+    source_description = models.CharField(max_length=255, blank=True)
+    base_amount = models.DecimalField(max_digits=18, decimal_places=2)
+    commission_amount = models.DecimalField(max_digits=18, decimal_places=2)
+    currency = models.CharField(max_length=3, default='USD')
+    status = models.CharField(max_length=20, choices=GOVERNANCE_COMMISSION_STATUS_CHOICES, default='accrued')
+    calculated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='governance_commission_entries_calculated')
+    calculated_at = models.DateTimeField(auto_now_add=True)
+    paid_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-calculated_at']
+        constraints = [
+            models.UniqueConstraint(fields=['plan', 'source_reference', 'recipient'], name='unique_governance_commission_source'),
+        ]
+
+    def __str__(self):
+        return f"{self.plan.name}: {self.commission_amount} {self.currency}"
+
+
 class PlatformTask(models.Model):
     """Unified task layer that can aggregate work across product domains."""
 

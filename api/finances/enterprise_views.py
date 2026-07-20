@@ -15,7 +15,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.dateparse import parse_date
 from datetime import datetime, timedelta
 from collections import defaultdict
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 
 from django.utils import timezone
 from workspaces.models import Workspace
@@ -24,7 +24,7 @@ from .models import (
     Organization, Entity, TeamMember, Role, Permission, TaxExposure, ROLE_ORG_OWNER, ROLE_CFO,
     ROLE_FINANCE_ANALYST, ROLE_VIEWER, ROLE_EXTERNAL_ADVISOR,
     TaxProfile, TaxRegimeRegistry, TaxCalculation, TaxFiling, TaxAuditLog, TaxRuleSetVersion, TaxRiskAlert, ComplianceDeadline, CashflowForecast, AuditLog, PlatformAuditEvent, PlatformTask, EntityDepartment,
-    GovernancePolicy, GovernanceAmendment, GovernanceVote,
+    GovernancePolicy, GovernanceAmendment, GovernanceVote, GovernanceCommissionPlan, GovernanceCommissionEntry,
     Budget, Scenario, Consolidation,
     EntityRole, EntityStaff, BankAccount, Wallet, ComplianceDocument,
     StaffPayrollProfile, PayrollComponent, StaffPayrollComponentAssignment,
@@ -59,7 +59,8 @@ from .serializers import (
     TeamMemberSerializer, RoleSerializer, PermissionSerializer,
     TaxExposureSerializer, TaxProfileSerializer, ComplianceDeadlineSerializer,
     CashflowForecastSerializer, AuditLogSerializer, PlatformAuditEventSerializer, GovernancePolicySerializer,
-    GovernanceAmendmentSerializer, GovernanceVoteSerializer, OrgOverviewSerializer,
+    GovernanceAmendmentSerializer, GovernanceVoteSerializer, GovernanceCommissionPlanSerializer,
+    GovernanceCommissionEntrySerializer, GovernanceCommissionCalculationSerializer, OrgOverviewSerializer,
     EntityDepartmentSerializer, EntityRoleSerializer, EntityStaffSerializer,
     StaffPayrollProfileSerializer, PayrollComponentSerializer, StaffPayrollComponentAssignmentSerializer,
     LeaveTypeSerializer, LeaveBalanceSerializer, LeaveRequestSerializer, PayrollBankOriginatorProfileSerializer, PayrollRunSerializer,
@@ -2198,6 +2199,73 @@ class GovernanceVoteViewSet(viewsets.ModelViewSet):
         if amendment.voting_closes_at and now > amendment.voting_closes_at:
             raise ValidationError('The voting window has closed.')
         serializer.save(voter=self.request.user)
+
+
+class GovernanceCommissionPlanViewSet(viewsets.ModelViewSet):
+    serializer_class = GovernanceCommissionPlanSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return GovernanceCommissionPlan.objects.filter(
+            organization__in=_accessible_organizations_queryset(self.request.user)
+        ).select_related('organization', 'created_by')
+
+    def perform_create(self, serializer):
+        organization = serializer.validated_data['organization']
+        if not _accessible_organizations_queryset(self.request.user).filter(pk=organization.pk).exists():
+            raise PermissionDenied('You do not have access to this organization.')
+        plan = serializer.save(created_by=self.request.user)
+        log_platform_audit_event(
+            domain='governance', event_type='commission_plan.created', action='commission_plan_created',
+            actor=self.request.user, organization=organization, resource_type='GovernanceCommissionPlan',
+            resource_id=str(plan.id), resource_name=plan.name, summary=f'Created commission plan {plan.name}',
+            metadata={'role_code': plan.role_code, 'trigger_type': plan.trigger_type, 'rate_percent': str(plan.rate_percent)},
+        )
+
+    @action(detail=True, methods=['post'])
+    def calculate(self, request, pk=None):
+        plan = self.get_object()
+        if not plan.is_active:
+            raise ValidationError('Inactive commission plans cannot calculate entries.')
+        calculation_serializer = GovernanceCommissionCalculationSerializer(data=request.data)
+        calculation_serializer.is_valid(raise_exception=True)
+        values = calculation_serializer.validated_data
+        commission_amount = (values['base_amount'] * plan.rate_percent / Decimal('100')).quantize(
+            Decimal('0.01'), rounding=ROUND_HALF_UP,
+        )
+        entry = GovernanceCommissionEntry.objects.create(
+            plan=plan, recipient=values['recipient'], source_reference=values['source_reference'],
+            source_description=values.get('source_description', ''), base_amount=values['base_amount'],
+            commission_amount=commission_amount, currency=values['currency'], calculated_by=request.user,
+        )
+        log_platform_audit_event(
+            domain='governance', event_type='commission_entry.calculated', action='commission_calculated',
+            actor=request.user, organization=plan.organization, resource_type='GovernanceCommissionEntry',
+            resource_id=str(entry.id), resource_name=plan.name,
+            summary=f'Calculated {entry.commission_amount} {entry.currency} commission for {entry.recipient.username}',
+            metadata={'plan_id': plan.id, 'source_reference': entry.source_reference, 'base_amount': str(entry.base_amount), 'commission_amount': str(entry.commission_amount)},
+        )
+        return Response(GovernanceCommissionEntrySerializer(entry).data, status=drf_status.HTTP_201_CREATED)
+
+
+class GovernanceCommissionEntryViewSet(viewsets.ModelViewSet):
+    serializer_class = GovernanceCommissionEntrySerializer
+    permission_classes = [IsAuthenticated]
+    http_method_names = ['get', 'patch', 'head', 'options']
+
+    def get_queryset(self):
+        return GovernanceCommissionEntry.objects.filter(
+            plan__organization__in=_accessible_organizations_queryset(self.request.user)
+        ).select_related('plan', 'plan__organization', 'recipient', 'calculated_by')
+
+    def perform_update(self, serializer):
+        entry = serializer.save(paid_at=timezone.now() if serializer.validated_data.get('status') == 'paid' else serializer.instance.paid_at)
+        log_platform_audit_event(
+            domain='governance', event_type='commission_entry.status_updated', action='commission_status_updated',
+            actor=self.request.user, organization=entry.plan.organization, resource_type='GovernanceCommissionEntry',
+            resource_id=str(entry.id), resource_name=entry.plan.name,
+            summary=f'Updated commission entry {entry.source_reference} to {entry.status}', metadata={'status': entry.status},
+        )
 
 
 # ============ Entity-Specific ViewSets ============

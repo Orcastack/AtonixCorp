@@ -30,6 +30,7 @@ from .models import (
     ChartOfAccounts,
     ComplianceDeadline,
     ComplianceDocument,
+    GovernanceCommissionEntry,
     Customer,
     Consolidation,
     ConsolidationEntity,
@@ -2739,6 +2740,54 @@ class PlatformFoundationAPITests(TestCase):
         self.controllership.save(update_fields=['owner'])
         self.client = APIClient()
         self.client.force_authenticate(user=self.owner)
+
+    def test_governance_commission_plan_calculates_and_audits_entry(self):
+        plan_response = self.client.post(
+            '/api/governance-commission-plans/',
+            {
+                'organization': self.organization.id,
+                'role_code': 'CFO',
+                'name': 'Financial transaction commission',
+                'trigger_type': 'financial_transaction',
+                'rate_percent': '2.5000',
+            },
+            format='json',
+        )
+
+        self.assertEqual(plan_response.status_code, 201)
+        calculation_response = self.client.post(
+            f"/api/governance-commission-plans/{plan_response.data['id']}/calculate/",
+            {
+                'recipient': self.department_owner.id,
+                'source_reference': 'TXN-2026-001',
+                'source_description': 'Approved treasury transfer',
+                'base_amount': '1200.00',
+                'currency': 'usd',
+            },
+            format='json',
+        )
+
+        self.assertEqual(calculation_response.status_code, 201)
+        self.assertEqual(calculation_response.data['commission_amount'], '30.00')
+        entry = GovernanceCommissionEntry.objects.get(pk=calculation_response.data['id'])
+        self.assertEqual(entry.status, 'accrued')
+        self.assertTrue(
+            PlatformAuditEvent.objects.filter(
+                domain='governance',
+                event_type='commission_entry.calculated',
+                resource_id=str(entry.id),
+            ).exists()
+        )
+
+        update_response = self.client.patch(
+            f'/api/governance-commission-entries/{entry.id}/',
+            {'base_amount': '1.00', 'status': 'approved'},
+            format='json',
+        )
+        self.assertEqual(update_response.status_code, 200)
+        entry.refresh_from_db()
+        self.assertEqual(entry.base_amount, Decimal('1200.00'))
+        self.assertEqual(entry.status, 'approved')
 
     def test_creating_task_request_creates_platform_task_and_audit_event(self):
         response = self.client.post(
