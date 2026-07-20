@@ -16,8 +16,11 @@ services:
     environment:
       - DJANGO_SETTINGS_MODULE=finance_api.settings
       - PYTHONUNBUFFERED=1
-      - FRONTEND_BASE_URL=${FRONTEND_BASE_URL:-http://localhost:3000}
-      - APPROVAL_NOTIFICATION_BASE_URL=${APPROVAL_NOTIFICATION_BASE_URL:-http://localhost:3000}
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,api.atonixcorp.com,atonixcorp.com,www.atonixcorp.com}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-https://atonixcorp.com,https://www.atonixcorp.com,http://atonixcorp.com,http://www.atonixcorp.com}
+      - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS:-https://atonixcorp.com,https://www.atonixcorp.com,http://atonixcorp.com,http://www.atonixcorp.com}
+      - FRONTEND_BASE_URL=${FRONTEND_BASE_URL:-https://atonixcorp.com}
+      - APPROVAL_NOTIFICATION_BASE_URL=${APPROVAL_NOTIFICATION_BASE_URL:-https://atonixcorp.com}
       - AI_ENABLE_EXTERNAL_MODELS=${AI_ENABLE_EXTERNAL_MODELS:-0}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
       - ANTHROPIC_API_BASE_URL=${ANTHROPIC_API_BASE_URL:-https://api.anthropic.com}
@@ -110,6 +113,8 @@ services:
       - /app/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
+      # The app port is loopback-only; public traffic reaches CRA through Apache.
+      - DANGEROUSLY_DISABLE_HOST_CHECK=true
     depends_on:
       - api
 
@@ -122,8 +127,11 @@ services:
       - "443:443"
     volumes:
       - ./deploy/apache2/docker/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro
-      - ./deploy/apache2/docker/atonixcorp-vhosts.conf:/usr/local/apache2/conf/extra/atonixcorp-vhosts.conf:ro
+      - ./deploy/apache2/docker/atonixcorp-vhosts-tls.conf:/usr/local/apache2/conf/extra/atonixcorp-vhosts-tls.conf:ro
+      - ./deploy/apache2/docker/atonixcorp-vhosts-http.conf:/usr/local/apache2/conf/extra/atonixcorp-vhosts-http.conf:ro
+      - ./deploy/apache2/docker/entrypoint.sh:/usr/local/apache2/conf/extra/entrypoint.sh:ro
       - ${APACHE_CERTS_DIR:-/etc/letsencrypt}:/usr/local/apache2/conf/letsencrypt:ro
+    command: ["/bin/sh", "/usr/local/apache2/conf/extra/entrypoint.sh"]
     depends_on:
       - app
       - api

@@ -9,6 +9,8 @@ These two host Apache virtual hosts serve the running Docker containers without 
 
 `docker-compose.yml` now starts an `atonixcorp-apache` container automatically with the frontend and API. It publishes ports `80` and `443`, proxies to the internal `app` and `api` services, and mounts Let’s Encrypt certificates read-only from `${APACHE_CERTS_DIR:-/etc/letsencrypt}`.
 
+When all four certificate files are present, Apache serves the TLS virtual hosts and redirects HTTP to HTTPS. If certificates are absent, the container stays available through an HTTP-only fallback and logs the condition instead of restarting. This fallback is for initial DNS/certificate setup only; do not treat it as a production HTTPS configuration.
+
 Do not run the host Apache service and the Compose Apache container on the same ports. For the Compose-managed proxy:
 
 ```bash
@@ -18,6 +20,8 @@ sudo docker compose ps
 ```
 
 The certificate directories below must exist before `atonixcorp-apache` starts. Set `APACHE_CERTS_DIR` in the shell or `.env` when certificates are stored elsewhere.
+
+Before requesting certificates, confirm `atonixcorp.com`, `www.atonixcorp.com`, and `api.atonixcorp.com` each resolve to this server's public IP. The HTTP-01 challenge cannot succeed while DNS points at another host.
 
 ## Host Apache Alternative
 
