@@ -869,7 +869,7 @@ class DeveloperPortalViewTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data['username'], 'This field is required.')
+        self.assertEqual(response.data['error']['details']['username'], 'This field is required.')
 
         matching_username_response = self.client.post(
             '/api/auth/register/',
@@ -884,7 +884,7 @@ class DeveloperPortalViewTests(TestCase):
 
         self.assertEqual(matching_username_response.status_code, 400)
         self.assertEqual(
-            matching_username_response.data['username'],
+            matching_username_response.data['error']['details']['username'],
             'Username or employee ID must be different from your email address.',
         )
 
@@ -915,7 +915,10 @@ class DeveloperPortalViewTests(TestCase):
         )
 
         self.assertEqual(duplicate_response.status_code, 400)
-        self.assertEqual(duplicate_response.data['username'], 'This username is already in use.')
+        self.assertEqual(
+            duplicate_response.data['error']['details']['username'],
+            'This username is already in use.',
+        )
 
     def test_expired_email_verification_token_is_rejected(self):
         self.client.post(

@@ -7,9 +7,13 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const API_BASE_URL =
-    process.env.REACT_APP_API_BASE_URL ||
-    (process.env.NODE_ENV === 'development' ? 'http://localhost:8000' : '');
+  const isLocalBrowser = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+  const configuredApiBaseUrl = process.env.REACT_APP_API_BASE_URL;
+  const API_BASE_URL = configuredApiBaseUrl && (isLocalBrowser || !configuredApiBaseUrl.includes('localhost'))
+    ? configuredApiBaseUrl
+    : isLocalBrowser
+      ? 'http://localhost:8000'
+      : 'https://api.atonixcorp.com';
 
   const apiUrl = useCallback(
     (path) => {
