@@ -816,10 +816,13 @@ class DeveloperPortalViewTests(TestCase):
         self.assertTrue(register_response.data['verification_required'])
         self.assertNotIn('access', register_response.data)
         self.assertFalse(Organization.objects.filter(owner__email='secure-id@example.com').exists())
-        verification_messages = [message for message in mail.outbox if message.subject == 'Verify Your Account']
+        verification_messages = [message for message in mail.outbox if message.subject == 'Confirm your email for AtonixCorp']
         self.assertEqual(len(verification_messages), 1)
-        self.assertNotIn('<html', verification_messages[-1].body.lower())
+        self.assertIn('Thanks for joining AtonixCorp.', verification_messages[-1].body)
         self.assertIn('/verify-email?token=', verification_messages[-1].body)
+        self.assertEqual(len(verification_messages[-1].alternatives), 1)
+        self.assertEqual(verification_messages[-1].alternatives[0].mimetype, 'text/html')
+        self.assertIn('Verify your account', verification_messages[-1].alternatives[0].content)
 
         token_response = self.client.post(
             '/api/auth/token/',
@@ -832,7 +835,7 @@ class DeveloperPortalViewTests(TestCase):
 
         self.assertEqual(token_response.status_code, 401)
         self.assertIn('Please verify your email first.', str(token_response.data))
-        verification_messages = [message for message in mail.outbox if message.subject == 'Verify Your Account']
+        verification_messages = [message for message in mail.outbox if message.subject == 'Confirm your email for AtonixCorp']
         self.assertEqual(len(verification_messages), 1)
 
         verification_url = next(line for line in verification_messages[0].body.splitlines() if '/verify-email?token=' in line)
@@ -1013,7 +1016,7 @@ class DeveloperPortalViewTests(TestCase):
             },
             format='json',
         )
-        verification_message = next(message for message in mail.outbox if message.subject == 'Verify Your Account')
+        verification_message = next(message for message in mail.outbox if message.subject == 'Confirm your email for AtonixCorp')
         verification_url = next(line for line in verification_message.body.splitlines() if '/verify-email?token=' in line)
         verification_token = parse_qs(urlparse(verification_url).query)['token'][0]
         token_record = EmailVerificationToken.objects.get(user__email='expired-link@example.com')
