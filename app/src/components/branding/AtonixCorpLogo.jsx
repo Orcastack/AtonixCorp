@@ -14,7 +14,6 @@ function AtonixCorpLogo({ variant = 'full', withText = true, size = 'medium', te
 
   return (
     <span className={classes}>
-      {/* Square brand mark: premium navy background + warm shield */}
       <svg
         className="atonixcorp-logo-mark"
         width={dimension}
@@ -24,21 +23,14 @@ function AtonixCorpLogo({ variant = 'full', withText = true, size = 'medium', te
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden="true"
       >
-        <defs>
-          <linearGradient id="atonixcorp-logo-bg" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#081A33" />
-            <stop offset="1" stopColor="#123B66" />
-          </linearGradient>
-          <linearGradient id="atonixcorp-logo-shield" x1="20" y1="16" x2="44" y2="52" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#FFFFFF" />
-            <stop offset="1" stopColor="#D9E8F5" />
-          </linearGradient>
-        </defs>
-        <rect width="64" height="64" rx="14" fill="url(#atonixcorp-logo-bg)" />
+        <rect width="64" height="64" rx="14" fill="#0B1F3A" />
         <path d="M32 12 L50 19 L50 34 C50 44 42 52 32 56 C22 52 14 44 14 34 L14 19 Z"
-          fill="url(#atonixcorp-logo-shield)" />
-        <path d="M32 17 L46 23 L46 34 C46 42 40 49 32 53 C24 49 18 42 18 34 L18 23 Z"
-          fill="none" stroke="#7DD3FC" strokeWidth="1.5" />
+          fill="#FFFFFF" />
+        <path d="M24 28h7m2 0h7M31 28v8m0 0h7" fill="none" stroke="#1F9D91" strokeWidth="2" strokeLinecap="round" />
+        <circle cx="22" cy="28" r="2.5" fill="#1F9D91" />
+        <circle cx="40" cy="28" r="2.5" fill="#1F9D91" />
+        <circle cx="31" cy="38" r="2.5" fill="#1F9D91" />
+        <circle cx="40" cy="38" r="2.5" fill="#1F9D91" />
       </svg>
       {withText ? (
         <span className="atonixcorp-logo-wordmark">

@@ -3,6 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useEnterprise } from '../../context/EnterpriseContext';
 import { LogoMark } from '../Brand/LogoMark';
+import ModuleIcon from '../branding/ModuleIcon';
 import './Layout.css';
 
 const Layout = ({ children }) => {
@@ -42,16 +43,16 @@ const Layout = ({ children }) => {
   //  Navigation definitions
 
   const overviewNav = [
-    { to: '/app/enterprise/org-overview',    label: 'Overview' },
+    { to: '/app/enterprise/org-overview',    label: 'Overview', icon: <ModuleIcon name="compute" /> },
     { to: '/app/overview/notifications',     label: 'Notifications' },
     { to: '/app/overview/tasks',             label: 'Tasks' },
   ];
 
   const workspaceNav = [
-    { to: '/app/enterprise/team',            label: 'Team & Permissions' },
+    { to: '/app/enterprise/team',            label: 'Team & Permissions', icon: <ModuleIcon name="workspace" /> },
     { to: '/app/enterprise/reports',         label: 'Reports' },
     { to: '/app/enterprise/audit-explorer',  label: 'Platform Audit' },
-    { to: '/app/governance',                 label: 'Governance Center' },
+    { to: '/app/governance',                 label: 'Governance Center', icon: <ModuleIcon name="governance" /> },
     { to: '/app/enterprise/tax-compliance',  label: 'Tax Compliance' },
     { to: '/app/settings/branding',          label: 'Branding' },
   ];
@@ -126,14 +127,14 @@ const Layout = ({ children }) => {
 
   const integrationsNav = [
     { to: '/app/marketplace', label: 'Module Marketplace' },
-    { to: '/app/integrations/api-keys', label: 'API Keys' },
+    { to: '/app/integrations/api-keys', label: 'API Keys', icon: <ModuleIcon name="compute" /> },
     { to: '/app/integrations/list',     label: 'Connected Apps' },
   ];
 
   const settingsNav = [
     { to: '/app/settings/firm',         label: 'Firm Settings' },
     { to: '/app/settings/team',         label: 'Team & Permissions' },
-    { to: '/security-center',           label: 'Security', target: '_blank', rel: 'noreferrer noopener' },
+    { to: '/security-center',           label: 'Security', icon: <ModuleIcon name="security" />, target: '_blank', rel: 'noreferrer noopener' },
     { to: '/app/settings/subscription', label: 'Subscription' },
   ];
 
