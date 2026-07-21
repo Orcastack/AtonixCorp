@@ -54,6 +54,16 @@ Use the semantic variables instead of raw color values:
 
 Avoid raw colors, neon effects, glow treatments, decorative gradients, and page-specific brand colors.
 
+## Enterprise Dashboards
+
+Organization dashboards use a white and cool-gray canvas with blue for navigation
+and interactive controls, green for positive performance, and amber or red only
+for status conditions. Dashboard panels, metrics, tabs, and resource cards use a
+1px border, 2px corner radius, and restrained shadow. Metric labels are 11px
+uppercase metadata; values are 25px bold figures with no decorative gradients.
+Keep dashboard grids at four metrics on wide screens, two on tablet, and one on
+mobile. Tabs use a blue bottom border for the active state and a gray hover fill.
+
 ## Layout and components
 
 Use the 12-column grid patterns already established by page shells. The standard rhythm is 16px for controls and local spacing, 24px for grouped content, and 32px for section separation. Cards use an 8px maximum radius, a 1px silver border, and the shared shadow tokens.
