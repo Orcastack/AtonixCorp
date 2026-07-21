@@ -8,6 +8,7 @@ import dj_database_url
 
 # Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
+EMAIL_TEMPLATE_DIR = BASE_DIR.parent / 'email-templates'
 
 
 def env_bool(name, default=False):
@@ -67,7 +68,7 @@ ROOT_URLCONF = 'atonixcorp_api.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [BASE_DIR / 'templates', EMAIL_TEMPLATE_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

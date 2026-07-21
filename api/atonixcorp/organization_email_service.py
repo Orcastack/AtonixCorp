@@ -1,7 +1,6 @@
 from calendar import monthrange
 from datetime import datetime
 from email.utils import make_msgid
-from html import escape
 from urllib.parse import quote
 
 from django.conf import settings
@@ -12,6 +11,7 @@ from django.utils.html import strip_tags
 from django.utils.text import slugify
 from rest_framework.exceptions import ValidationError
 
+from .email_template_service import render_email_template
 from .models import (
     OrganizationEmailAccount,
     OrganizationEmailCampaign,
@@ -207,7 +207,12 @@ def send_campaign(organization, actor, payload):
     for recipient in recipients:
         body = html_body
         if campaign_type == 'marketing':
-            body = f'{html_body}<hr><p><a href="{escape(_unsubscribe_url(organization, recipient))}">Unsubscribe</a></p>'
+            body, _ = render_email_template('marketing_campaign', {
+                'title': subject,
+                'content_html': html_body,
+                'content_text': strip_tags(html_body),
+                'unsubscribe_url': _unsubscribe_url(organization, recipient),
+            })
         deliveries.append(_send_message(
             sender_address=sender.address,
             recipient=recipient,
@@ -232,10 +237,7 @@ def send_campaign(organization, actor, payload):
 def send_system_notification(*, recipient, subject, title, message, event_type, organization=None):
     if not recipient:
         return None
-    html_body = (
-        f'<h1>{escape(title)}</h1><p>{escape(message)}</p>'
-        '<p>This is an automated AtonixCorp service notification.</p>'
-    )
+    html_body, _ = render_email_template('system_notification', {'title': title, 'message': message})
     return _send_message(
         sender_address=getattr(settings, 'DEFAULT_FROM_EMAIL', 'no-reply@atonixcorp.local'),
         recipient=recipient,

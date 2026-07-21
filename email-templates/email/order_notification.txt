@@ -1,0 +1,7 @@
+Hi {{ user_name }},
+
+Order {{ order_id }} for {{ organization_name }} has been updated.
+Total: {{ order_total }}
+Delivery status: {{ delivery_status }}
+
+For assistance, contact {{ support_email }}.

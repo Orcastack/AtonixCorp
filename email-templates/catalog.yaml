@@ -1,0 +1,11 @@
+version: 1
+templates:
+  verification:
+    subject: Confirm your email for AtonixCorp
+    required_variables: [user_name, verification_link, expiration_minutes]
+  marketing_campaign:
+    required_variables: [title, content_html, unsubscribe_url]
+  order_notification:
+    required_variables: [user_name, organization_name, order_id, order_total, delivery_status]
+  system_notification:
+    required_variables: [title, message]

@@ -822,7 +822,7 @@ class DeveloperPortalViewTests(TestCase):
         self.assertIn('/verify-email?token=', verification_messages[-1].body)
         self.assertEqual(len(verification_messages[-1].alternatives), 1)
         self.assertEqual(verification_messages[-1].alternatives[0].mimetype, 'text/html')
-        self.assertIn('Verify your account', verification_messages[-1].alternatives[0].content)
+        self.assertIn('Verify Email', verification_messages[-1].alternatives[0].content)
 
         token_response = self.client.post(
             '/api/auth/token/',
@@ -2142,7 +2142,28 @@ class OrganizationDirectoryAPITests(TestCase):
         self.assertEqual(unit.parent_id, office.id)
 
 
+@override_settings(MEDIA_ROOT=tempfile.gettempdir())
 class CompanyIdentityAPITests(TestCase):
+    def test_unverified_account_cannot_create_an_organization(self):
+        creator = User.objects.create_user(
+            username='unverified-creator',
+            email='unverified-creator@example.com',
+            password='pass',
+        )
+        UserProfile.objects.create(user=creator, email_verified=False)
+        client = APIClient()
+        client.force_authenticate(creator)
+
+        response = client.post('/api/organizations/', {
+            'name': 'Blocked Organization',
+            'registration_number': 'US-2026-100001',
+            'primary_country': 'US',
+            'primary_currency': 'USD',
+        }, format='json')
+
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(Organization.objects.filter(name='Blocked Organization').exists())
+
     def test_company_identity_is_required_normalized_unique_and_audited(self):
         founder = User.objects.create_user(
             username='company-founder',
@@ -2302,6 +2323,42 @@ class GovernanceCloudExportAPITests(TestCase):
 
         self.assertEqual(response.status_code, 404)
         self.assertFalse(organization.governance_cloud_exports.exists())
+
+
+@override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
+class SystemNotificationTemplateTests(TestCase):
+    def test_marketing_template_renders_unsubscribe_link(self):
+        from .email_template_service import render_email_template
+
+        html_body, text_body = render_email_template('marketing_campaign', {
+            'title': 'AtonixCorp product update',
+            'content_html': '<p>New reporting features are available.</p>',
+            'content_text': 'New reporting features are available.',
+            'unsubscribe_url': 'https://atonixcorp.com/email-preferences?recipient=test@example.com',
+        })
+
+        self.assertIn('Unsubscribe', html_body)
+        self.assertIn('email-preferences', html_body)
+        self.assertIn('Unsubscribe:', text_body)
+
+    def test_system_notification_uses_branded_transactional_template(self):
+        from .organization_email_service import send_system_notification
+
+        mail.outbox.clear()
+        delivery = send_system_notification(
+            recipient='notification-recipient@example.com',
+            subject='Welcome to AtonixCorp',
+            title='Welcome to AtonixCorp',
+            message='Your account is ready.',
+            event_type='account_registration',
+        )
+
+        self.assertEqual(delivery.status, 'sent')
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn('Welcome to AtonixCorp', mail.outbox[0].body)
+        self.assertEqual(len(mail.outbox[0].alternatives), 1)
+        self.assertIn('background:#fc6d26', mail.outbox[0].alternatives[0].content)
+        self.assertIn('automated AtonixCorp service notification', mail.outbox[0].alternatives[0].content)
 
 
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')

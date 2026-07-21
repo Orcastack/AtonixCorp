@@ -1,0 +1,8 @@
+[
+  { "key": "registration_number", "label": "Registration Number", "fallback": "Verification required" },
+  { "key": "primary_country", "label": "Country", "fallback": "Not set" },
+  { "key": "industry", "label": "Industry", "fallback": "Not set" },
+  { "key": "employee_count", "label": "Employees", "fallback": "Not set" },
+  { "key": "email", "label": "Email", "fallback": "Not set" },
+  { "key": "owner_name", "label": "Owner", "fallback": "Owner record unavailable" }
+]

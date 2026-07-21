@@ -3,22 +3,26 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useEnterprise } from '../../context/EnterpriseContext';
 import { organizationsAPI } from '../../services/api';
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { countryDropdownOptionsByCode, countryDropdownOptionsByName } from '../../utils/countryDropdowns';
+import organizationCardFields from './organizationCardFields.json';
 import './WorkspaceSelector.css';
+
+const ORGANIZATIONS_PER_PAGE = 4;
 
 const getCountryLabel = (country) => {
   if (!country) return 'Not Set';
   return countryDropdownOptionsByCode.get(country)?.name || countryDropdownOptionsByName.get(country)?.name || country;
 };
 
-const formatDate = (value) => {
-  if (!value) return 'Not Set';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-};
-
 const getInitials = (name = '') => name.split(' ').filter(Boolean).slice(0, 2).map((part) => part[0]?.toUpperCase()).join('') || 'LG';
+
+const getCardValue = (workspace, field) => {
+  if (field.key === 'primary_country') return getCountryLabel(workspace.primary_country);
+  if (field.key === 'email') return workspace.email || workspace.owner_email || field.fallback;
+  if (field.key === 'owner_name') return workspace.owner_name || workspace.owner_email || field.fallback;
+  return workspace[field.key] ?? field.fallback;
+};
 
 const WorkspaceSelector = () => {
   const navigate = useNavigate();
@@ -27,9 +31,19 @@ const WorkspaceSelector = () => {
   const [workspaces, setWorkspaces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [currentPage, setCurrentPage] = useState(0);
   const userLabel = user?.name || user?.email || '';
   const workspaceCount = workspaces.length;
   const pendingAccessCount = workspaces.filter((workspace) => workspace?.status === 'pending' || workspace?.invite_status === 'pending').length;
+  const pageCount = Math.max(1, Math.ceil(workspaceCount / ORGANIZATIONS_PER_PAGE));
+  const visibleWorkspaces = workspaces.slice(
+    currentPage * ORGANIZATIONS_PER_PAGE,
+    (currentPage + 1) * ORGANIZATIONS_PER_PAGE,
+  );
+
+  useEffect(() => {
+    setCurrentPage((page) => Math.min(page, pageCount - 1));
+  }, [pageCount]);
 
   useEffect(() => {
     let active = true;
@@ -63,6 +77,16 @@ const WorkspaceSelector = () => {
   const handleOpenWorkspace = (org) => {
     switchOrganization(org);
     navigate('/app/enterprise/org-overview');
+  };
+
+  const handleEditWorkspace = (org) => {
+    switchOrganization(org);
+    navigate('/app/enterprise/settings');
+  };
+
+  const handleManageWorkspace = (org) => {
+    switchOrganization(org);
+    navigate('/app/enterprise/team');
   };
 
   return (
@@ -105,8 +129,39 @@ const WorkspaceSelector = () => {
                 </div>
               </section>
             ) : (
-              <section className="ws-selector-grid" aria-label="My organizations">
-                {workspaces.map((workspace) => (
+              <section className="ws-selector-collection" aria-label="My organizations">
+                <div className="ws-selector-collection-head">
+                  <div>
+                    <h2>Organizations</h2>
+                    <p>Page {currentPage + 1} of {pageCount}</p>
+                  </div>
+                  {pageCount > 1 && (
+                    <div className="ws-selector-pagination" aria-label="Organization pages">
+                      <button
+                        type="button"
+                        className="ws-selector-page-button"
+                        onClick={() => setCurrentPage((page) => Math.max(0, page - 1))}
+                        disabled={currentPage === 0}
+                        aria-label="Previous organization page"
+                        title="Previous organizations"
+                      >
+                        <FiChevronLeft aria-hidden="true" />
+                      </button>
+                      <button
+                        type="button"
+                        className="ws-selector-page-button"
+                        onClick={() => setCurrentPage((page) => Math.min(pageCount - 1, page + 1))}
+                        disabled={currentPage === pageCount - 1}
+                        aria-label="Next organization page"
+                        title="Next organizations"
+                      >
+                        <FiChevronRight aria-hidden="true" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <div className="ws-selector-rail">
+                  {visibleWorkspaces.map((workspace) => (
                     <article key={workspace.id} className="ws-selector-card">
                       <div className="ws-selector-card-top">
                         <div className="ws-selector-card-brand">
@@ -120,61 +175,26 @@ const WorkspaceSelector = () => {
                           <h2>{workspace.name}</h2>
                           <p>{workspace.description || workspace.industry || 'Organization'}</p>
                         </div>
-                        <div className="ws-selector-card-badge">{formatDate(workspace.created_at)}</div>
+                        <div className="ws-selector-card-badge">Active</div>
                       </div>
 
                       <div className="ws-selector-card-fields">
-                        <div className="ws-selector-card-field ws-selector-card-field--compact">
-                          <span>Registration Number</span>
-                          <strong>{workspace.registration_number || 'Verification required'}</strong>
-                        </div>
-                        <div className="ws-selector-card-field ws-selector-card-field--compact">
-                          <span>Organization Owner</span>
-                          <strong>{workspace.owner_name || workspace.owner_email || 'Owner record unavailable'}</strong>
-                        </div>
-                        <div className="ws-selector-card-field">
-                          <span>Industry</span>
-                          <strong>{workspace.industry || 'Not Set'}</strong>
-                        </div>
-                        <div className="ws-selector-card-field">
-                          <span>Country</span>
-                          <strong>{getCountryLabel(workspace.primary_country)}</strong>
-                        </div>
-                        <div className="ws-selector-card-field">
-                          <span>Currency</span>
-                          <strong>{workspace.primary_currency || 'USD'}</strong>
-                        </div>
-                        <div className="ws-selector-card-field">
-                          <span>Employees</span>
-                          <strong>{workspace.employee_count ?? 'Not Set'}</strong>
-                        </div>
-                        <div className="ws-selector-card-field ws-selector-card-field--compact">
-                          <span>Email</span>
-                          <strong>{workspace.email || workspace.owner_email || 'Not Set'}</strong>
-                        </div>
-                        <div className="ws-selector-card-field ws-selector-card-field--compact">
-                          <span>Address</span>
-                          <strong>{workspace.address || 'Not Set'}</strong>
-                        </div>
-                        <div className="ws-selector-card-field">
-                          <span>Service Time</span>
-                          <strong>{workspace.service_time || 'Not Set'}</strong>
-                        </div>
-                        <div className="ws-selector-card-field">
-                          <span>Created</span>
-                          <strong>{formatDate(workspace.created_at)}</strong>
-                        </div>
-                        <div className="ws-selector-card-field ws-selector-card-field--compact">
-                          <span>Website</span>
-                          <strong>{workspace.website || 'Not Set'}</strong>
-                        </div>
+                        {organizationCardFields.map((field) => (
+                          <div key={field.key} className="ws-selector-card-field">
+                            <span>{field.label}</span>
+                            <strong>{getCardValue(workspace, field)}</strong>
+                          </div>
+                        ))}
                       </div>
 
-                      <button className="ws-selector-open" onClick={() => handleOpenWorkspace(workspace)}>
-                        Open Organization
-                      </button>
+                      <div className="ws-selector-card-actions">
+                        <button className="ws-selector-open" onClick={() => handleOpenWorkspace(workspace)}>Open</button>
+                        <button className="ws-selector-card-action" onClick={() => handleEditWorkspace(workspace)}>Edit</button>
+                        <button className="ws-selector-card-action" onClick={() => handleManageWorkspace(workspace)}>Manage</button>
+                      </div>
                     </article>
-                ))}
+                  ))}
+                </div>
               </section>
             )}
           </>

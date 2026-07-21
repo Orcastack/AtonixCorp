@@ -11,6 +11,7 @@ services:
       - "127.0.0.1:8000:8000"
     volumes:
       - ./api:/app
+      - ./email-templates:/email-templates:ro
     env_file:
       - ./api/.env
     environment:
@@ -61,6 +62,7 @@ services:
       done"
     volumes:
       - ./api:/app
+      - ./email-templates:/email-templates:ro
     env_file:
       - ./api/.env
     environment:
@@ -99,6 +101,7 @@ services:
       done"
     volumes:
       - ./api:/app
+      - ./email-templates:/email-templates:ro
     env_file:
       - ./api/.env
     environment:
