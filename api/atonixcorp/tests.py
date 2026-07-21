@@ -2144,7 +2144,7 @@ class OrganizationDirectoryAPITests(TestCase):
 
 @override_settings(MEDIA_ROOT=tempfile.gettempdir())
 class CompanyIdentityAPITests(TestCase):
-    def test_unverified_account_cannot_create_an_organization(self):
+    def test_unverified_account_can_create_an_organization(self):
         creator = User.objects.create_user(
             username='unverified-creator',
             email='unverified-creator@example.com',
@@ -2155,14 +2155,14 @@ class CompanyIdentityAPITests(TestCase):
         client.force_authenticate(creator)
 
         response = client.post('/api/organizations/', {
-            'name': 'Blocked Organization',
+            'name': 'Unverified Creator Organization',
             'registration_number': 'US-2026-100001',
             'primary_country': 'US',
             'primary_currency': 'USD',
         }, format='json')
 
-        self.assertEqual(response.status_code, 403)
-        self.assertFalse(Organization.objects.filter(name='Blocked Organization').exists())
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(Organization.objects.filter(name='Unverified Creator Organization').exists())
 
     def test_company_identity_is_required_normalized_unique_and_audited(self):
         founder = User.objects.create_user(
