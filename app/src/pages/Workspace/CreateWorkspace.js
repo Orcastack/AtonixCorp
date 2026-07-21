@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useEnterprise } from '../../context/EnterpriseContext';
 import AtonixCorpLogo from '../../components/branding/AtonixCorpLogo';
-import { organizationsAPI } from '../../services/api';
 import { countryDropdownOptions } from '../../utils/countryDropdowns';
 import {
   WORKSPACE_MODE_LABELS,
@@ -199,8 +198,6 @@ const CreateWorkspace = () => {
   const [form, setForm] = useState(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
-  const [identityStatus, setIdentityStatus] = useState(null);
-  const [verifyingIdentity, setVerifyingIdentity] = useState(false);
   const [fyOpen, setFyOpen] = useState(false);
   const [fyMonth, setFyMonth] = useState(null);
   const fyRef = React.useRef(null);
@@ -225,39 +222,7 @@ const CreateWorkspace = () => {
   }, [fyOpen]);
 
   const update = (field, value) => {
-    if (field === 'name' || field === 'registrationNumber') setIdentityStatus(null);
     setForm((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const verifyIdentity = async () => {
-    if (!form.name.trim() || !form.registrationNumber.trim()) {
-      setError('Enter the company name and registration number before verification.');
-      return false;
-    }
-    setVerifyingIdentity(true);
-    setError(null);
-    try {
-      const response = await organizationsAPI.verifyIdentity({
-        name: form.name.trim(),
-        registration_number: form.registrationNumber.trim(),
-      });
-      const result = response.data;
-      setIdentityStatus(result);
-      if (!result.name_available || !result.available) {
-        setError(!result.name_available
-          ? 'A company with this name already exists.'
-          : 'This company registration number is already in use.');
-        return false;
-      }
-      setForm((previous) => ({ ...previous, registrationNumber: result.registration_number }));
-      return true;
-    } catch (requestError) {
-      const details = requestError.response?.data;
-      setError(details?.name || details?.registration_number || 'Company identity could not be verified.');
-      return false;
-    } finally {
-      setVerifyingIdentity(false);
-    }
   };
 
   // Parse current MM-DD value
@@ -282,10 +247,8 @@ const CreateWorkspace = () => {
 
   const canGoNext = () => {
     if (step === 1) {
-      const hasRegistrationNumber = form.registrationNumber.trim().length > 0;
       return form.name.trim().length >= 2
-        && (!isOrgCreate || form.email.trim().length > 0)
-        && (!isOrgCreate || !hasRegistrationNumber || (identityStatus?.available && identityStatus?.name_available));
+        && (!isOrgCreate || form.email.trim().length > 0);
     }
     if (step === 2) return !!form.country && !!form.currency && (!isOrgCreate || form.website.trim().length > 0);
     if (step === 4) return !!form.workspaceMode && !!form.subscriptionTier && (form.enabledModules.length > 0 || form.workspaceMode === 'standalone');
@@ -383,14 +346,6 @@ const CreateWorkspace = () => {
           onChange={(e) => update('name', e.target.value)}
           autoFocus
         />
-        {isOrgCreate && form.registrationNumber.trim() && (
-          <div className={`cw-identity-status${identityStatus?.available && identityStatus?.name_available ? ' is-verified' : ''}`}>
-            <span>{identityStatus?.available && identityStatus?.name_available ? 'Identity available and normalized' : 'Verify identity before continuing'}</span>
-            <button type="button" className="cw-verify-btn" onClick={verifyIdentity} disabled={verifyingIdentity}>
-              {verifyingIdentity ? 'Verifying...' : 'Verify company identity'}
-            </button>
-          </div>
-        )}
         <span className="cw-hint">This will be displayed as the organization name throughout AtonixCorp.</span>
       </div>
       <div className="cw-field">
@@ -813,10 +768,7 @@ const CreateWorkspace = () => {
               <button
                 type="button"
                 className="cw-btn cw-btn-primary"
-                onClick={async () => {
-                  if (step === 1 && isOrgCreate && form.registrationNumber.trim() && !(await verifyIdentity())) return;
-                  setStep(step + 1);
-                }}
+                onClick={() => setStep(step + 1)}
                 disabled={!canGoNext()}
               >
                 Next →
