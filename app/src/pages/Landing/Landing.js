@@ -146,6 +146,11 @@ const Landing = () => {
         <section className="landing-hero" aria-label="AtonixCorp overview">
           <div className="landing-shell landing-hero__layout">
             <div className="landing-hero__copy">
+              <img
+                className="landing-brand-lockup"
+                src="/atonixcorp-lockup.svg"
+                alt="AtonixCorp"
+              />
               <p className="landing-kicker">Governance-as-a-Service for modern institutions</p>
               <h1>The operating system for accountable institutions.</h1>
               <p className="landing-lead">

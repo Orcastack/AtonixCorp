@@ -48,6 +48,13 @@
   grid-column: span 5;
 }
 
+.landing-brand-lockup {
+  display: block;
+  width: 112px;
+  height: 112px;
+  margin: 0 0 var(--space-lg);
+}
+
 .landing-hero__copy .landing-kicker {
   display: inline-flex;
   align-items: center;
@@ -68,6 +75,14 @@
   font-weight: var(--font-weight-bold);
   letter-spacing: 0;
   line-height: 1.08;
+}
+
+@media (max-width: 767px) {
+  .landing-brand-lockup {
+    width: 96px;
+    height: 96px;
+    margin-bottom: var(--space-base);
+  }
 }
 
 .landing-lead {
