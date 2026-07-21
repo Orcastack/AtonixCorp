@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useEnterprise } from '../../context/EnterpriseContext';
 import { LogoMark } from '../Brand/LogoMark';
@@ -9,6 +9,7 @@ import './Layout.css';
 const Layout = ({ children }) => {
   const { user, logout } = useAuth();
   const { currentOrganization } = useEnterprise();
+  const location = useLocation();
   const navigate = useNavigate();
 
   const [sidebarMinimized, setSidebarMinimized] = React.useState(false);
@@ -39,6 +40,7 @@ const Layout = ({ children }) => {
   };
 
   const userInitial = (user?.name || user?.email || 'U').charAt(0).toUpperCase();
+  const isEnterpriseRoute = location.pathname.startsWith('/app/enterprise');
 
   //  Navigation definitions
 
@@ -230,7 +232,7 @@ const Layout = ({ children }) => {
   };
 
   return (
-    <div className="layout">
+    <div className={`layout${isEnterpriseRoute ? ' enterprise-layout' : ''}`}>
       {/*  SIDEBAR  */}
       <nav className={`sidebar${sidebarMinimized ? ' minimized' : ''}`} aria-label="Main navigation">
 
@@ -301,7 +303,7 @@ const Layout = ({ children }) => {
       </nav>
 
       {/*  MAIN CONTENT  */}
-      <div className={`main-wrapper${sidebarMinimized ? ' sidebar-minimized' : ''}`}>
+      <div className={`main-wrapper${sidebarMinimized ? ' sidebar-minimized' : ''}${isEnterpriseRoute ? ' enterprise-main-wrapper' : ''}`}>
         {/* Top Bar */}
         <header className="topbar">
           <div className="topbar-left">

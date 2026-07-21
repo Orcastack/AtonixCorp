@@ -1,10 +1,10 @@
 .enterprise-action-page {
-  --overview-ink: #000000;
-  --overview-muted: rgba(0, 0, 0, 0.64);
+  --overview-ink: #172033;
+  --overview-muted: #5d6b7d;
   --overview-surface: #ffffff;
-  --overview-line: rgba(0, 0, 0, 0.12);
-  --overview-shadow: 0 22px 50px rgba(0, 0, 0, 0.08);
-  --overview-hero-bg: #1E2328;
+  --overview-line: #d8e0e8;
+  --overview-shadow: 0 8px 24px rgba(23, 32, 51, 0.08);
+  --overview-hero-bg: #1f5f9b;
   color: var(--overview-ink);
   display: grid;
   gap: 24px;
@@ -14,7 +14,7 @@
 .action-page-hero {
   align-items: end;
   background: var(--overview-hero-bg);
-  border: 1px solid rgba(0, 0, 0, 0.10);
+  border: 1px solid #174a79;
   border-radius: 28px;
   box-shadow: var(--overview-shadow);
   color: #f8fafc;
@@ -28,8 +28,7 @@
 
 .action-page-hero::after {
   background:
-    radial-gradient(ellipse at top right, rgba(255, 255, 255, 0.18) 0%, transparent 50%),
-    radial-gradient(ellipse at bottom left, rgba(0, 0, 0, 0.12) 0%, transparent 55%);
+    radial-gradient(ellipse at top right, rgba(255, 255, 255, 0.16) 0%, transparent 52%);
   content: '';
   inset: 0;
   pointer-events: none;
@@ -143,7 +142,7 @@
 
 .business-suite-create-card {
   align-items: start;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 245, 241, 0.98));
+  background: var(--overview-surface);
   border: 1px solid var(--overview-line);
   border-radius: 24px;
   box-shadow: var(--overview-shadow);
@@ -185,7 +184,7 @@
 }
 
 .business-suite-create-link {
-  color: #000000;
+  color: #1f5f9b;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -210,8 +209,8 @@
 }
 
 .entities-page .entity-card {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(249, 247, 243, 0.96));
-  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: var(--overview-surface);
+  border: 1px solid var(--overview-line);
   border-radius: 22px;
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
   padding: 24px;
@@ -243,7 +242,7 @@
   background: linear-gradient(135deg, rgba(40, 120, 189, 0.18), rgba(255, 255, 255, 0.95));
   border: 1px solid rgba(40, 120, 189, 0.18);
   border-radius: 14px;
-  color: #9f341f;
+  color: #1f5f9b;
   height: 48px;
   width: 48px;
 }

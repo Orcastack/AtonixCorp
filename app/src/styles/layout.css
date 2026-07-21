@@ -1013,7 +1013,7 @@
 
 .profile-avatar-btn {
   align-items: center;
-  background: var(--atc-crimson, #c0392b);
+  background: var(--color-blue-700, #1f5f9b);
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   box-shadow: var(--shadow-sm);
@@ -1069,7 +1069,7 @@
 
 .profile-dropdown-avatar {
   align-items: center;
-  background: var(--atc-crimson, #c0392b);
+  background: var(--color-blue-700, #1f5f9b);
   border-radius: 50%;
   color: #fff;
   display: flex;

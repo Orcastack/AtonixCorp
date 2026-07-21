@@ -1,23 +1,23 @@
 /* ============================================================================
    ENTITY PAGES DESIGN SYSTEM
    All entity-scoped pages (dashboards, accounting, bookkeeping, etc.)
-   3-Color System: Graphite #1E2328 | White #FFFFFF | Crimson #2878BD
+  Enterprise system: Blue #1F5F9B | White #FFFFFF | Cool Gray #F8F9FB
    ============================================================================ */
 
 /* Color Palette — 3-color compliant */
 :root {
-  --primary:       #2878BD;   /* Crimson — primary actions */
-  --primary-dark:  #1F5F9B;   /* Crimson hover */
+  --primary:       #1F5F9B;
+  --primary-dark:  #174A79;
   --page-bg:       #F8F9FB;   /* Off-white surface */
   --card-bg:       #FFFFFF;
-  --text-primary:  #1E2328;   /* Graphite */
+  --text-primary:  #172033;
   --text-secondary: #6B7280;
   --text-muted:    #9CA3AF;
   --border:        #E0E2E5;
-  --green:         #1E2328;   /* Positive → Graphite bold, never green */
-  --amber:         #5F6B7A;   /* Warning → Graphite muted, never yellow */
-  --red:           #2878BD;   /* Negative → Crimson */
-  --blue:          #1E2328;   /* No blues — Graphite */
+  --green:         #19724A;
+  --amber:         #A16207;
+  --red:           #1F5F9B;
+  --blue:          #1F5F9B;
   --gray-50:       #F8F9FB;
   --gray-100:      #F2F3F4;
   --gray-200:      #E0E2E5;
@@ -69,9 +69,9 @@
 .chart-header,
 .alerts-header,
 .filing-dashboard {
-  background: var(--card-bg);
+  background: var(--primary);
   padding: 24px 32px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--primary-dark);
   margin-bottom: 24px;
   display: flex;
   justify-content: space-between;
@@ -89,7 +89,7 @@
 .chart-header h1 {
   font-size: 26px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #ffffff;
   margin: 0 0 8px 0;
   line-height: 1.2;
 }
@@ -97,7 +97,7 @@
 .header-left p,
 .subtitle {
   font-size: 14px;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.82);
   margin: 0;
 }
 

@@ -1,5 +1,29 @@
 @import '../../styles/layout.css';
 
+.enterprise-layout,
+.enterprise-layout .main-wrapper {
+	background: #f8f9fb;
+}
+
+.enterprise-layout .sidebar,
+.enterprise-layout .topbar {
+	background: #1f5f9b;
+	border-color: rgba(255, 255, 255, 0.24);
+}
+
+.enterprise-layout .sidebar-header {
+	border-bottom-color: rgba(255, 255, 255, 0.24);
+}
+
+.enterprise-layout .profile-avatar-btn,
+.enterprise-layout .profile-dropdown-avatar {
+	background: #1f5f9b;
+}
+
+.enterprise-layout .profile-avatar-btn {
+	border-color: rgba(255, 255, 255, 0.48);
+}
+
 .sidebar-organization-name {
 	color: var(--color-white);
 	font-size: 13px;
