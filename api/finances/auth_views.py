@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from django.utils.text import slugify
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
@@ -11,11 +10,24 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from .developer_portal_common import DeveloperFacingAPIView
 from .email_verification import send_verification_email, verify_email_token
-from .models import IdentityVerification, Organization, UserProfile, ACCOUNT_TYPE_ENTERPRISE, ACCOUNT_TYPE_PERSONAL
+from .models import IdentityVerification, UserProfile, ACCOUNT_TYPE_ENTERPRISE, ACCOUNT_TYPE_PERSONAL
 from .organization_email_service import send_system_notification
 
 
 User = get_user_model()
+
+
+def _registration_username(email):
+    """Generate a unique internal username while keeping email as the login identity."""
+    max_length = User._meta.get_field('username').max_length
+    base = email[:max_length]
+    candidate = base
+    suffix = 1
+    while User.objects.filter(username__iexact=candidate).exists():
+        suffix += 1
+        suffix_text = f'-{suffix}'
+        candidate = f'{base[:max_length - len(suffix_text)]}{suffix_text}'
+    return candidate
 
 
 def _user_payload(user):
@@ -73,12 +85,11 @@ class RegisterView(DeveloperFacingAPIView):
     def post(self, request):
         payload = request.data or {}
         email = (payload.get("email") or "").strip().lower()
+        username = (payload.get("username") or "").strip()
         password = payload.get("password") or ""
-        username = (payload.get("username") or email).strip()
         account_type = (payload.get("account_type") or ACCOUNT_TYPE_ENTERPRISE).strip()
         country = (payload.get("country") or "").strip()
         phone = (payload.get("phone") or "").strip()
-        org_name = (payload.get("org_name") or "").strip()
         tax_type = (payload.get("tax_type") or "").strip() or None
         tax_rate = payload.get("tax_rate")
 
@@ -86,14 +97,12 @@ class RegisterView(DeveloperFacingAPIView):
             return Response({"email": "This field is required."}, status=status.HTTP_400_BAD_REQUEST)
         if not password:
             return Response({"password": "This field is required."}, status=status.HTTP_400_BAD_REQUEST)
-        if not username:
-            return Response({"username": "This field is required."}, status=status.HTTP_400_BAD_REQUEST)
-
-        if User.objects.filter(username=username).exists():
-            return Response({"username": "A user with this username already exists."}, status=status.HTTP_400_BAD_REQUEST)
-        if User.objects.filter(email=email).exists():
+        if User.objects.filter(email__iexact=email).exists():
             return Response({"email": "A user with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)
+        if username and User.objects.filter(username__iexact=username).exists():
+            return Response({"username": "This username is already in use."}, status=status.HTTP_400_BAD_REQUEST)
 
+        username = username or _registration_username(email)
         user = User.objects.create_user(username=username, email=email, password=password)
 
         # Create profile so the frontend starts from real stored values (no mock).
@@ -118,25 +127,9 @@ class RegisterView(DeveloperFacingAPIView):
             recipient=user.email,
             subject='Welcome to AtonixCorp',
             title='Welcome to AtonixCorp',
-            message='Your account is ready. Verify your email address through your organization administrator before enabling outbound workspace email.',
+            message='Your account is ready. Verify your email address, then sign in to create your organization workspace.',
             event_type='account_registration',
         )
-
-        # Optional: create a first organization for enterprise accounts.
-        if account_type == ACCOUNT_TYPE_ENTERPRISE and org_name:
-            base_slug = slugify(org_name) or f"org-{user.id}"
-            slug_candidate = base_slug
-            suffix = 1
-            while Organization.objects.filter(slug=slug_candidate).exists():
-                suffix += 1
-                slug_candidate = f"{base_slug}-{suffix}"
-
-            Organization.objects.create(
-                owner=user,
-                name=org_name,
-                slug=slug_candidate,
-                primary_country=country or "Unknown",
-            )
 
         send_verification_email(user)
         return Response(

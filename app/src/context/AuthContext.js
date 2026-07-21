@@ -150,19 +150,18 @@ export const AuthProvider = ({ children }) => {
     }
   }, [apiUrl, buildAuthHeaders, normalizeUser, parseApiError]);
 
-  const register = useCallback(async (name, email, password, country, phone, account_type, org_name) => {
+  const register = useCallback(async (username, email, password, country, phone, account_type) => {
     try {
       const response = await fetch(apiUrl('/api/auth/register/'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          username,
           email,
           password,
-          username: email,
           account_type,
           country,
           phone,
-          org_name,
         }),
       });
 

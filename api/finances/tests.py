@@ -805,7 +805,6 @@ class DeveloperPortalViewTests(TestCase):
                 'username': 'secure-id@example.com',
                 'account_type': 'enterprise',
                 'country': 'Nigeria',
-                'org_name': 'Secure ID Org',
             },
             format='json',
         )
@@ -816,6 +815,7 @@ class DeveloperPortalViewTests(TestCase):
         self.assertTrue(secure_user_id.isdigit())
         self.assertTrue(register_response.data['verification_required'])
         self.assertNotIn('access', register_response.data)
+        self.assertFalse(Organization.objects.filter(owner__email='secure-id@example.com').exists())
         verification_messages = [message for message in mail.outbox if message.subject == 'Verify Your Account']
         self.assertEqual(len(verification_messages), 1)
         self.assertNotIn('<html', verification_messages[-1].body.lower())
@@ -856,6 +856,57 @@ class DeveloperPortalViewTests(TestCase):
         self.assertEqual(verified_login_response.status_code, 200)
         self.assertTrue(verified_login_response.data['user']['email_verified'])
         self.assertIn('access', verified_login_response.data)
+
+    def test_register_uses_email_when_a_legacy_username_conflicts(self):
+        User.objects.create_user(
+            username='new-owner@example.com',
+            email='legacy-owner@example.com',
+            password='strong-pass-123',
+        )
+
+        response = self.client.post(
+            '/api/auth/register/',
+            {
+                'email': 'new-owner@example.com',
+                'password': 'strong-pass-123',
+                'account_type': 'enterprise',
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 201)
+        user = User.objects.get(email='new-owner@example.com')
+        self.assertNotEqual(user.username, 'new-owner@example.com')
+        self.assertTrue(user.username.startswith('new-owner@example.com-'))
+
+    def test_register_uses_submitted_username_and_rejects_duplicates(self):
+        response = self.client.post(
+            '/api/auth/register/',
+            {
+                'email': 'username-owner@example.com',
+                'username': 'username-owner',
+                'password': 'strong-pass-123',
+                'account_type': 'enterprise',
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(User.objects.get(email='username-owner@example.com').username, 'username-owner')
+
+        duplicate_response = self.client.post(
+            '/api/auth/register/',
+            {
+                'email': 'other-owner@example.com',
+                'username': 'username-owner',
+                'password': 'strong-pass-123',
+                'account_type': 'enterprise',
+            },
+            format='json',
+        )
+
+        self.assertEqual(duplicate_response.status_code, 400)
+        self.assertEqual(duplicate_response.data['username'], 'This username is already in use.')
 
     def test_expired_email_verification_token_is_rejected(self):
         self.client.post(
@@ -1995,7 +2046,12 @@ class OrganizationDirectoryAPITests(TestCase):
 
 class CompanyIdentityAPITests(TestCase):
     def test_company_identity_is_required_normalized_unique_and_audited(self):
-        founder = User.objects.create_user(username='company-founder', password='pass')
+        founder = User.objects.create_user(
+            username='company-founder',
+            email='founder@example.com',
+            password='pass',
+        )
+        UserProfile.objects.create(user=founder, email_verified=True)
         other_user = User.objects.create_user(username='company-other-user', password='pass')
         client = APIClient()
         client.force_authenticate(founder)
@@ -2016,6 +2072,8 @@ class CompanyIdentityAPITests(TestCase):
         }, format='json')
         self.assertEqual(create_response.status_code, 201)
         organization = Organization.objects.get(pk=create_response.data['id'])
+        self.assertEqual(organization.owner, founder)
+        self.assertEqual(organization.owner.email, 'founder@example.com')
         self.assertEqual(organization.registration_number, 'ZA2024123456')
         self.assertTrue(PlatformAuditEvent.objects.filter(
             organization=organization,

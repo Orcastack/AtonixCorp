@@ -6,7 +6,7 @@ import AtonixCorpLogo from '../../components/branding/AtonixCorpLogo';
 
 const Register = () => {
   const [step, setStep] = useState(1); // 1: email → 2: details
-  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -14,7 +14,6 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [country, setCountry] = useState('US');
   const [phone, setPhone] = useState('');
-  const [orgName, setOrgName] = useState('');
   const [error, setError] = useState('');
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -49,7 +48,7 @@ const Register = () => {
     e.preventDefault();
     setError('');
 
-    if (!name || !password || !confirmPassword || !country || !phone || !orgName) {
+    if (!username || !password || !confirmPassword || !country || !phone) {
       setError('Please fill in all fields');
       return;
     }
@@ -69,7 +68,7 @@ const Register = () => {
       return;
     }
 
-    const result = await register(name, email, password, country, phone, 'enterprise', orgName);
+    const result = await register(username, email, password, country, phone, 'enterprise');
     if (result.success) {
       navigate('/verify-email', { state: { email } });
     } else {
@@ -149,26 +148,15 @@ const Register = () => {
 
           <form onSubmit={handleDetailsSubmit} className="auth-form">
             <div className="form-group">
-              <label htmlFor="name">Full Name</label>
+              <label htmlFor="username">Username</label>
               <input
                 type="text"
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="John Doe"
-                autoComplete="name"
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="johndoe"
+                autoComplete="username"
                 autoFocus
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="orgName">Organization Name</label>
-              <input
-                type="text"
-                id="orgName"
-                value={orgName}
-                onChange={(e) => setOrgName(e.target.value)}
-                placeholder="Your Company Name"
               />
             </div>
 

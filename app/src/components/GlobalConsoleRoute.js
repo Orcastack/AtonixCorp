@@ -5,7 +5,7 @@ import { useEnterprise } from '../context/EnterpriseContext';
 
 const GlobalConsoleRoute = ({ children }) => {
   const { isAuthenticated, loading, user } = useAuth();
-  const { getDefaultDashboardPath, hasPermission, loading: enterpriseLoading } = useEnterprise();
+  const { organizations, getDefaultDashboardPath, hasPermission, loading: enterpriseLoading } = useEnterprise();
   const location = useLocation();
 
   if (loading || enterpriseLoading) {
@@ -31,6 +31,10 @@ const GlobalConsoleRoute = ({ children }) => {
 
   if (!user?.email_verified) {
     return <Navigate to="/verify-email" replace />;
+  }
+
+  if (organizations.length === 0) {
+    return <Navigate to="/app/organizations/create" state={{ from: location }} replace />;
   }
 
   if (!hasPermission('view_org_overview')) {

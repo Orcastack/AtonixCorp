@@ -309,7 +309,11 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         return _accessible_organizations_queryset(self.request.user)
 
     def perform_create(self, serializer):
-        """Create organization with current user as owner"""
+        """Create an organization for a verified user as its owner."""
+        profile = getattr(self.request.user, 'profile', None)
+        if not profile or not profile.email_verified:
+            raise PermissionDenied('Please verify your email before creating an organization.')
+
         organization = serializer.save(owner=self.request.user)
         selected_tier = (organization.settings or {}).get('subscription_tier', 'basic')
         if selected_tier in {'basic', 'professional', 'enterprise'}:
