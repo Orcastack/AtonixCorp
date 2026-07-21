@@ -247,8 +247,7 @@ const CreateWorkspace = () => {
 
   const canGoNext = () => {
     if (step === 1) {
-      return form.name.trim().length >= 2
-        && (!isOrgCreate || form.email.trim().length > 0);
+      return form.name.trim().length >= 2;
     }
     if (step === 2) return !!form.country && !!form.currency && (!isOrgCreate || form.website.trim().length > 0);
     if (step === 4) return !!form.workspaceMode && !!form.subscriptionTier && (form.enabledModules.length > 0 || form.workspaceMode === 'standalone');
