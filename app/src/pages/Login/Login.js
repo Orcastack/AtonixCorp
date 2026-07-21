@@ -8,12 +8,15 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const { login } = useAuth();
+  const [verificationRequired, setVerificationRequired] = useState(false);
+  const [isRequestingLink, setIsRequestingLink] = useState(false);
+  const { login, resendEmailVerification } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setVerificationRequired(false);
 
     if (!identifier || !password) {
       setError('Please fill in all fields');
@@ -25,7 +28,17 @@ const Login = () => {
       navigate('/app/console', { replace: true });
     } else {
       setError(result.error || 'Login failed. Please try again.');
+      setVerificationRequired(Boolean(result.verificationRequired));
     }
+  };
+
+  const handleRequestVerificationLink = async () => {
+    setIsRequestingLink(true);
+    const result = await resendEmailVerification(identifier.trim());
+    setIsRequestingLink(false);
+    setError(result.success
+      ? 'If this account requires verification, a new link has been sent.'
+      : (result.error || 'Unable to request a new verification link.'));
   };
 
   return (
@@ -42,6 +55,16 @@ const Login = () => {
           <p className="auth-subtitle">Sign in to your account to continue</p>
 
           {error && <div className="auth-error" role="alert">{error}</div>}
+          {verificationRequired && (
+            <button
+              type="button"
+              className="btn-link"
+              onClick={handleRequestVerificationLink}
+              disabled={isRequestingLink}
+            >
+              {isRequestingLink ? 'Sending verification link...' : 'Request a new verification link'}
+            </button>
+          )}
 
           <form onSubmit={handleSubmit} className="auth-form">
             <div className="form-group">

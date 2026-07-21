@@ -12,9 +12,9 @@ const Product = () => {
 
       <section className="product-hero">
         <div className="hero-content">
-          <h1>Next-Generation Financial Platform</h1>
-          <p>AtonixCorp redefines financial management with sovereign-grade security,
-            AI-powered intelligence, and comprehensive multi-asset capabilities.
+          <h1>Financial Management Software Services</h1>
+          <p>AtonixCorp brings personal finance, enterprise operations, global tax,
+            security, and AI-powered financial intelligence into one platform.
           </p>
           <div className="hero-stats">
             <div className="stat">
@@ -35,7 +35,7 @@ const Product = () => {
 
       <section className="product-overview">
         <div className="container">
-          <h2>Comprehensive Financial Solutions</h2>
+          <h2>Financial Services Built Into One Platform</h2>
           <div className="product-grid">
             <div className="product-card">
               <div className="product-icon">

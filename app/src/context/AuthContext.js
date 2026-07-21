@@ -123,7 +123,11 @@ export const AuthProvider = ({ children }) => {
 
       if (!tokenRes.ok) {
         const details = await parseApiError(tokenRes, 'Invalid credentials');
-        return { success: false, error: details };
+        return {
+          success: false,
+          error: details,
+          verificationRequired: details.toLowerCase().includes('verify your email first'),
+        };
       }
 
       const tokenData = await tokenRes.json();

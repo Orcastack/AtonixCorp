@@ -221,8 +221,9 @@ class ResendEmailVerificationView(DeveloperFacingAPIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        email = str((request.data or {}).get('email') or '').strip().lower()
-        user = User.objects.filter(email__iexact=email).first()
+        identifier = str((request.data or {}).get('email') or '').strip()
+        username = SecureUserIdTokenObtainPairSerializer._resolve_username(identifier)
+        user = User.objects.filter(username__iexact=username).first()
         profile = getattr(user, 'profile', None) if user else None
         if user and profile and not profile.email_verified:
             try:

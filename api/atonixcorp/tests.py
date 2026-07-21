@@ -895,6 +895,25 @@ class DeveloperPortalViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['detail'], 'If this account requires verification, a new link has been sent.')
 
+    @patch('atonixcorp.auth_views.send_verification_email')
+    def test_resend_verification_accepts_username_or_employee_id(self, send_verification_email):
+        user = User.objects.create_user(
+            username='resend-employee',
+            email='resend-employee@example.com',
+            password='strong-pass-123',
+        )
+        profile = UserProfile.objects.create(user=user, secure_user_id='1234567890')
+
+        for identifier in (user.username, profile.secure_user_id):
+            response = self.client.post(
+                '/api/auth/resend-verification/',
+                {'email': identifier},
+                format='json',
+            )
+            self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(send_verification_email.call_count, 2)
+
     def test_register_requires_username_distinct_from_email(self):
         response = self.client.post(
             '/api/auth/register/',
