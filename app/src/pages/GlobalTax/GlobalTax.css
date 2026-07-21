@@ -224,9 +224,9 @@
   display: flex;
   width: 100%;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
-  padding: 12px 14px;
+  padding: 12px 16px;
   background: var(--color-white);
   border: 0;
   border-bottom: 1px solid var(--color-silver-very-light);
@@ -311,9 +311,9 @@
 }
 
 .country-details {
-  padding: 18px;
+  padding: 16px;
   display: grid;
-  gap: 14px;
+  gap: 16px;
 }
 
 .details-header {
@@ -328,13 +328,13 @@
 .header-title {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
 .header-title h2 {
   margin: 0;
-  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-size: var(--font-size-xl);
 }
 
 .country-code-badge,
@@ -343,8 +343,8 @@
   align-items: center;
   justify-content: center;
   min-height: 28px;
-  padding: 0 10px;
-  border-radius: 999px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border-color-default);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
@@ -365,11 +365,11 @@
   border: 1px solid var(--border-color-default);
   background: var(--color-white);
   border-radius: var(--radius-sm);
-  padding: 14px;
+  padding: 16px;
 }
 
 .section-title {
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   font-size: var(--font-size-sm);
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -384,7 +384,7 @@
 .info-row {
   display: grid;
   grid-template-columns: 130px 1fr;
-  gap: 10px;
+  gap: 12px;
   align-items: start;
 }
 
@@ -481,7 +481,7 @@
 }
 
 .actions-card {
-  gap: 10px;
+  gap: 12px;
 }
 
 .actions-banner {
@@ -503,7 +503,7 @@
 
 .actions-grid {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 10px;
+  gap: 12px;
 }
 
 .actions-grid--single {
@@ -565,7 +565,7 @@
 
   .tax-search-container {
     grid-template-columns: 1fr;
-    gap: 10px;
+    gap: 12px;
   }
 
   .results-count {
@@ -608,7 +608,7 @@
 
   .action-btn {
     min-height: 44px;
-    padding: 0 14px;
+    padding: 0 16px;
   }
 
   .actions-grid--single {
