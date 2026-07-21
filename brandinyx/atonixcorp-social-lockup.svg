@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">AtonixCorp shield-circuit social lockup</title>
+  <rect width="64" height="64" rx="14" fill="#0B1F3A"/>
+  <g transform="translate(12 8.5) scale(.62)">
+    <path d="M32 12 50 19v15c0 10-8 18-18 22-10-4-18-12-18-22V19z" fill="#FFFFFF"/>
+    <path d="M24 28h7m2 0h7M31 28v8m0 0h7" fill="none" stroke="#1F9D91" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="22" cy="28" r="2.5" fill="#1F9D91"/>
+    <circle cx="40" cy="28" r="2.5" fill="#1F9D91"/>
+    <circle cx="31" cy="38" r="2.5" fill="#1F9D91"/>
+    <circle cx="40" cy="38" r="2.5" fill="#1F9D91"/>
+  </g>
+  <text x="32" y="53" fill="#FFFFFF" font-family="IBM Plex Sans, Arial, sans-serif" font-size="7.5" font-weight="700" letter-spacing="-.3" text-anchor="middle">AtonixCorp</text>
+</svg>
