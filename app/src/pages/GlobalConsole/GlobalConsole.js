@@ -7,9 +7,9 @@ import { globalInviteAPI, platformAuditEventsAPI, platformTasksAPI } from '../..
 import './GlobalConsole.css';
 
 /* ─────────────────────────────────────────────────────────────────────────────
-  AtonixCorp — Global Capital Console
-   The cross-company control center a user sees immediately after login.
-   Shows: My Entities · Global Notifications · Global Tasks · Quick Actions
+  AtonixCorp Console
+  The organization control center a user sees immediately after login.
+  Shows: My Entities · Notifications · Tasks · Quick Actions
 ───────────────────────────────────────────────────────────────────────────── */
 
 const openStandalonePath = (path) => {
@@ -262,7 +262,7 @@ const GlobalConsole = () => {
   const contactReadiness = currentOrganization?.email && currentOrganization?.address ? 'Ready' : 'Profile incomplete';
   const healthStatus = complianceAlertCount > 0 ? 'Review required' : 'Current';
   const marketPulse = [
-    { label: 'Global Equity Index', value: 'No data connected', tone: 'muted' },
+    { label: 'Equity Market Index', value: 'No data connected', tone: 'muted' },
     { label: 'Volatility Index', value: 'Stable', tone: 'positive' },
     { label: 'Portfolio NAV', value: 'Not yet configured', tone: 'muted' },
     { label: 'Compliance Status', value: 'Current', tone: 'positive' },
@@ -345,7 +345,7 @@ const GlobalConsole = () => {
         </div>
         <div className="gc-capital-badges">
           <span className="gc-compliance-badge">Compliance: Current</span>
-          <span className="gc-capital-watermark">ATONIXCORP GLOBAL</span>
+          <span className="gc-capital-watermark">ATONIXCORP</span>
         </div>
       </section>
 
@@ -483,7 +483,7 @@ const GlobalConsole = () => {
                 <div className="gc-section-header gc-section-header--tight">
                   <div>
                     <h2>Compliance Feed</h2>
-                    <p>Global alerts and status</p>
+                    <p>Organization alerts and status</p>
                   </div>
                   {notifs.length > 0 && <span className="gc-notif-badge">{complianceAlertCount}</span>}
                 </div>
@@ -516,16 +516,16 @@ const GlobalConsole = () => {
           </div>
 
           <footer className="gc-capital-footer">
-            <span>PrimeSource Equity • Global Capital Infrastructure • Systems Operational</span>
+            <span>AtonixCorp • Financial Management Platform • Systems Operational</span>
           </footer>
 
       {inviteModalOpen && (
         <div className="gc-modal-backdrop" role="presentation" onClick={() => !inviteSaving && setInviteModalOpen(false)}>
-          <div className="gc-modal" role="dialog" aria-modal="true" aria-labelledby="global-invite-title" onClick={(event) => event.stopPropagation()}>
+          <div className="gc-modal" role="dialog" aria-modal="true" aria-labelledby="organization-invite-title" onClick={(event) => event.stopPropagation()}>
             <div className="gc-modal-header">
               <div>
-                <p className="gc-modal-kicker">Global Invite</p>
-                <h3 id="global-invite-title">Invite User to an Organization</h3>
+                <p className="gc-modal-kicker">Organization Invite</p>
+                <h3 id="organization-invite-title">Invite User to an Organization</h3>
               </div>
               <button className="gc-modal-close" onClick={() => setInviteModalOpen(false)} disabled={inviteSaving} aria-label="Close invite dialog">
                 ×
@@ -562,7 +562,7 @@ const GlobalConsole = () => {
             <div className="gc-modal-actions">
               <button className="gc-action-btn gc-action-secondary" onClick={() => setInviteModalOpen(false)} disabled={inviteSaving}>Cancel</button>
               <button className="gc-action-btn gc-action-primary" onClick={handleInviteUser} disabled={inviteSaving}>
-                {inviteSaving ? 'Inviting…' : 'Send Global Invite'}
+                {inviteSaving ? 'Inviting…' : 'Send Organization Invite'}
               </button>
             </div>
           </div>
