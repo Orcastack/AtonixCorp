@@ -1,4 +1,4 @@
-"""WSGI config for the AtonixCorp API project."""
+"""Legacy WSGI compatibility entry point for the AtonixCorp API project."""
 
 import os
 
