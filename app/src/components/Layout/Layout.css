@@ -7,7 +7,7 @@
 
 .enterprise-layout .sidebar,
 .enterprise-layout .topbar {
-	background: #1f5f9b;
+	background: #0a2a66;
 	border-color: rgba(255, 255, 255, 0.24);
 }
 
@@ -17,11 +17,78 @@
 
 .enterprise-layout .profile-avatar-btn,
 .enterprise-layout .profile-dropdown-avatar {
-	background: #1f5f9b;
+	background: #0a2a66;
 }
 
 .enterprise-layout .profile-avatar-btn {
 	border-color: rgba(255, 255, 255, 0.48);
+}
+
+.enterprise-layout .topbar-left {
+	gap: 12px;
+}
+
+.enterprise-layout .topbar-left .topbar-title {
+	font-size: 16px;
+	letter-spacing: 0;
+}
+
+.enterprise-header-actions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.enterprise-header-action {
+	background: rgba(255, 255, 255, 0.12);
+	border: 1px solid rgba(255, 255, 255, 0.34);
+	border-radius: 2px;
+	color: #ffffff;
+	cursor: pointer;
+	font-size: 12px;
+	font-weight: 600;
+	min-height: 32px;
+	padding: 0 10px;
+}
+
+.enterprise-header-action:hover,
+.enterprise-header-action:focus-visible {
+	background: rgba(255, 255, 255, 0.22);
+	border-color: rgba(255, 255, 255, 0.64);
+}
+
+.enterprise-notification-link {
+	align-items: center;
+	color: #ffffff;
+	display: inline-flex;
+	font-size: 17px;
+	justify-content: center;
+	min-height: 36px;
+	min-width: 36px;
+	position: relative;
+	text-decoration: none;
+}
+
+.enterprise-notification-badge {
+	align-items: center;
+	background: #ffffff;
+	border-radius: 999px;
+	color: #0a2a66;
+	display: inline-flex;
+	font-size: 9px;
+	font-weight: 800;
+	height: 16px;
+	justify-content: center;
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 16px;
+}
+
+@media (max-width: 900px) {
+	.enterprise-header-actions {
+		display: none;
+	}
 }
 
 .sidebar-organization-name {

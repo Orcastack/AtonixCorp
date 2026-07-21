@@ -190,6 +190,11 @@ const EnterpriseOrgOverview = () => {
   const regionCount = Object.keys(regionData).length;
   const profitMargin = totalRevenue ? (totalProfit / totalRevenue) * 100 : 0;
   const attentionCount = pending_tax_returns + missing_data_entities;
+  const priorityTasks = [
+    { label: 'Tax returns pending', value: pending_tax_returns, due: 'This period', path: '/app/enterprise/tax-compliance' },
+    { label: 'Entities missing data', value: missing_data_entities, due: 'Before next close', path: '/app/enterprise/entities' },
+    { label: 'Approvals awaiting review', value: 0, due: 'Review queue', path: '/app/enterprise/audit-explorer' },
+  ];
 
   return (
     <div className="enterprise-overview enterprise-dashboard org-overview-container ed-page org-dashboard-page">
@@ -281,6 +286,28 @@ const EnterpriseOrgOverview = () => {
                 ))}
               </div>
             </div>
+
+            <section className="org-priority-work" aria-labelledby="priority-work-title">
+              <div className="org-panel-head">
+                <div>
+                  <h2 id="priority-work-title">Priority Work</h2>
+                  <p>Review the items that need attention across the enterprise.</p>
+                </div>
+                <span className="org-priority-count">{attentionCount} active</span>
+              </div>
+              <div className="org-priority-list">
+                {priorityTasks.map((task) => (
+                  <button className="org-priority-item" key={task.label} onClick={() => navigate(task.path)}>
+                    <span className={`org-priority-indicator${task.value > 0 ? ' is-active' : ''}`} aria-hidden="true" />
+                    <span className="org-priority-copy">
+                      <strong>{task.label}</strong>
+                      <span>Due: {task.due}</span>
+                    </span>
+                    <span className="org-priority-value">{task.value}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
 
             {loading && (
               <div className="ed-loading">

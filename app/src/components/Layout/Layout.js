@@ -40,7 +40,8 @@ const Layout = ({ children }) => {
   };
 
   const userInitial = (user?.name || user?.email || 'U').charAt(0).toUpperCase();
-  const isEnterpriseRoute = location.pathname.startsWith('/app/enterprise');
+  const enterpriseRoutePrefixes = ['/app/enterprise', '/app/governance', '/app/accounting', '/app/equity', '/app/subledgers'];
+  const isEnterpriseRoute = enterpriseRoutePrefixes.some((prefix) => location.pathname.startsWith(prefix));
 
   //  Navigation definitions
 
@@ -307,9 +308,23 @@ const Layout = ({ children }) => {
         {/* Top Bar */}
         <header className="topbar">
           <div className="topbar-left">
-            <h2 className="topbar-title">{currentOrganization?.name || 'AtonixCorp'}</h2>
+            {isEnterpriseRoute && <LogoMark size={24} />}
+            <h2 className="topbar-title">{isEnterpriseRoute ? 'Enterprise Console' : (currentOrganization?.name || 'AtonixCorp')}</h2>
           </div>
           <div className="topbar-right">
+            {isEnterpriseRoute && (
+              <>
+                <div className="enterprise-header-actions" aria-label="Enterprise quick actions">
+                  <button className="enterprise-header-action" onClick={() => navigate('/app/entities/create?mode=accounting')}>Add Entity</button>
+                  <button className="enterprise-header-action" onClick={() => navigate('/app/workspaces/new')}>Add Workspace</button>
+                  <button className="enterprise-header-action" onClick={() => navigate('/app/equity/create')}>Add Equity</button>
+                </div>
+                <NavLink className="enterprise-notification-link" to="/app/overview/notifications" aria-label="Notifications, 0 unread">
+                  <span aria-hidden="true">&#128276;</span>
+                  <span className="enterprise-notification-badge">0</span>
+                </NavLink>
+              </>
+            )}
             <div className="profile-menu" ref={profileRef}>
               <button
                 className="profile-avatar-btn"
