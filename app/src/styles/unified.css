@@ -203,6 +203,13 @@ textarea:focus {
     min-height: 48px;
   }
 
+  select,
+  option,
+  optgroup {
+    background-color: var(--color-dropdown-surface);
+    color: var(--color-dropdown-text);
+  }
+
   .page-header,
   .card-header,
   .card-footer,

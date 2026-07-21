@@ -6,6 +6,13 @@ text color in `app/src/styles/unified.css`, so they cannot inherit white text on
 white popup. Reusable profile and workspace menus use the same contract, including
 hover, active, keyboard-focus, and touch-safe mobile target styles.
 
+At widths below 1024px, profile and workspace dropdowns reassert their tokenized
+surface, border, and text colors and use 48px menu-item targets. At widths below
+768px, native selects reassert the same surface and text colors. Regular mobile
+navigation links use the dropdown ink token; white utility-link text is reserved
+for the explicit dark utility surface. This keeps phone, tablet, and desktop menus
+legible in both light and dark themes.
+
 For a future dark theme, set `data-theme="dark"` on the application root. The
 dropdown tokens then switch together; do not set isolated menu text or background
 colors in feature CSS.

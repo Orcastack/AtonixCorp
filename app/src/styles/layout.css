@@ -185,9 +185,7 @@
 .ly-utility-links a,
 .ly-lang-select,
 .ly-signin,
-.ly-header .ly-nav-link,
-.ly-header .ly-mobile-link,
-.ly-header .ly-mobile-signin {
+.ly-header .ly-nav-link {
   color: var(--color-white);
 }
 
@@ -725,22 +723,28 @@
   border: 1px solid var(--color-dropdown-border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
+  color: var(--color-dropdown-text);
   overflow: hidden;
   z-index: 300;
 }
 
+.profile-dropdown-header,
 .ws-dropdown-header {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
   padding: 14px 16px;
-  background: var(--brand-soft-grey);
+  background: var(--color-dropdown-surface);
+  border-bottom: 1px solid var(--color-dropdown-border);
+  color: var(--color-dropdown-text);
 }
 
+.profile-dropdown-name,
+.profile-dropdown-item,
 .ws-dropdown-name,
 .ws-dropdown-ws-name,
 .ws-dropdown-item {
-  color: var(--color-heading);
+  color: var(--color-dropdown-text);
 }
 
 .ws-dropdown-name {
@@ -751,9 +755,10 @@
   text-overflow: ellipsis;
 }
 
+.profile-dropdown-email,
 .ws-dropdown-email,
 .ws-dropdown-ws-label {
-  color: var(--color-text);
+  color: var(--color-dropdown-muted);
 }
 
 .ws-dropdown-email {
@@ -778,14 +783,18 @@
 }
 
 .ws-dropdown-item:hover,
-.ws-dropdown-item:focus-visible {
+.ws-dropdown-item:focus-visible,
+.profile-dropdown-item:hover,
+.profile-dropdown-item:focus-visible {
   background: var(--color-dropdown-hover);
   color: var(--color-dropdown-text);
   outline: none;
 }
 
-.ws-dropdown-item:active {
+.ws-dropdown-item:active,
+.profile-dropdown-item:active {
   background: var(--color-dropdown-active);
+  color: var(--color-dropdown-text);
 }
 
 .ws-dropdown-logout {
@@ -858,8 +867,8 @@
   .ly-mobile-nav {
     display: flex;
     flex-direction: column;
-    background: #FFFFFF;
-    border-top: 1px solid rgba(16, 24, 32, 0.08);
+    background: var(--color-dropdown-surface);
+    border-top: 1px solid var(--color-dropdown-border);
   }
 
   .ly-primary-inner {
@@ -871,8 +880,27 @@
     max-width: 100%;
   }
 
-  .ly-mobile-link {
-    color: #101820;
+  .ly-mobile-nav .ly-mobile-link:not(.ly-mobile-link--utility),
+  .ly-mobile-nav .ly-mobile-signin {
+    color: var(--color-black) !important;
+  }
+
+  .ly-mobile-nav .ly-mobile-link:hover,
+  .ly-mobile-nav .ly-mobile-link:focus-visible,
+  .ly-mobile-nav .ly-mobile-signin:hover,
+  .ly-mobile-nav .ly-mobile-signin:focus-visible {
+    background: var(--color-dropdown-hover);
+    color: var(--color-black) !important;
+    outline: none;
+  }
+
+  [data-theme='dark'] .ly-mobile-nav .ly-mobile-link:not(.ly-mobile-link--utility),
+  [data-theme='dark'] .ly-mobile-nav .ly-mobile-signin,
+  [data-theme='dark'] .ly-mobile-nav .ly-mobile-link:hover,
+  [data-theme='dark'] .ly-mobile-nav .ly-mobile-link:focus-visible,
+  [data-theme='dark'] .ly-mobile-nav .ly-mobile-signin:hover,
+  [data-theme='dark'] .ly-mobile-nav .ly-mobile-signin:focus-visible {
+    color: var(--color-dropdown-text) !important;
   }
 
   .ws-main-area {
@@ -901,13 +929,17 @@
 
   .profile-dropdown,
   .ws-dropdown {
+    background: var(--color-dropdown-surface);
+    border-color: var(--color-dropdown-border);
+    color: var(--color-dropdown-text);
     max-width: calc(100vw - 32px);
     min-width: min(240px, calc(100vw - 32px));
   }
 
   .profile-dropdown-item,
   .ws-dropdown-item {
-    min-height: 44px;
+    min-height: 48px;
+    padding: 12px 16px;
   }
 }
 
@@ -1003,10 +1035,11 @@
 
 .profile-dropdown {
   animation: dropdownFadeIn 0.15s ease;
-  background: var(--color-white);
-  border: 1px solid var(--border-color-default);
+  background: var(--color-dropdown-surface);
+  border: 1px solid var(--color-dropdown-border);
   border-radius: 10px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  color: var(--color-dropdown-text);
   overflow: hidden;
   position: absolute;
   right: 0;
@@ -1049,7 +1082,7 @@
 }
 
 .profile-dropdown-name {
-  color: var(--color-midnight, #0f172a);
+  color: var(--color-dropdown-text);
   font-size: 13px;
   font-weight: 700;
   max-width: 160px;
@@ -1059,7 +1092,7 @@
 }
 
 .profile-dropdown-email {
-  color: var(--color-silver-dark, #64748b);
+  color: var(--color-dropdown-muted);
   font-size: 11px;
   margin-top: 2px;
   max-width: 160px;
@@ -1078,7 +1111,7 @@
   align-items: center;
   background: none;
   border: none;
-  color: var(--color-midnight, #0f172a);
+  color: var(--color-dropdown-text);
   cursor: pointer;
   display: flex;
   font-size: 13px;
@@ -1092,7 +1125,8 @@
 }
 
 .profile-dropdown-item:hover {
-  background: var(--color-silver-very-light, #f8fafc);
+  background: var(--color-dropdown-hover);
+  color: var(--color-dropdown-text);
 }
 
 .profile-dropdown-logout {

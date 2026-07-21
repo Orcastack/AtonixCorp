@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useEnterprise } from '../../context/EnterpriseContext';
+import { useAuth } from '../../context/AuthContext';
 import AtonixCorpLogo from '../../components/branding/AtonixCorpLogo';
 import { organizationsAPI } from '../../services/api';
 import { countryDropdownOptions } from '../../utils/countryDropdowns';
@@ -186,6 +187,7 @@ const CreateWorkspace = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { createWorkspace, createEntity, createOrganization, currentOrganization, setActiveWorkspace } = useEnterprise();
+  const { user, resendEmailVerification } = useAuth();
   const location = useLocation();
   const isOrgCreate = location.pathname.includes('/organizations/create');
   const isEntityCreate = location.pathname.includes('/entities/create');
@@ -199,6 +201,7 @@ const CreateWorkspace = () => {
   const [form, setForm] = useState(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [sendingVerificationLink, setSendingVerificationLink] = useState(false);
   const [identityStatus, setIdentityStatus] = useState(null);
   const [verifyingIdentity, setVerifyingIdentity] = useState(false);
   const [fyOpen, setFyOpen] = useState(false);
@@ -280,6 +283,23 @@ const CreateWorkspace = () => {
     }));
   };
 
+  const requestEmailVerification = async () => {
+    if (!user?.email) {
+      setError('Sign in again to request an email verification link.');
+      return;
+    }
+
+    setSendingVerificationLink(true);
+    const result = await resendEmailVerification(user.email);
+    setSendingVerificationLink(false);
+    setError(result.success
+      ? `A verification link has been sent to ${user.email}. Open it, then return here to launch your organization.`
+      : (result.error || 'Unable to request an email verification link.'));
+  };
+
+  const requiresEmailVerification = isOrgCreate
+    && (user?.email_verified === false || error?.toLowerCase().includes('verify your email'));
+
   const canGoNext = () => {
     if (step === 1) {
       return form.name.trim().length >= 2
@@ -293,6 +313,10 @@ const CreateWorkspace = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isOrgCreate && user?.email_verified === false) {
+      setError('Verify your account email to create an organization.');
+      return;
+    }
     if (!form.name.trim()) { setError('Company name is required'); return; }
     if (isOrgCreate && !form.registrationNumber.trim()) { setError('Company registration number is required'); return; }
     if (!form.country)     { setError('Country is required'); return; }
@@ -784,7 +808,21 @@ const CreateWorkspace = () => {
         </div>
 
         {/* Error */}
-        {error && <div className="cw-error">{error}</div>}
+        {error && (
+          <div className="cw-error" role="alert">
+            <span>{error}</span>
+            {requiresEmailVerification && (
+              <button
+                type="button"
+                className="cw-verify-btn cw-error-action"
+                onClick={requestEmailVerification}
+                disabled={sendingVerificationLink}
+              >
+                {sendingVerificationLink ? 'Sending link...' : 'Send verification link'}
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="cw-form">
