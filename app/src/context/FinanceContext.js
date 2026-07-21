@@ -8,6 +8,7 @@ import {
   aiInsightsAPI, reportsAPI,
   organizationsAPI, entitiesAPI, bankingTransactionsAPI
 } from '../services/api';
+import { getApiOrigin } from '../utils/apiBaseUrl';
 
 const FinanceContext = createContext();
 
@@ -100,9 +101,7 @@ export const FinanceProvider = ({ children }) => {
   const [income, setIncome] = useState([]);
   const [budgets, setBudgets] = useState([]);
 
-  const API_BASE_URL =
-    process.env.REACT_APP_API_BASE_URL ||
-    (process.env.NODE_ENV === 'development' ? 'http://localhost:8000' : '');
+  const API_BASE_URL = getApiOrigin();
 
   const apiUrl = useCallback(
     (path) => {

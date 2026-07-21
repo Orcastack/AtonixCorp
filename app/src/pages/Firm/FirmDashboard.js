@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useEnterprise } from '../../context/EnterpriseContext';
+import { getApiBaseUrl } from '../../utils/apiBaseUrl';
 
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+const API_BASE = getApiBaseUrl();
 
 const EMPTY_DASHBOARD = {
   clients: { total: 0, active: 0, inactive: 0, prospects: 0, recent: [] },

@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { formatErrorMessage, reportUiError } from '../utils/errorReporting';
+import { getApiBaseUrl } from '../utils/apiBaseUrl';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+const API_BASE_URL = getApiBaseUrl();
 
 const api = axios.create({
   baseURL: API_BASE_URL,

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useEnterprise } from '../../context/EnterpriseContext';
+import { getApiBaseUrl } from '../../utils/apiBaseUrl';
 
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+const API_BASE = getApiBaseUrl();
 
 const CATEGORIES = ['All', 'Integration', 'Add-on', 'Partner Service'];
 

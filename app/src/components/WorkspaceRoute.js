@@ -2,6 +2,7 @@ import React from 'react';
 import { Navigate, useLocation, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useEnterprise } from '../context/EnterpriseContext';
+import { getApiBaseUrl } from '../utils/apiBaseUrl';
 
 /**
  * WorkspaceRoute — guards workspace-scoped routes.
@@ -13,7 +14,7 @@ const WorkspaceRoute = ({ children }) => {
   const { activeWorkspace, entities, setActiveWorkspace, fetchWorkspacePermissionSummary, getWorkspacePermissionSummary } = useEnterprise();
   const location = useLocation();
   const { workspaceId } = useParams();
-  const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+  const API_BASE_URL = getApiBaseUrl();
   const [resolvedWorkspace, setResolvedWorkspace] = React.useState(null);
   const [permissionLoading, setPermissionLoading] = React.useState(true);
   const [permissionDenied, setPermissionDenied] = React.useState(false);

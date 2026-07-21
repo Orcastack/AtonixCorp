@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useFinance } from '../../context/FinanceContext';
+import { getApiBaseUrl } from '../../utils/apiBaseUrl';
 import ModelInputForm from './components/ModelInputForm';
 import ResultsDashboard from './components/ResultsDashboard';
 import ScenarioDashboard from './components/ScenarioDashboard';
@@ -219,7 +220,7 @@ const FinancialModels = () => {
       }
 
       // Call reporting engine
-      const response = await fetch('http://localhost:8000/api/models/reports/', {
+      const response = await fetch(`${getApiBaseUrl()}/models/reports/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -267,7 +268,7 @@ const FinancialModels = () => {
       }
 
       // Call advanced reporting engine
-      const response = await fetch('http://localhost:8000/api/models/analytics/', {
+      const response = await fetch(`${getApiBaseUrl()}/models/analytics/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useAuth } from './AuthContext';
 import { workspacePermissionsAPI } from '../services/api';
+import { getApiOrigin } from '../utils/apiBaseUrl';
 
 const EnterpriseContext = createContext();
 
@@ -21,9 +22,7 @@ export const EnterpriseProvider = ({ children }) => {
   const DASHBOARD_CACHE_TTL_MS = 60 * 1000;
   const ORG_PREFETCH_THROTTLE_MS = 15 * 1000;
 
-  const API_BASE_URL =
-    process.env.REACT_APP_API_BASE_URL ||
-    (process.env.NODE_ENV === 'development' ? 'http://localhost:8000' : '');
+  const API_BASE_URL = getApiOrigin();
 
   const apiUrl = useCallback(
     (path) => {
