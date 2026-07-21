@@ -802,7 +802,7 @@ class DeveloperPortalViewTests(TestCase):
             {
                 'email': 'secure-id@example.com',
                 'password': 'strong-pass-123',
-                'username': 'secure-id@example.com',
+                'username': 'secure-id-user',
                 'account_type': 'enterprise',
                 'country': 'Nigeria',
             },
@@ -857,13 +857,7 @@ class DeveloperPortalViewTests(TestCase):
         self.assertTrue(verified_login_response.data['user']['email_verified'])
         self.assertIn('access', verified_login_response.data)
 
-    def test_register_uses_email_when_a_legacy_username_conflicts(self):
-        User.objects.create_user(
-            username='new-owner@example.com',
-            email='legacy-owner@example.com',
-            password='strong-pass-123',
-        )
-
+    def test_register_requires_username_distinct_from_email(self):
         response = self.client.post(
             '/api/auth/register/',
             {
@@ -874,10 +868,25 @@ class DeveloperPortalViewTests(TestCase):
             format='json',
         )
 
-        self.assertEqual(response.status_code, 201)
-        user = User.objects.get(email='new-owner@example.com')
-        self.assertNotEqual(user.username, 'new-owner@example.com')
-        self.assertTrue(user.username.startswith('new-owner@example.com-'))
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['username'], 'This field is required.')
+
+        matching_username_response = self.client.post(
+            '/api/auth/register/',
+            {
+                'email': 'new-owner@example.com',
+                'username': 'new-owner@example.com',
+                'password': 'strong-pass-123',
+                'account_type': 'enterprise',
+            },
+            format='json',
+        )
+
+        self.assertEqual(matching_username_response.status_code, 400)
+        self.assertEqual(
+            matching_username_response.data['username'],
+            'Username or employee ID must be different from your email address.',
+        )
 
     def test_register_uses_submitted_username_and_rejects_duplicates(self):
         response = self.client.post(
@@ -914,7 +923,7 @@ class DeveloperPortalViewTests(TestCase):
             {
                 'email': 'expired-link@example.com',
                 'password': 'strong-pass-123',
-                'username': 'expired-link@example.com',
+                'username': 'expired-link-user',
             },
             format='json',
         )

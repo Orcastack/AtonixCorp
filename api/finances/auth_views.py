@@ -17,19 +17,6 @@ from .organization_email_service import send_system_notification
 User = get_user_model()
 
 
-def _registration_username(email):
-    """Generate a unique internal username while keeping email as the login identity."""
-    max_length = User._meta.get_field('username').max_length
-    base = email[:max_length]
-    candidate = base
-    suffix = 1
-    while User.objects.filter(username__iexact=candidate).exists():
-        suffix += 1
-        suffix_text = f'-{suffix}'
-        candidate = f'{base[:max_length - len(suffix_text)]}{suffix_text}'
-    return candidate
-
-
 def _user_payload(user):
     profile = getattr(user, 'profile', None)
     return {
@@ -95,14 +82,19 @@ class RegisterView(DeveloperFacingAPIView):
 
         if not email:
             return Response({"email": "This field is required."}, status=status.HTTP_400_BAD_REQUEST)
+        if not username:
+            return Response({"username": "This field is required."}, status=status.HTTP_400_BAD_REQUEST)
+        if username.casefold() == email.casefold():
+            return Response({"username": "Username or employee ID must be different from your email address."}, status=status.HTTP_400_BAD_REQUEST)
+        if len(username) > User._meta.get_field('username').max_length:
+            return Response({"username": "Username must be 150 characters or fewer."}, status=status.HTTP_400_BAD_REQUEST)
         if not password:
             return Response({"password": "This field is required."}, status=status.HTTP_400_BAD_REQUEST)
         if User.objects.filter(email__iexact=email).exists():
             return Response({"email": "A user with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)
-        if username and User.objects.filter(username__iexact=username).exists():
+        if User.objects.filter(username__iexact=username).exists():
             return Response({"username": "This username is already in use."}, status=status.HTTP_400_BAD_REQUEST)
 
-        username = username or _registration_username(email)
         user = User.objects.create_user(username=username, email=email, password=password)
 
         # Create profile so the frontend starts from real stored values (no mock).

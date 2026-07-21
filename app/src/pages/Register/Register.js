@@ -53,6 +53,11 @@ const Register = () => {
       return;
     }
 
+    if (username.trim().toLowerCase() === email.trim().toLowerCase()) {
+      setError('Username or employee ID must be different from your email address');
+      return;
+    }
+
     if (password.length < 6) {
       setError('Password must be at least 6 characters');
       return;
@@ -68,7 +73,7 @@ const Register = () => {
       return;
     }
 
-    const result = await register(username, email, password, country, phone, 'enterprise');
+    const result = await register(username.trim(), email, password, country, phone, 'enterprise');
     if (result.success) {
       navigate('/verify-email', { state: { email } });
     } else {
@@ -148,13 +153,13 @@ const Register = () => {
 
           <form onSubmit={handleDetailsSubmit} className="auth-form">
             <div className="form-group">
-              <label htmlFor="username">Username</label>
+              <label htmlFor="username">Username or Employee ID</label>
               <input
                 type="text"
                 id="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="johndoe"
+                placeholder="Jane Doe or EMP-1024"
                 autoComplete="username"
                 autoFocus
               />
