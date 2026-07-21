@@ -600,19 +600,11 @@ const CreateWorkspace = () => {
 
   const renderStep4 = () => {
     const selectedPackage = WORKSPACE_PACKAGE_OPTIONS.find((option) => option.id === form.workspaceMode) || null;
-    const packageTitle = selectedPackage?.title || 'Choose an organization package';
     const accountingModules = ACCOUNTING_MODULE_OPTIONS.filter((module) => form.enabledModules.includes(module.key));
     const equityModules = EQUITY_MODULE_OPTIONS.filter((module) => form.enabledModules.includes(module.key));
     const governanceModules = equityModules.filter((module) => module.key === 'equity_governance');
     const preinstalledCount = selectedPackage?.modules?.length || 0;
-    const operatingSystem = WORKSPACE_MODE_LABELS[form.workspaceMode] || 'Choose an organization package';
-    const licenseLabel = selectedPackage ? 'Included with organization package' : 'Not selected';
-    const userLabel = '1 owner';
-
-    const renderModuleNames = (modules) => {
-      if (modules.length === 0) return 'None selected';
-      return modules.slice(0, 3).map((module) => module.label).join(' · ');
-    };
+    const packageLabel = WORKSPACE_MODE_LABELS[form.workspaceMode] || 'Select';
 
     return (
       <div className="cw-launch-template">
@@ -620,31 +612,22 @@ const CreateWorkspace = () => {
           <div className="cw-launch-section-header">
             <div>
               <h4 className="cw-launch-section-title">Organization Summary</h4>
-              <p className="cw-launch-section-subtitle">Select the operating model, then confirm the organization package that will be provisioned.</p>
             </div>
-            <span className="cw-launch-section-pill">Ready to configure</span>
+            <span className="cw-launch-section-pill">Configure</span>
           </div>
 
           <div className="cw-launch-summary-grid">
             <div className="cw-launch-summary-row">
               <span>Package</span>
-              <strong>{packageTitle}</strong>
+              <strong>{packageLabel}</strong>
             </div>
             <div className="cw-launch-summary-row">
-              <span>Operating System</span>
-              <strong>{operatingSystem}</strong>
-            </div>
-            <div className="cw-launch-summary-row">
-              <span>Preinstalled Modules</span>
+              <span>Modules</span>
               <strong>{preinstalledCount}</strong>
             </div>
             <div className="cw-launch-summary-row">
-              <span>License</span>
-              <strong>{licenseLabel}</strong>
-            </div>
-            <div className="cw-launch-summary-row">
-              <span>Users</span>
-              <strong>{userLabel}</strong>
+              <span>Plan</span>
+              <strong>{form.subscriptionTier}</strong>
             </div>
           </div>
 
@@ -657,8 +640,7 @@ const CreateWorkspace = () => {
                 onClick={() => selectPackage(option.id)}
                 aria-pressed={form.workspaceMode === option.id}
               >
-                <span className="cw-launch-package-title">{option.title}</span>
-                <span className="cw-launch-package-desc">{option.description}</span>
+                <span className="cw-launch-package-title">{WORKSPACE_MODE_LABELS[option.id]}</span>
               </button>
             ))}
           </div>
@@ -672,7 +654,6 @@ const CreateWorkspace = () => {
                 aria-pressed={form.subscriptionTier === tier.id}
               >
                 <span>{tier.label}</span>
-                <small>{tier.detail}</small>
               </button>
             ))}
           </div>
@@ -682,7 +663,6 @@ const CreateWorkspace = () => {
           <div className="cw-launch-section-header">
             <div>
               <h4 className="cw-launch-section-title">Module Overview</h4>
-              <p className="cw-launch-section-subtitle">Only the selected modules will preinstall into the organization shell.</p>
             </div>
           </div>
 
@@ -690,17 +670,14 @@ const CreateWorkspace = () => {
             <article className="cw-launch-module-card">
               <span className="cw-launch-module-label">Accounting modules</span>
               <strong>{accountingModules.length} selected</strong>
-              <p>{renderModuleNames(accountingModules)}</p>
             </article>
             <article className="cw-launch-module-card">
               <span className="cw-launch-module-label">Equity modules</span>
               <strong>{equityModules.length} selected</strong>
-              <p>{renderModuleNames(equityModules)}</p>
             </article>
             <article className="cw-launch-module-card">
               <span className="cw-launch-module-label">Governance modules</span>
               <strong>{governanceModules.length} selected</strong>
-              <p>{renderModuleNames(governanceModules)}</p>
             </article>
           </div>
         </section>

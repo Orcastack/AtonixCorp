@@ -546,7 +546,7 @@
 .cw-launch-summary-grid {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .cw-launch-summary-row {
@@ -555,7 +555,7 @@
   border-radius: 12px;
   display: grid;
   gap: 6px;
-  min-height: 96px;
+  min-height: 76px;
   padding: 12px;
 }
 
@@ -576,6 +576,9 @@
   font-size: 14px;
   font-weight: 700;
   line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .cw-launch-package-grid {
@@ -589,8 +592,9 @@
   border: 1px solid var(--cw-line);
   border-radius: 12px;
   display: grid;
-  gap: 8px;
-  min-height: 112px;
+  align-items: center;
+  gap: 0;
+  min-height: 72px;
   padding: 12px;
   text-align: left;
 }
@@ -605,12 +609,9 @@
   font-size: 14px;
   font-weight: 700;
   line-height: 1.35;
-}
-
-.cw-launch-package-desc {
-  color: var(--cw-muted);
-  font-size: 13px;
-  line-height: 1.55;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .cw-launch-module-grid {
@@ -624,16 +625,9 @@
   border: 1px solid var(--cw-line);
   border-radius: 12px;
   display: grid;
-  gap: 8px;
-  min-height: 148px;
+  gap: 6px;
+  min-height: 88px;
   padding: 16px;
-}
-
-.cw-launch-module-card p {
-  color: var(--cw-muted);
-  font-size: 13px;
-  line-height: 1.55;
-  margin: 0;
 }
 
 .cw-launch-confirmation-card {
@@ -1704,19 +1698,18 @@
 
 .creation-flow .cw-launch-summary-grid {
   gap: 12px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .creation-flow .cw-launch-summary-row,
 .creation-flow .cw-launch-package-card,
 .creation-flow .cw-launch-module-card {
-  align-content: start;
-  min-height: 112px;
+  min-height: 76px;
   padding: var(--creation-space-2);
 }
 
 .creation-flow .cw-launch-summary-row {
-  gap: 10px;
+  gap: 6px;
 }
 
 .creation-flow .cw-launch-summary-row strong {
@@ -1731,20 +1724,14 @@
 }
 
 .creation-flow .cw-launch-package-card {
-  align-content: start;
-  gap: 10px;
-  min-height: 144px;
-  padding: 18px;
+  align-content: center;
+  min-height: 72px;
+  padding: var(--creation-space-2);
 }
 
 .creation-flow .cw-launch-package-title {
   font-size: 15px;
   line-height: 22px;
-}
-
-.creation-flow .cw-launch-package-desc {
-  font-size: 13px;
-  line-height: 20px;
 }
 
 .creation-flow .cw-launch-module-grid {
@@ -1753,8 +1740,8 @@
 }
 
 .creation-flow .cw-launch-module-card {
-  min-height: 152px;
-  padding: 18px;
+  min-height: 88px;
+  padding: var(--creation-space-2);
 }
 
 .creation-flow .cw-launch-module-card strong {
