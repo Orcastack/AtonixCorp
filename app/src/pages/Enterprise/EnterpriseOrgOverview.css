@@ -310,11 +310,11 @@
 
 /* Text colours on accent header */
 .org-dashboard-header .ed-entity-name {
-  color: #ffffff;
+  color: #0A2A66;
 }
 
 .org-dashboard-header .org-dashboard-subtitle {
-  color: rgba(255, 255, 255, 0.80);
+  color: #0A2A66;
 }
 
 .org-dashboard-title-block {
