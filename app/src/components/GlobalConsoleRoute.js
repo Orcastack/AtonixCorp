@@ -33,11 +33,7 @@ const GlobalConsoleRoute = ({ children }) => {
     return <Navigate to="/verify-email" replace />;
   }
 
-  if (organizations.length === 0) {
-    return <Navigate to="/app/organizations/create" state={{ from: location }} replace />;
-  }
-
-  if (!hasPermission('view_org_overview')) {
+  if (organizations.length > 0 && !hasPermission('view_org_overview')) {
     const fallbackPath = getDefaultDashboardPath();
 
     if (fallbackPath !== location.pathname) {
