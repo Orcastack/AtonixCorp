@@ -1,7 +1,7 @@
 {
   "name": "atonixcorp",
   "version": "1.0.0",
-  "homepage": "https://atonixcorp.com",
+  "homepage": "https://orcastack.github.io/AtonixCorp/",
   "private": true,
   "proxy": "http://localhost:8000",
   "engines": {
