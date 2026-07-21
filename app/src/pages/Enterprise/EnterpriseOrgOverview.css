@@ -823,6 +823,14 @@
   line-height: 1.2;
 }
 
+.org-dashboard-page .org-dashboard-organization {
+  color: var(--org-muted);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: -4px 0 0;
+}
+
 .org-dashboard-page .org-dashboard-subtitle,
 .org-dashboard-page .org-dashboard-header .org-dashboard-subtitle {
   color: var(--org-muted);

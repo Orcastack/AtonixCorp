@@ -195,8 +195,8 @@ const EnterpriseOrgOverview = () => {
     <div className="enterprise-overview enterprise-dashboard org-overview-container ed-page org-dashboard-page">
       <div className="ed-header org-dashboard-header">
         <div className="org-dashboard-title-block">
-          <h1 className="ed-entity-name">{currentOrganization.name}</h1>
-          <p className="org-dashboard-subtitle">Organization overview for finance, operations, and compliance leaders. Use this view to understand the portfolio at a glance before drilling into entities, regions, or tax workflows.</p>
+          <h1 className="ed-entity-name">Organization Overview</h1>
+          <p className="org-dashboard-organization">{currentOrganization.name}</p>
           <div className="ed-meta-row">
             <span className="ed-meta-item ed-meta-chip">{active_entities} active entities</span>
             <span className="ed-meta-sep">·</span>
