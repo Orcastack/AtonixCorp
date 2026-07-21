@@ -1,6 +1,6 @@
 import os
 import django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'finance_api.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'atonixcorp_api.settings')
 django.setup()
 
 from django.contrib.auth.models import User

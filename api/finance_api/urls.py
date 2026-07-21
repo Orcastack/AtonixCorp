@@ -1,5 +1,5 @@
 """
-URL configuration for finance_api project.
+URL configuration for the AtonixCorp API project.
 """
 from django.conf import settings
 from django.conf.urls.static import static

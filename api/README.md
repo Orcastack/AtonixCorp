@@ -184,7 +184,7 @@ The container health check calls `GET /status`; route TLS termination through a 
 ### Project Structure
 ```
 api/
-├── finance_api/          # Main Django project
+├── atonixcorp_api/       # Main Django project
 │   ├── settings.py      # Django settings
 │   ├── urls.py         # URL configuration
 │   └── wsgi.py         # WSGI application
@@ -228,7 +228,7 @@ RUN pip install -r requirements.txt
 COPY . .
 RUN python manage.py collectstatic --noinput
 EXPOSE 8000
-CMD ["gunicorn", "finance_api.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "atonixcorp_api.wsgi:application", "--bind", "0.0.0.0:8000"]
 ```
 
 ### Banking Integration Environment

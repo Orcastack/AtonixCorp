@@ -14,7 +14,7 @@ services:
     env_file:
       - ./api/.env
     environment:
-      - DJANGO_SETTINGS_MODULE=finance_api.settings
+      - DJANGO_SETTINGS_MODULE=atonixcorp_api.settings
       - PYTHONUNBUFFERED=1
       - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,api.atonixcorp.com,atonixcorp.com,www.atonixcorp.com}
       - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-https://atonixcorp.com,https://www.atonixcorp.com,http://atonixcorp.com,http://www.atonixcorp.com}
@@ -55,7 +55,7 @@ services:
     env_file:
       - ./api/.env
     environment:
-      - DJANGO_SETTINGS_MODULE=finance_api.settings
+      - DJANGO_SETTINGS_MODULE=atonixcorp_api.settings
       - PYTHONUNBUFFERED=1
       - FRONTEND_BASE_URL=${FRONTEND_BASE_URL:-http://localhost:3000}
       - APPROVAL_NOTIFICATION_BASE_URL=${APPROVAL_NOTIFICATION_BASE_URL:-http://localhost:3000}
@@ -84,7 +84,7 @@ services:
     env_file:
       - ./api/.env
     environment:
-      - DJANGO_SETTINGS_MODULE=finance_api.settings
+      - DJANGO_SETTINGS_MODULE=atonixcorp_api.settings
       - PYTHONUNBUFFERED=1
       - FRONTEND_BASE_URL=${FRONTEND_BASE_URL:-http://localhost:3000}
       - APPROVAL_NOTIFICATION_BASE_URL=${APPROVAL_NOTIFICATION_BASE_URL:-http://localhost:3000}

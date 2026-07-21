@@ -1,4 +1,4 @@
-"""Legacy ASGI compatibility entry point for the AtonixCorp API project."""
+"""ASGI config for the AtonixCorp API project."""
 
 import os
 

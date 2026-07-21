@@ -12,7 +12,7 @@ COPY . .
 
 # Environment variables
 ENV PYTHONUNBUFFERED=1 \
-    DJANGO_SETTINGS_MODULE=finance_api.settings \
+    DJANGO_SETTINGS_MODULE=atonixcorp_api.settings \
     PORT=8000
 
 # Expose port

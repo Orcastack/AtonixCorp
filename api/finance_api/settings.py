@@ -1,4 +1,4 @@
-"""Django settings for finance_api project."""
+"""Django settings for the AtonixCorp API project."""
 
 import os
 import sys
@@ -62,7 +62,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'finance_api.urls'
+ROOT_URLCONF = 'atonixcorp_api.urls'
 
 TEMPLATES = [
     {
@@ -80,7 +80,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'finance_api.wsgi.application'
+WSGI_APPLICATION = 'atonixcorp_api.wsgi.application'
 
 # Database
 DATABASES = {
