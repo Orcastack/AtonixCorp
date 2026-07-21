@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -15,6 +17,7 @@ from .organization_email_service import send_system_notification
 
 
 User = get_user_model()
+logger = logging.getLogger(__name__)
 
 
 def _user_payload(user):
@@ -60,7 +63,13 @@ class SecureUserIdTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         profile = getattr(self.user, 'profile', None)
         if not profile or not profile.email_verified:
-            send_verification_email(self.user)
+            try:
+                send_verification_email(self.user)
+            except Exception:
+                logger.exception('Unable to resend verification email for user %s', self.user.pk)
+                raise AuthenticationFailed(
+                    'Please verify your email first. We could not send a new verification link; try again later or contact support.'
+                )
             raise AuthenticationFailed('Please verify your email first. A new verification link has been sent.')
         data['user'] = _user_payload(self.user)
         return data
@@ -91,7 +100,10 @@ class RegisterView(DeveloperFacingAPIView):
         if not password:
             return Response({"password": "This field is required."}, status=status.HTTP_400_BAD_REQUEST)
         if User.objects.filter(email__iexact=email).exists():
-            return Response({"email": "A user with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"email": "An account with this email already exists. Sign in with your email, username, or employee ID."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         if User.objects.filter(username__iexact=username).exists():
             return Response({"username": "This username is already in use."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -123,7 +135,14 @@ class RegisterView(DeveloperFacingAPIView):
             event_type='account_registration',
         )
 
-        send_verification_email(user)
+        try:
+            send_verification_email(user)
+        except Exception:
+            logger.exception('Unable to send verification email for newly registered user %s', user.pk)
+            return Response(
+                {'detail': 'Account created, but the verification email could not be sent. Try signing in later or contact support.'},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
         return Response(
             {
                 "user": _user_payload(user),

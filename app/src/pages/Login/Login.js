@@ -45,13 +45,13 @@ const Login = () => {
 
           <form onSubmit={handleSubmit} className="auth-form">
             <div className="form-group">
-              <label htmlFor="identifier">Email or User ID</label>
+              <label htmlFor="identifier">Email, Username, or Employee ID</label>
               <input
                 type="text"
                 id="identifier"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
-                placeholder="your@email.com or 10-digit user ID"
+                placeholder="your@email.com, username, or employee ID"
                 autoComplete="username"
               />
             </div>

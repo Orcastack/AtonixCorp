@@ -857,6 +857,25 @@ class DeveloperPortalViewTests(TestCase):
         self.assertTrue(verified_login_response.data['user']['email_verified'])
         self.assertIn('access', verified_login_response.data)
 
+    @patch('atonixcorp.auth_views.send_verification_email', side_effect=RuntimeError('SMTP unavailable'))
+    def test_unverified_login_reports_delivery_failure_without_server_error(self, _send_verification_email):
+        user = User.objects.create_user(
+            username='unverified-user',
+            email='unverified@example.com',
+            password='strong-pass-123',
+        )
+        UserProfile.objects.create(user=user)
+
+        response = self.client.post(
+            '/api/auth/token/',
+            {'username': 'unverified@example.com', 'password': 'strong-pass-123'},
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.data['error']['code'], 'UNAUTHORIZED')
+        self.assertIn('could not send a new verification link', response.data['error']['message'])
+
     def test_register_requires_username_distinct_from_email(self):
         response = self.client.post(
             '/api/auth/register/',
@@ -918,6 +937,30 @@ class DeveloperPortalViewTests(TestCase):
         self.assertEqual(
             duplicate_response.data['error']['details']['username'],
             'This username is already in use.',
+        )
+
+    def test_register_directs_existing_email_to_sign_in(self):
+        User.objects.create_user(
+            username='existing-user',
+            email='existing@example.com',
+            password='strong-pass-123',
+        )
+
+        response = self.client.post(
+            '/api/auth/register/',
+            {
+                'email': 'existing@example.com',
+                'username': 'different-user',
+                'password': 'strong-pass-123',
+                'account_type': 'enterprise',
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.data['error']['details']['email'],
+            'An account with this email already exists. Sign in with your email, username, or employee ID.',
         )
 
     def test_expired_email_verification_token_is_rejected(self):
