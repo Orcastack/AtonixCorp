@@ -2597,10 +2597,28 @@
   gap: 10px;
 }
 
+.cw-entity-creation .cw-tile-grid {
+  grid-auto-rows: 56px;
+}
+
 :is(.cw-entity-creation, .cw-equity-creation) .cw-tile {
   border-color: var(--specialized-line);
+  box-sizing: border-box;
+  min-width: 0;
   min-height: 46px;
   padding: 10px 12px;
+  text-align: center;
+  width: 100%;
+}
+
+.cw-entity-creation .cw-tile {
+  height: 100%;
+}
+
+.cw-entity-creation .cw-tile-label {
+  line-height: 1.25;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 :is(.cw-entity-creation, .cw-equity-creation) .cw-tile:hover,

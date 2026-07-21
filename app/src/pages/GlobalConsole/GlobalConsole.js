@@ -55,10 +55,8 @@ const GlobalConsole = () => {
     organizations,
     globalNotifications,
     fetchGlobalNotifications,
-    teamMembers,
     loading,
     complianceDeadlines,
-    hasPermission,
   } = useEnterprise();
 
   const [profileOpen, setProfileOpen] = useState(false);
@@ -128,9 +126,6 @@ const GlobalConsole = () => {
 
   const entityCount = entities.length;
   const showOrganizationOnboarding = !loading && organizations.length === 0;
-  const pendingInvitations = Array.isArray(teamMembers)
-    ? teamMembers.filter((member) => member?.accepted_at == null || member?.invitation_status === 'pending' || member?.status === 'pending').length
-    : 0;
   const ownedOrganizationOptions = organizations.filter((org) => (
     org.owner_email && org.owner_email === user?.email
   )).map((org) => ({
@@ -256,11 +251,6 @@ const GlobalConsole = () => {
   const activeOrganizationCount = organizations.length;
   const complianceAlertCount = notifs.filter((item) => item.severity === 'critical' || item.severity === 'high').length;
   const pendingCapitalTasks = tasks.length;
-  const isCurrentOrganizationOwner = Boolean(
-    currentOrganization?.owner_email && currentOrganization.owner_email === user?.email
-  );
-  const contactReadiness = currentOrganization?.email && currentOrganization?.address ? 'Ready' : 'Profile incomplete';
-  const healthStatus = complianceAlertCount > 0 ? 'Review required' : 'Current';
   const marketPulse = [
     { label: 'Equity Market Index', value: 'No data connected', tone: 'muted' },
     { label: 'Volatility Index', value: 'Stable', tone: 'positive' },
@@ -402,48 +392,6 @@ const GlobalConsole = () => {
                 <strong>{pendingCapitalTasks}</strong>
               </article>
             </div>
-          </section>
-
-          <section className="gc-center-grid" aria-label="Organization health and security centers">
-            <article className="gc-center-card">
-              <div className="gc-section-header gc-section-header--tight">
-                <div>
-                  <p className="gc-center-eyebrow">Health Center</p>
-                  <h2>Operational Readiness</h2>
-                  <p>Organization-level governance signals</p>
-                </div>
-                <span className={`gc-center-status ${healthStatus === 'Current' ? 'is-healthy' : 'is-review'}`}>{healthStatus}</span>
-              </div>
-              <div className="gc-center-checks">
-                <div><span>Registration identity</span><strong>{currentOrganization?.registration_number || 'Missing'}</strong></div>
-                <div><span>Compliance posture</span><strong>{healthStatus}</strong></div>
-                <div><span>Contact readiness</span><strong>{contactReadiness}</strong></div>
-                <div><span>Pending invitations</span><strong>{pendingInvitations}</strong></div>
-              </div>
-              <button className="gc-center-link" onClick={() => navigate('/app/enterprise/org-overview')}>Open organization health</button>
-            </article>
-
-            <article className="gc-center-card">
-              <div className="gc-section-header gc-section-header--tight">
-                <div>
-                  <p className="gc-center-eyebrow">Security Center</p>
-                  <h2>Access & Policy Controls</h2>
-                  <p>Security posture for the active organization</p>
-                </div>
-                <span className={`gc-center-status ${hasPermission('manage_org_settings') ? 'is-healthy' : 'is-review'}`}>
-                  {hasPermission('manage_org_settings') ? 'Manage' : 'View only'}
-                </span>
-              </div>
-              <div className="gc-center-checks">
-                <div><span>Owner oversight</span><strong>{isCurrentOrganizationOwner ? 'Active' : 'Delegated'}</strong></div>
-                <div><span>Role-based access</span><strong>Enforced</strong></div>
-                <div><span>Audit logging</span><strong>Active</strong></div>
-                <div><span>Policy administration</span><strong>{hasPermission('manage_org_settings') ? 'Available' : 'Restricted'}</strong></div>
-              </div>
-              <button className="gc-center-link" onClick={() => navigate('/security-center')} disabled={!hasPermission('manage_org_settings')}>
-                Open Security Center
-              </button>
-            </article>
           </section>
 
           <div className="gc-main-grid">

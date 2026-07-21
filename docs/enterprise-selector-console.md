@@ -22,23 +22,6 @@ Only the organization owner can use this branch. It creates or reopens a pending
 
 The Global Console only offers organization invite choices for organizations owned by the signed-in user. Server-side owner enforcement remains the authoritative control.
 
-## Health Center
-
-The Global Console includes an organization Health Center that reports:
-
-- Canonical registration identity presence.
-- Compliance feed posture from active notifications and deadlines.
-- Contact readiness based on the organization profile.
-- Pending invitation count.
-
-The panel links to the organization overview for detailed financial, entity, and compliance analysis.
-
-## Security Center
-
-The Global Console presents an access and policy checkpoint, and authorized users can open Security Center from that panel. Security Center persists MFA, IP restriction, session timeout, and audit-logging policy settings under the active organization. It also reads the organization permission context to show the effective role and whether `manage_org_settings` is granted.
-
-The route remains RBAC protected by `manage_org_settings`; the console action is disabled when that permission is absent.
-
 ## Validation
 
-Focused API coverage verifies owner invitations, audit records, and non-owner denial. Frontend production builds validate the selector, console, and Security Center UI integration. The UI consumes live organization and permission data; deployment-level monitoring and external identity-provider policy controls remain operational configuration responsibilities.
+Focused API coverage verifies owner invitations, audit records, and non-owner denial. Frontend production builds validate the selector and console UI integration. The UI consumes live organization data; deployment-level monitoring and external identity-provider policy controls remain operational configuration responsibilities.
