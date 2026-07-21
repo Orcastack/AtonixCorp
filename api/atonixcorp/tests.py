@@ -1776,7 +1776,7 @@ class CoreFinancialAPIV1Tests(TestCase):
         self.assertEqual(JournalEntry.objects.count(), 2)
         self.assertEqual(GeneralLedger.objects.count(), 2)
 
-    @patch('finances.v1_views.urlopen')
+    @patch('atonixcorp.v1_views.urlopen')
     def test_webhook_delivery_execution_and_signing(self, mocked_urlopen):
         mocked_response = mocked_urlopen.return_value.__enter__.return_value
         mocked_response.status = 200
@@ -1837,7 +1837,7 @@ class CoreFinancialAPIV1Tests(TestCase):
         self.assertEqual(delivery.status, 'delivered')
         self.assertEqual(delivery.response_status, 200)
 
-    @patch('finances.v1_views.urlopen')
+    @patch('atonixcorp.v1_views.urlopen')
     def test_reconciliation_matching_exposes_events_and_supports_replay(self, mocked_urlopen):
         mocked_response = mocked_urlopen.return_value.__enter__.return_value
         mocked_response.status = 200
