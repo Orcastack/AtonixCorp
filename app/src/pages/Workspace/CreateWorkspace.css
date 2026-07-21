@@ -592,11 +592,12 @@
   border: 1px solid var(--cw-line);
   border-radius: 12px;
   display: grid;
-  align-items: center;
+  align-content: center;
+  justify-items: center;
   gap: 0;
   min-height: 72px;
   padding: 12px;
-  text-align: left;
+  text-align: center;
 }
 
 .cw-launch-package-card.selected {
@@ -609,9 +610,10 @@
   font-size: 14px;
   font-weight: 700;
   line-height: 1.35;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .cw-launch-module-grid {
@@ -816,10 +818,12 @@
   color: #132238;
   cursor: pointer;
   display: grid;
-  gap: 6px;
-  min-height: 104px;
+  align-content: center;
+  justify-items: center;
+  gap: 0;
+  min-height: 72px;
   padding: 14px;
-  text-align: left;
+  text-align: center;
 }
 
 .cw-tier-card.selected {
