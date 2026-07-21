@@ -492,8 +492,8 @@
   max-width: 100%;
   padding: 0 12px;
   border-radius: var(--radius-sm);
-  background: rgba(238, 108, 77, 0.12);
-  border: 1px solid rgba(238, 108, 77, 0.28);
+  background: rgb(var(--color-accent-rgb) / 0.12);
+  border: 1px solid rgb(var(--color-accent-rgb) / 0.28);
   color: #000000;
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);

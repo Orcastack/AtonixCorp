@@ -6,7 +6,7 @@
 
 .cli-docs-hero {
   padding: 120px 0 56px;
-  background: #EE6C4D;
+  background: var(--color-accent);
   color: #ffffff;
 }
 

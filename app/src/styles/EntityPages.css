@@ -1,13 +1,13 @@
 /* ============================================================================
    ENTITY PAGES DESIGN SYSTEM
    All entity-scoped pages (dashboards, accounting, bookkeeping, etc.)
-   3-Color System: Graphite #1E2328 | White #FFFFFF | Crimson #C41E3A
+   3-Color System: Graphite #1E2328 | White #FFFFFF | Crimson #2878BD
    ============================================================================ */
 
 /* Color Palette — 3-color compliant */
 :root {
-  --primary:       #C41E3A;   /* Crimson — primary actions */
-  --primary-dark:  #A8172F;   /* Crimson hover */
+  --primary:       #2878BD;   /* Crimson — primary actions */
+  --primary-dark:  #1F5F9B;   /* Crimson hover */
   --page-bg:       #F8F9FB;   /* Off-white surface */
   --card-bg:       #FFFFFF;
   --text-primary:  #1E2328;   /* Graphite */
@@ -16,7 +16,7 @@
   --border:        #E0E2E5;
   --green:         #1E2328;   /* Positive → Graphite bold, never green */
   --amber:         #5F6B7A;   /* Warning → Graphite muted, never yellow */
-  --red:           #C41E3A;   /* Negative → Crimson */
+  --red:           #2878BD;   /* Negative → Crimson */
   --blue:          #1E2328;   /* No blues — Graphite */
   --gray-50:       #F8F9FB;
   --gray-100:      #F2F3F4;
@@ -155,7 +155,7 @@
 .btn-danger,
 .btn-delete {
   background: var(--ly-crimson-tint, #FAE9EC);
-  color: var(--ly-crimson, #C41E3A);
+  color: var(--ly-crimson, #2878BD);
   border: 1px solid var(--ly-crimson-border, #E6A3AE);
   border-radius: 7px;
   padding: 8px 14px;
@@ -167,7 +167,7 @@
 
 .btn-danger:hover,
 .btn-delete:hover {
-  background: var(--ly-crimson, #C41E3A);
+  background: var(--ly-crimson, #2878BD);
   color: #FFFFFF;
 }
 

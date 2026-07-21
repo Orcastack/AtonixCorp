@@ -4,8 +4,8 @@
   --overview-surface: #ffffff;
   --overview-line: rgba(0, 0, 0, 0.12);
   --overview-shadow: 0 22px 50px rgba(0, 0, 0, 0.08);
-  --overview-hero-bg: linear-gradient(135deg, #EE6C4D 0%, #D95A3C 60%, #c44d30 100%);
-  --overview-accent: #EE6C4D;
+  --overview-hero-bg: #1E2328;
+  --overview-accent: #2878BD;
   color: var(--overview-ink);
   display: grid;
   gap: 28px;
@@ -133,7 +133,7 @@
 .metric-card.warning::before,
 .metric-card.info::before,
 .metric-card.success::before {
-  background: linear-gradient(90deg, #EE6C4D, #000000);
+  background: linear-gradient(90deg, #2878BD, #000000);
 }
 
 .metric-header.stacked {
@@ -182,8 +182,8 @@
 }
 
 .metric-details .asset {
-  background: rgba(238, 108, 77, 0.12);
-  color: #EE6C4D;
+  background: rgba(40, 120, 189, 0.12);
+  color: #2878BD;
 }
 
 .metric-details .liability {
@@ -193,8 +193,8 @@
 
 .metric-badge {
   align-self: start;
-  background: rgba(238, 108, 77, 0.14);
-  color: #EE6C4D;
+  background: rgba(40, 120, 189, 0.14);
+  color: #2878BD;
 }
 
 @media (max-width: 1200px) {

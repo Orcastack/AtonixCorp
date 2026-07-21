@@ -3,7 +3,7 @@
 }
 
 .audit-hero {
-  --overview-hero-bg: linear-gradient(135deg, #EE6C4D 0%, #D95A3C 60%, #c44d30 100%);
+  --overview-hero-bg: #1E2328;
 }
 
 .audit-toolbar {
@@ -74,9 +74,9 @@
 }
 
 .audit-loading-pill {
-  background: rgba(238, 108, 77, 0.12);
+  background: rgba(40, 120, 189, 0.12);
   border-radius: 999px;
-  color: #EE6C4D;
+  color: #2878BD;
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -105,7 +105,7 @@
 
 .audit-event-row:hover,
 .audit-event-row.selected {
-  border-color: rgba(238, 108, 77, 0.35);
+  border-color: rgba(40, 120, 189, 0.35);
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.06);
   transform: translateY(-1px);
 }
@@ -141,8 +141,8 @@
 }
 
 .severity-critical {
-  background: rgba(196, 30, 58, 0.12);
-  color: #C41E3A;
+  background: rgba(40, 120, 189, 0.12);
+  color: #2878BD;
 }
 
 .severity-high {
@@ -221,7 +221,7 @@
 
 .audit-error-banner {
   border-style: solid;
-  color: #C41E3A;
+  color: #2878BD;
 }
 
 @media (max-width: 1200px) {

@@ -1,7 +1,7 @@
 /* =============================================================================
    ATONIXCORP — ENTITY LAYOUT SIDEBAR & SHELL
    Extends Layout.css for entity-scoped pages
-  Color system: Graphite (#1E2328), White (#FFFFFF), Crimson (#C41E3A)
+  Color system: Graphite (#1E2328), White (#FFFFFF), Crimson (#2878BD)
    ============================================================================= */
 
 /* --------------------------------------------------------------------------
@@ -37,7 +37,7 @@
   background: #1E2328;
   padding: 0;
   flex-shrink: 0;
-  border-bottom: 2px solid #C41E3A;
+  border-bottom: 2px solid #2878BD;
   min-height: 64px;
   display: flex;
   align-items: center;
@@ -52,7 +52,7 @@
   right: -20px;
   width: 80px;
   height: 80px;
-  background: radial-gradient(circle, rgba(196,30,58,0.12) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(40, 120, 189,0.12) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -69,10 +69,10 @@
 .entity-sidebar-accent {
   width: 6px;
   height: 6px;
-  background: #C41E3A;
+  background: #2878BD;
   border-radius: 50%;
   flex-shrink: 0;
-  box-shadow: 0 0 6px rgba(196, 30, 58, 0.35);
+  box-shadow: 0 0 6px rgba(40, 120, 189, 0.35);
 }
 
 .entity-sidebar-name {
@@ -484,17 +484,17 @@
 .entity-nav-link.active,
 .entity-submenu .entity-nav-link.active,
 .entity-topbar-badge {
-  color: #C41E3A;
+  color: #2878BD;
 }
 
 .entity-nav-link.active,
 .entity-submenu .entity-nav-link.active,
 .entity-topbar-badge {
-  background: rgba(196, 30, 58, 0.10);
+  background: rgba(40, 120, 189, 0.10);
 }
 
 .entity-nav-link.active::before {
-  background: #C41E3A;
+  background: #2878BD;
 }
 
 .entity-nav-section-label,
@@ -526,5 +526,5 @@
 }
 
 .entity-topbar-badge {
-  border-color: rgba(196, 30, 58, 0.18);
+  border-color: rgba(40, 120, 189, 0.18);
 }

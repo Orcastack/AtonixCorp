@@ -7,7 +7,7 @@
   --adv-soft:    #F8F9FB;
   --adv-line:    #E0E2E5;
   --adv-shadow:  0 18px 40px rgba(30, 35, 40, 0.08);
-  --adv-blue:    var(--ly-crimson, #C41E3A);
+  --adv-blue:    var(--ly-crimson, #2878BD);
   --adv-blue-bg: var(--ly-crimson-tint, #FAE9EC);
   --adv-green:   var(--ly-graphite, #1E2328);
   --adv-green-bg:rgba(30, 35, 40, 0.06);
@@ -116,13 +116,13 @@
 
 .ai-advisor-page .status-indicator.active {
   animation: adv-pulse 2s ease-in-out infinite;
-  background: var(--ly-crimson, #C41E3A);
-  box-shadow: 0 0 0 0 rgba(196, 30, 58, 0.4);
+  background: var(--ly-crimson, #2878BD);
+  box-shadow: 0 0 0 0 rgba(40, 120, 189, 0.4);
 }
 
 @keyframes adv-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(196, 30, 58, 0.4); }
-  50%       { box-shadow: 0 0 0 5px rgba(196, 30, 58, 0);  }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(40, 120, 189, 0.4); }
+  50%       { box-shadow: 0 0 0 5px rgba(40, 120, 189, 0);  }
 }
 
 .ai-advisor-page .chat-info {
@@ -167,7 +167,7 @@
 
 .ai-advisor-page .message.user .message-avatar {
   order: 2;
-  background: var(--ly-crimson, #C41E3A);
+  background: var(--ly-crimson, #2878BD);
 }
 
 .ai-advisor-page .message.user .message-content {
@@ -180,7 +180,7 @@
   align-self: flex-start;
   background: var(--ly-crimson-tint, #FAE9EC);
   border-radius: 50%;
-  color: var(--ly-crimson, #C41E3A);
+  color: var(--ly-crimson, #2878BD);
   display: flex;
   flex-shrink: 0;
   font-size: 15px;
@@ -452,8 +452,8 @@
 
 .ai-advisor-page .question-btn:hover {
   background: var(--ly-crimson-tint, #FAE9EC);
-  border-color: var(--ly-crimson, #C41E3A);
-  color: var(--ly-crimson, #C41E3A);
+  border-color: var(--ly-crimson, #2878BD);
+  color: var(--ly-crimson, #2878BD);
 }
 
 /* ─── Shared small-button links ──────────────────────────────────────────── */

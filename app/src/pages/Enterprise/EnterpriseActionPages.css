@@ -4,7 +4,7 @@
   --overview-surface: #ffffff;
   --overview-line: rgba(0, 0, 0, 0.12);
   --overview-shadow: 0 22px 50px rgba(0, 0, 0, 0.08);
-  --overview-hero-bg: linear-gradient(135deg, #EE6C4D 0%, #D95A3C 60%, #c44d30 100%);
+  --overview-hero-bg: #1E2328;
   color: var(--overview-ink);
   display: grid;
   gap: 24px;
@@ -156,13 +156,13 @@
 }
 
 .business-suite-create-card:hover {
-  border-color: rgba(238, 108, 77, 0.35);
+  border-color: rgba(40, 120, 189, 0.35);
   box-shadow: 0 26px 54px rgba(0, 0, 0, 0.12);
   transform: translateY(-2px);
 }
 
 .business-suite-create-accent {
-  color: #EE6C4D;
+  color: #2878BD;
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.14em;
@@ -219,7 +219,7 @@
 }
 
 .entities-page .entity-card::after {
-  background: linear-gradient(135deg, rgba(238, 108, 77, 0.18), transparent 45%);
+  background: linear-gradient(135deg, rgba(40, 120, 189, 0.18), transparent 45%);
   border-radius: inherit;
   content: '';
   inset: 0;
@@ -234,14 +234,14 @@
 }
 
 .entities-page .entity-card:hover {
-  border-color: rgba(238, 108, 77, 0.4);
+  border-color: rgba(40, 120, 189, 0.4);
   box-shadow: 0 24px 52px rgba(15, 23, 42, 0.12);
   transform: translateY(-3px);
 }
 
 .entities-page .entity-card-avatar {
-  background: linear-gradient(135deg, rgba(238, 108, 77, 0.18), rgba(255, 255, 255, 0.95));
-  border: 1px solid rgba(238, 108, 77, 0.18);
+  background: linear-gradient(135deg, rgba(40, 120, 189, 0.18), rgba(255, 255, 255, 0.95));
+  border: 1px solid rgba(40, 120, 189, 0.18);
   border-radius: 14px;
   color: #9f341f;
   height: 48px;
@@ -334,7 +334,7 @@
 }
 
 .entities-page table tbody tr:hover {
-  background: rgba(238, 108, 77, 0.06);
+  background: rgba(40, 120, 189, 0.06);
 }
 
 .entities-page table tbody td {
@@ -450,7 +450,7 @@
 }
 
 .team-container .matrix-header {
-  background: rgba(238, 108, 77, 0.08);
+  background: rgba(40, 120, 189, 0.08);
   border-bottom: 1px solid var(--overview-line);
 }
 
@@ -536,7 +536,7 @@
 
 .team-container .member-avatar {
   align-items: center;
-  background: linear-gradient(135deg, #EE6C4D, #000000);
+  background: linear-gradient(135deg, #2878BD, #000000);
   border-radius: 14px;
   color: #ffffff;
   display: inline-flex;
@@ -581,8 +581,8 @@
 
 .reports-container .report-menu-item.selected,
 .reports-container .report-menu-item:hover {
-  border-color: #EE6C4D;
-  box-shadow: 0 18px 36px rgba(238, 108, 77, 0.12);
+  border-color: #2878BD;
+  box-shadow: 0 18px 36px rgba(40, 120, 189, 0.12);
   transform: translateY(-1px);
 }
 
@@ -717,15 +717,15 @@
 }
 
 .btn-icon.delete:hover {
-  background: rgba(238, 108, 77, 0.12);
-  border-color: #EE6C4D;
-  color: #EE6C4D;
+  background: rgba(40, 120, 189, 0.12);
+  border-color: #2878BD;
+  color: #2878BD;
 }
 
 .btn-link {
   background: none;
   border: none;
-  color: #EE6C4D;
+  color: #2878BD;
   cursor: pointer;
   font-size: 13px;
   font-weight: 600;
@@ -746,8 +746,8 @@
 .status-badge.active,
 .status-badge.pending,
 .status-badge.warning {
-  background: rgba(238, 108, 77, 0.12);
-  color: #EE6C4D;
+  background: rgba(40, 120, 189, 0.12);
+  color: #2878BD;
 }
 
 .status-badge.inactive {
@@ -765,8 +765,8 @@
 
 /* Error banner */
 .error-banner {
-  background: rgba(238, 108, 77, 0.08);
-  border: 1px solid #EE6C4D;
+  background: rgba(40, 120, 189, 0.08);
+  border: 1px solid #2878BD;
   border-radius: 12px;
   color: #000000;
   font-size: 13px;
@@ -829,7 +829,7 @@
 }
 
 .team-container .matrix-row .col-role.has-permission {
-  color: #EE6C4D;
+  color: #2878BD;
   font-size: 16px;
   font-weight: 900;
 }
@@ -903,7 +903,7 @@
 }
 
 .input-group input:focus {
-  border-color: #EE6C4D;
+  border-color: #2878BD;
 }
 
 /* Format buttons */
@@ -998,9 +998,9 @@
 }
 
 .report-format {
-  background: rgba(238, 108, 77, 0.12);
+  background: rgba(40, 120, 189, 0.12);
   border-radius: 999px;
-  color: #EE6C4D;
+  color: #2878BD;
   font-size: 11px;
   font-weight: 700;
   padding: 2px 8px;

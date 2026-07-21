@@ -349,7 +349,7 @@ body {
 
 /* Auth screens (login/register)
    ─────────────────────────────────────────────────────────────
-   Light mode: white card, #EE6C4D primary, black text
+  Light mode: white card, accent primary, black text
    Dark mode:  black background, white text, same accent
    ──────────────────────────────────────────────────────────── */
 .auth-page {
@@ -404,9 +404,9 @@ body {
 }
 
 .auth-error {
-  background: rgba(238, 108, 77, 0.08);
-  border: 1px solid rgba(238, 108, 77, 0.35);
-  color: #EE6C4D;
+  background: rgb(var(--color-accent-rgb) / 0.08);
+  border: 1px solid rgb(var(--color-accent-rgb) / 0.35);
+  color: var(--color-accent);
   padding: 10px 16px;
   border-radius: 6px;
   margin-bottom: 16px;
@@ -448,8 +448,8 @@ body {
 .phone-input:focus,
 .country-select:focus {
   outline: none;
-  border-color: #EE6C4D;
-  box-shadow: 0 0 0 3px rgba(238, 108, 77, 0.12);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgb(var(--color-accent-rgb) / 0.12);
 }
 
 .auth-form input::placeholder {
@@ -458,7 +458,7 @@ body {
 
 .auth-form .btn-primary,
 .auth-form .btn-full {
-  background: #EE6C4D;
+  background: var(--color-accent);
   color: #FFFFFF;
   border: none;
   border-radius: 6px;
@@ -473,7 +473,7 @@ body {
 
 .auth-form .btn-primary:hover,
 .auth-form .btn-full:hover {
-  background: #D95A3C;
+  background: var(--color-accent-hover);
 }
 
 .password-input-wrapper,
@@ -500,8 +500,8 @@ body {
 
 .password-toggle:hover,
 .btn-link:hover {
-  border-color: #EE6C4D;
-  color: #EE6C4D;
+  border-color: var(--color-accent);
+  color: var(--color-accent);
 }
 
 .btn-full {
@@ -524,7 +524,7 @@ body {
 
 .step-dot.active,
 .step-dot.completed {
-  background: #EE6C4D;
+  background: var(--color-accent);
 }
 
 .auth-footer {
@@ -536,13 +536,13 @@ body {
 }
 
 .auth-footer a {
-  color: #EE6C4D;
+  color: var(--color-accent);
   text-decoration: none;
   font-weight: 500;
 }
 
 .auth-footer a:hover {
-  color: #D95A3C;
+  color: var(--color-accent-hover);
 }
 
 /* ── Dark mode variant ──────────────────────────────────────── */
@@ -582,8 +582,8 @@ body {
   .auth-form select:focus,
   .phone-input:focus,
   .country-select:focus {
-    border-color: #EE6C4D;
-    box-shadow: 0 0 0 3px rgba(238, 108, 77, 0.18);
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgb(var(--color-accent-rgb) / 0.18);
   }
 
   .auth-form input::placeholder {

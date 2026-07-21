@@ -1576,7 +1576,7 @@
 }
 
 .filing-assistant-page .filing-assistant-hero {
-  background: #EE6C4D;
+  background: #1E2328;
   border-radius: 28px;
   color: #ffffff;
   display: grid;
@@ -1861,7 +1861,7 @@
 }
 
 .tax-monitoring-page .monitoring-hero-card {
-  background: #EE6C4D;
+  background: #1E2328;
   border-radius: 28px;
   color: #ffffff;
   display: grid;
@@ -2242,7 +2242,7 @@
 
 /* 1. Page-specific hero gradient */
 .enterprise-tax-compliance {
-  --overview-hero-bg: linear-gradient(135deg, #EE6C4D 0%, #D95A3C 60%, #c44d30 100%);
+  --overview-hero-bg: #1E2328;
 }
 
 /* 2. Sticky section navigation with glass-morphism */
@@ -2874,7 +2874,7 @@
 
 /* Brand enforcement overrides */
 .enterprise-tax-compliance {
-  --overview-hero-bg: linear-gradient(135deg, #EE6C4D 0%, #D95A3C 60%, #c44d30 100%);
+  --overview-hero-bg: #1E2328;
 }
 
 .enterprise-tax-compliance .action-page-stat:nth-child(1)::before,
@@ -2886,7 +2886,7 @@
 .enterprise-tax-compliance .stat-card-orange::before,
 .enterprise-tax-compliance .stat-card-amber::before,
 .enterprise-tax-compliance .stat-card-purple::before {
-  background: #C41E3A;
+  background: #2878BD;
 }
 
 .enterprise-tax-compliance .action-page-stat:nth-child(1) .action-page-stat-value,
@@ -2903,7 +2903,7 @@
 .enterprise-tax-compliance .action-page-stat:nth-child(2) .action-page-stat-value,
 .enterprise-tax-compliance .score-status.warning,
 .enterprise-tax-compliance .stat-trend.down {
-  color: #C41E3A;
+  color: #2878BD;
 }
 
 .enterprise-tax-compliance .stat-card-blue .stat-icon,
@@ -2924,7 +2924,7 @@
 .enterprise-tax-compliance .stat-card-red .stat-icon,
 .enterprise-tax-compliance .alert-item.severity-high .alert-icon {
   background: #FAE9EC;
-  color: #C41E3A;
+  color: #2878BD;
 }
 
 .enterprise-tax-compliance .stat-trend.neutral,
@@ -2935,7 +2935,7 @@
 
 .enterprise-tax-compliance .quick-actions,
 .enterprise-tax-compliance .calculation-result {
-  border-left-color: #C41E3A;
+  border-left-color: #2878BD;
 }
 
 .enterprise-tax-compliance .score-circle,
@@ -2953,11 +2953,11 @@
 
 .enterprise-tax-compliance .deadline-item.urgent,
 .enterprise-tax-compliance .alert-item.severity-high {
-  border-left-color: #C41E3A;
+  border-left-color: #2878BD;
 }
 
 .enterprise-tax-compliance .deadline-item.urgent {
-  background: rgba(196, 30, 58, 0.04);
+  background: rgba(40, 120, 189, 0.04);
 }
 
 .enterprise-tax-compliance .alert-item.severity-medium {

@@ -273,7 +273,7 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: #C41E3A;
+  background: #2878BD;
   color: #fff;
   font-size: 13px;
   font-weight: 700;
@@ -325,7 +325,7 @@
 }
 
 .gc-topnav-dd-logout {
-  color: #C41E3A;
+  color: #2878BD;
 }
 
 .gc-topnav-dd-logout:hover {
@@ -962,7 +962,7 @@
 .gc-quick-actions {
   background: var(--gc-surface);
   border: 1px solid var(--gc-line);
-  border-left: 4px solid #EE6C4D;
+  border-left: 4px solid #2878BD;
   border-radius: 22px;
   box-shadow: var(--gc-shadow);
   display: flex;
@@ -1156,8 +1156,8 @@
 }
 
 .gc-search:focus {
-  border-color: #C41E3A;
-  box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.12);
+  border-color: #2878BD;
+  box-shadow: 0 0 0 3px rgba(40, 120, 189, 0.12);
 }
 
 .gc-filter-chips {
@@ -1203,8 +1203,8 @@
 }
 
 .gc-task-select:focus {
-  border-color: #C41E3A;
-  box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.12);
+  border-color: #2878BD;
+  box-shadow: 0 0 0 3px rgba(40, 120, 189, 0.12);
 }
 
 .gc-task-meta-row {
@@ -1338,7 +1338,7 @@
 .ws-rose::before,
 .ws-amber::before,
 .ws-sky::before {
-  background: #C41E3A;
+  background: #2878BD;
 }
 
 .gc-ws-header {
@@ -1403,8 +1403,8 @@
 }
 
 .status-pending {
-  background: rgba(196, 30, 58, 0.10);
-  color: #C41E3A;
+  background: rgba(40, 120, 189, 0.10);
+  color: #2878BD;
 }
 
 .gc-ws-details {
@@ -1424,8 +1424,8 @@
 }
 
 .gc-ws-tag-role {
-  background: rgba(196, 30, 58, 0.10);
-  color: #C41E3A;
+  background: rgba(40, 120, 189, 0.10);
+  color: #2878BD;
 }
 
 /* ── Organization Invite Modal ────────────────────────────────────────────── */
@@ -1682,7 +1682,7 @@
 
 /* ── Notifications ─────────────────────────────────────────────────────────── */
 .gc-notif-badge {
-  background: #C41E3A;
+  background: #2878BD;
   border-radius: 999px;
   color: #fff;
   font-size: 11px;
@@ -1723,8 +1723,8 @@
 }
 
 .sev-critical {
-  border-left-color: #C41E3A;
-  background: rgba(196, 30, 58, 0.05);
+  border-left-color: #2878BD;
+  background: rgba(40, 120, 189, 0.05);
 }
 
 .sev-high {
@@ -1746,7 +1746,7 @@
 }
 
 .sev-critical .gc-notif-dot {
-  background: #C41E3A;
+  background: #2878BD;
 }
 
 .sev-high .gc-notif-dot {
@@ -1787,8 +1787,8 @@
 }
 
 .gc-sev-critical {
-  background: rgba(196, 30, 58, 0.12);
-  color: #C41E3A;
+  background: rgba(40, 120, 189, 0.12);
+  color: #2878BD;
 }
 
 .gc-sev-high {
@@ -1819,7 +1819,7 @@
 }
 
 .pbar-overdue {
-  background: #C41E3A;
+  background: #2878BD;
 }
 
 .pbar-high {
