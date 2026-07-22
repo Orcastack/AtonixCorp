@@ -8,11 +8,11 @@ const sidebarItems = [
   { label: 'Search', route: '/app/organizations/select' },
   { label: 'Budget Calculator', route: '/budget' },
   { label: 'Set New Goal', route: '/help-center' },
-  { label: 'Ask Coach', route: '/support-center' },
+  { label: 'Ask Coach', route: '/app/console/settings/support-center' },
   { label: 'Courses', route: '/help-center' },
   { label: 'Inbox', route: '/support-tickets' },
   { label: 'Help Center', route: '/help-center' },
-  { label: 'Settings', route: '/security-center' },
+  { label: 'Settings', route: '/app/console/settings' },
 ];
 
 const topicTabs = ['All Topics', 'Budgeting', 'Saving', 'Investing'];
@@ -55,10 +55,10 @@ const courseCatalog = [
 const moduleTiles = [
   { label: 'Budget Calculator', description: 'Review projected cash flow and basic spending discipline.', route: '/budget' },
   { label: 'Savings Tracker', description: 'Follow the savings progress bar and keep targets visible.', route: '/help-center' },
-  { label: 'Ask Coach', description: 'Use the support center for guided financial help.', route: '/support-center' },
+  { label: 'Ask Coach', description: 'Use the support center for guided financial help.', route: '/app/console/settings/support-center' },
   { label: 'Learning Library', description: 'Move through the course catalog without leaving the dashboard.', route: '/help-center' },
   { label: 'Inbox', description: 'Check notifications and unresolved financial tasks.', route: '/support-tickets' },
-  { label: 'Settings', description: 'Adjust institutional controls and security preferences.', route: '/security-center' },
+  { label: 'Settings', description: 'Adjust institutional controls and security preferences.', route: '/app/console/settings' },
 ];
 
 const formatMoney = (value) => `$${Number(value || 0).toFixed(2)}`;

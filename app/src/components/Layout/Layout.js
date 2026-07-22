@@ -134,15 +134,8 @@ const Layout = ({ children }) => {
     { to: '/app/integrations/list',     label: 'Connected Apps' },
   ];
 
-  const settingsNav = [
-    { to: '/app/settings/firm',         label: 'Firm Settings' },
-    { to: '/app/settings/team',         label: 'Team & Permissions' },
-    { to: '/security-center',           label: 'Security', icon: <ModuleIcon name="security" />, target: '_blank', rel: 'noreferrer noopener' },
-    { to: '/app/settings/subscription', label: 'Subscription' },
-  ];
-
   const supportNav = [
-    { to: '/support-center',      label: 'Help Center', target: '_blank', rel: 'noreferrer noopener' },
+    { to: '/app/console/settings/support-center', label: 'Help Center', target: '_blank', rel: 'noreferrer noopener' },
     { to: '/support-tickets',     label: 'Support Tickets', target: '_blank', rel: 'noreferrer noopener' },
   ];
 
@@ -289,9 +282,6 @@ const Layout = ({ children }) => {
           {renderSection('Firm Management', firmNav)}
           <li className="nav-divider" role="separator" />
 
-          {renderSection('Settings', settingsNav)}
-          <li className="nav-divider" role="separator" />
-
           {renderSection('Support', supportNav)}
         </ul>
 
@@ -344,13 +334,10 @@ const Layout = ({ children }) => {
                     </div>
                   </div>
                   <div className="profile-dropdown-divider" />
-                  <NavLink to="/app/settings/firm" className="profile-dropdown-item" onClick={() => setProfileOpen(false)}>
-                    Firm Settings
+                  <NavLink to="/app/console/settings" className="profile-dropdown-item" onClick={() => setProfileOpen(false)}>
+                    Settings Console
                   </NavLink>
-                  <NavLink to="/security-center" className="profile-dropdown-item" onClick={() => setProfileOpen(false)} target="_blank" rel="noreferrer noopener">
-                    Security
-                  </NavLink>
-                  <NavLink to="/support-center" className="profile-dropdown-item" onClick={() => setProfileOpen(false)} target="_blank" rel="noreferrer noopener">
+                  <NavLink to="/app/console/settings/support-center" className="profile-dropdown-item" onClick={() => setProfileOpen(false)} target="_blank" rel="noreferrer noopener">
                     Help Center
                   </NavLink>
                   <NavLink to="/support-tickets" className="profile-dropdown-item" onClick={() => setProfileOpen(false)} target="_blank" rel="noreferrer noopener">

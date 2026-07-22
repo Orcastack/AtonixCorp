@@ -34,6 +34,11 @@ const GlobalConsoleRoute = ({ children }) => {
   }
 
   if (organizations.length > 0 && !hasPermission('view_org_overview')) {
+    const isSettingsPath = location.pathname.startsWith('/app/console/settings');
+    if (isSettingsPath && hasPermission('manage_org_settings')) {
+      return children;
+    }
+
     const fallbackPath = getDefaultDashboardPath();
 
     if (fallbackPath !== location.pathname) {

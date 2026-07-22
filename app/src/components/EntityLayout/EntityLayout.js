@@ -243,8 +243,8 @@ const EntityLayout = ({ children }) => {
                     <span className="profile-dropdown-email">{user?.email}</span>
                   </div>
                   <div className="profile-dropdown-divider" />
-                  <button className="profile-dropdown-item" onClick={() => { navigate('/app/settings/firm'); setProfileOpen(false); }}>
-                    Settings
+                  <button className="profile-dropdown-item" onClick={() => { navigate('/app/console/settings'); setProfileOpen(false); }}>
+                    Settings Console
                   </button>
                   <button className="profile-dropdown-item profile-dropdown-logout" onClick={handleLogout}>
                     Sign out

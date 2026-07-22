@@ -361,6 +361,15 @@ export const workspacePermissionsAPI = {
   getMine: (workspaceId) => api.get(workspaceApiPath(workspaceId, '/permissions/me')),
 };
 
+export const workspaceSettingsAPI = {
+  get: (workspaceId) => api.get(workspaceApiPath(workspaceId, '/settings')),
+  update: (workspaceId, data) => api.patch(workspaceApiPath(workspaceId, '/settings'), data),
+};
+
+export const workspaceLogsAPI = {
+  getAll: (workspaceId) => api.get(workspaceApiPath(workspaceId, '/logs')),
+};
+
 export const workspacesAPI = {
   getMine: () => api.get('/v1/workspaces'),
 };

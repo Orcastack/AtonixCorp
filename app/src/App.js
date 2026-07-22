@@ -11,7 +11,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import GlobalConsoleRoute from './components/GlobalConsoleRoute';
 import Layout from './components/Layout/Layout';
 import EntityLayout from './components/EntityLayout/EntityLayout';
-import Landing from './pages/Landing/Landing';
+import StandaloneModuleShell from './components/StandaloneModuleShell';
 import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
 import EmailVerification from './pages/Verification/EmailVerification';
@@ -36,7 +36,7 @@ import EnterpriseRiskExposure from './pages/Enterprise/EnterpriseRiskExposure';
 import EnterpriseReports from './pages/Enterprise/EnterpriseReports';
 import EnterpriseAuditExplorer from './pages/Enterprise/EnterpriseAuditExplorer';
 import EnterpriseTeam from './pages/Enterprise/EnterpriseTeam';
-import EnterpriseSettings from './pages/EnterpriseSettings/EnterpriseSettings';
+import SettingsConsole from './pages/SettingsConsole/SettingsConsole';
 import FirmDashboard from './pages/Firm/FirmDashboard';
 import WhiteLabel from './pages/Firm/WhiteLabel';
 import Marketplace from './pages/Firm/Marketplace';
@@ -99,11 +99,6 @@ import AppAIInsights from './modules/automation/AIInsights';
 import AppAIAdvisor from './modules/automation/AIAdvisor';
 import AppAPIKeys from './modules/integrations/APIKeys';
 import AppIntegrationsList from './modules/integrations/IntegrationsList';
-import AppFirmSettings from './modules/settings/FirmSettings';
-import AppTeamPermissions from './modules/settings/TeamPermissions';
-import AppSecurity from './modules/settings/Security';
-import AppBranding from './modules/settings/Branding';
-import AppSubscription from './modules/settings/Subscription';
 import AppHelpCenter from './modules/support/HelpCenter';
 import AppSupportTickets from './modules/support/SupportTickets';
 import Product from './pages/Product/Product';
@@ -196,7 +191,7 @@ function App() {
             <GlobalErrorCenter />
             <Routes>
               {/* Public Routes */}
-              <Route path="/" element={<Landing />} />
+              <Route path="/" element={<Navigate to="/app/console/settings" replace />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/verify-email" element={<EmailVerification />} />
@@ -221,14 +216,16 @@ function App() {
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
 
               {/* Standalone authenticated surfaces — no dashboard shell */}
-              {renderStandalonePageRoutes('/security-center', AppSecurity, 'manage_org_settings')}
-              {renderStandalonePageRoutes('/support-center', AppHelpCenter, 'view_org_overview')}
+              <Route path="/security-center" element={<Navigate to="/app/console/settings" replace />} />
+              <Route path="/support-center" element={<Navigate to="/app/console/settings/support-center" replace />} />
               {renderStandalonePageRoutes('/support-tickets', AppSupportTickets, 'view_org_overview')}
               {renderModulePageRoutes('/app/governance', GovernanceCenter, 'manage_org_settings')}
               {renderModulePageRoutes('/app/marketplace', ModuleMarketplace, 'manage_org_settings')}
 
               {/* Global Console — no sidebar */}
               <Route path="/app/console" element={<ProtectedRoute><GlobalConsoleRoute><GlobalConsole /></GlobalConsoleRoute></ProtectedRoute>} />
+              <Route path="/app/console/settings" element={<StandaloneModuleShell title="Settings Console" eyebrow="Console" backTo="/app/console" backLabel="Back to Console"><SettingsConsole /></StandaloneModuleShell>} />
+              <Route path="/app/console/settings/support-center" element={<StandaloneModuleShell title="Support Center" eyebrow="Settings Console" backTo="/app/console/settings" backLabel="Back to Settings"><AppHelpCenter /></StandaloneModuleShell>} />
               <Route path="/app/organizations/select" element={<ProtectedRoute><WorkspaceSelector /></ProtectedRoute>} />
               <Route path="/app/workspaces/create" element={<ProtectedRoute><CreateWorkspace /></ProtectedRoute>} />
               <Route path="/app/organizations/create" element={<ProtectedRoute><CreateWorkspace /></ProtectedRoute>} />
@@ -412,10 +409,9 @@ function App() {
                   <Layout><EnterpriseTeam /></Layout>
                 </ProtectedRoute>
               } />
+              <Route path="/app/settings/console" element={<Navigate to="/app/console/settings" replace />} />
               <Route path="/app/enterprise/settings" element={
-                <ProtectedRoute requiredPermission="manage_org_settings">
-                  <Layout><EnterpriseSettings /></Layout>
-                </ProtectedRoute>
+                <Navigate to="/app/console/settings" replace />
               } />
 
               {/* Legacy Group Overview route */}
@@ -511,16 +507,17 @@ function App() {
               {renderModulePageRoutes('/app/integrations/list', AppIntegrationsList, 'manage_org_settings')}
 
               {/* Settings */}
-              {renderModulePageRoutes('/app/settings/firm', AppFirmSettings, 'manage_org_settings')}
-              {renderModulePageRoutes('/app/settings/team', AppTeamPermissions, 'view_team')}
-              <Route path="/app/settings/security" element={<Navigate to="/security-center" replace />} />
-              <Route path="/app/settings/security/list" element={<Navigate to="/security-center" replace />} />
-              <Route path="/app/settings/entities" element={<Navigate to="/app/enterprise/entities" replace />} />
-              {renderModulePageRoutes('/app/settings/branding', AppBranding, 'manage_org_settings')}
-              {renderModulePageRoutes('/app/settings/subscription', AppSubscription, 'manage_billing')}
+              <Route path="/app/settings" element={<Navigate to="/app/console/settings" replace />} />
+              <Route path="/app/settings/firm" element={<Navigate to="/app/console/settings" replace />} />
+              <Route path="/app/settings/team" element={<Navigate to="/app/console/settings" replace />} />
+              <Route path="/app/settings/security" element={<Navigate to="/app/console/settings" replace />} />
+              <Route path="/app/settings/security/list" element={<Navigate to="/app/console/settings" replace />} />
+              <Route path="/app/settings/entities" element={<Navigate to="/app/console/settings" replace />} />
+              <Route path="/app/settings/branding" element={<Navigate to="/app/console/settings" replace />} />
+              <Route path="/app/settings/subscription" element={<Navigate to="/app/console/settings" replace />} />
               {/* Support */}
-              <Route path="/app/support/help" element={<Navigate to="/support-center" replace />} />
-              <Route path="/app/support/help/list" element={<Navigate to="/support-center" replace />} />
+              <Route path="/app/support/help" element={<Navigate to="/app/console/settings/support-center" replace />} />
+              <Route path="/app/support/help/list" element={<Navigate to="/app/console/settings/support-center" replace />} />
               <Route path="/app/support/tickets" element={<Navigate to="/support-tickets" replace />} />
               <Route path="/app/support/tickets/list" element={<Navigate to="/support-tickets" replace />} />
 

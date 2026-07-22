@@ -409,10 +409,10 @@ const GlobalConsole = () => {
                 </div>
               </div>
               <div className="gc-topnav-dd-divider" />
-              <button className="gc-topnav-dd-item" onClick={() => { setProfileOpen(false); openStandalonePath('/security-center'); }}>
-                Security
+              <button className="gc-topnav-dd-item" onClick={() => { setProfileOpen(false); navigate('/app/console/settings'); }}>
+                Settings Console
               </button>
-              <button className="gc-topnav-dd-item" onClick={() => { setProfileOpen(false); openStandalonePath('/support-center'); }}>
+              <button className="gc-topnav-dd-item" onClick={() => { setProfileOpen(false); openStandalonePath('/app/console/settings/support-center'); }}>
                 Help Center
               </button>
               <div className="gc-topnav-dd-divider" />

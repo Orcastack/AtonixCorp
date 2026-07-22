@@ -75,8 +75,8 @@ const StandaloneModuleShell = ({
                 </div>
               </div>
               <div className="standalone-console-dropdown-divider" />
-              <button className="standalone-console-dropdown-item" onClick={() => { setProfileOpen(false); navigate('/security-center'); }}>Security</button>
-              <button className="standalone-console-dropdown-item" onClick={() => { setProfileOpen(false); navigate('/support-center'); }}>Help Center</button>
+              <button className="standalone-console-dropdown-item" onClick={() => { setProfileOpen(false); navigate('/app/console/settings'); }}>Security</button>
+              <button className="standalone-console-dropdown-item" onClick={() => { setProfileOpen(false); navigate('/app/console/settings/support-center'); }}>Help Center</button>
               <div className="standalone-console-dropdown-divider" />
               <button className="standalone-console-dropdown-item standalone-console-dropdown-logout" onClick={handleLogout}>Sign Out</button>
             </div>
