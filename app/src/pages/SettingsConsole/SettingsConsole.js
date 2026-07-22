@@ -87,7 +87,6 @@ const SettingsConsole = () => {
     profile,
     scenarioApprovalPolicy,
     summary,
-    equityEnabled,
     updateScenarioApprovalPolicy,
     refreshEquity,
   } = useEquity();

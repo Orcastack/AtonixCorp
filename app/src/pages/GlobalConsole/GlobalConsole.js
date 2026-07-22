@@ -55,7 +55,6 @@ const GlobalConsole = () => {
     currentOrganization,
     entities,
     organizations,
-    switchOrganization,
     globalNotifications,
     fetchGlobalNotifications,
     loading,
