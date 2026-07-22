@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useEnterprise } from '../../context/EnterpriseContext';
 import AtonixCorpLogo from '../../components/branding/AtonixCorpLogo';
-import { globalInviteAPI, platformAuditEventsAPI, platformTasksAPI } from '../../services/api';
+import { globalInviteAPI, organizationsAPI, platformAuditEventsAPI, platformTasksAPI } from '../../services/api';
 import './GlobalConsole.css';
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -53,6 +53,7 @@ const GlobalConsole = () => {
     currentOrganization,
     entities,
     organizations,
+    switchOrganization,
     globalNotifications,
     fetchGlobalNotifications,
     loading,
@@ -68,6 +69,10 @@ const GlobalConsole = () => {
   const [inviteError, setInviteError] = useState('');
   const [inviteSuccess, setInviteSuccess] = useState('');
   const [inviteForm, setInviteForm] = useState({ invitee: '', workspaceId: '' });
+  const [lobbyItems, setLobbyItems] = useState([]);
+  const [lobbyRole, setLobbyRole] = useState('MEMBER');
+  const [lobbyLoading, setLobbyLoading] = useState(true);
+  const [lobbyError, setLobbyError] = useState('');
   const profileRef = useRef(null);
   const onboardingEnteredAtRef = useRef(null);
   const onboardingCtaClickedRef = useRef(false);
@@ -93,36 +98,78 @@ const GlobalConsole = () => {
     return () => window.clearInterval(timer);
   }, []);
 
+  const loadLobbyData = useCallback(async () => {
+    setLobbyLoading(true);
+    setLobbyError('');
+    try {
+      const response = await organizationsAPI.getLobby();
+      const payload = response.data || {};
+      setLobbyItems(Array.isArray(payload.items) ? payload.items : []);
+      setLobbyRole(payload.role || 'MEMBER');
+    } catch (error) {
+      setLobbyItems([]);
+      setLobbyError(error?.response?.data?.detail || 'Failed to load console items.');
+    } finally {
+      setLobbyLoading(false);
+    }
+  }, []);
+
+  const loadPlatformData = useCallback(async () => {
+    if (!user?.id) return;
+    try {
+      const [taskResponse, auditResponse] = await Promise.all([
+        platformTasksAPI.getAll({
+          assignee_id: user?.id,
+          state: 'open',
+        }),
+        platformAuditEventsAPI.getAll({ actor_id: user?.id }),
+      ]);
+      setTasks(normalizeCollection(taskResponse.data).slice(0, 8));
+      setAuditEvents(normalizeCollection(auditResponse.data).slice(0, 8));
+    } catch (error) {
+      setTasks([]);
+      setAuditEvents([]);
+    }
+  }, [user?.id]);
+
   useEffect(() => {
     let active = true;
 
-    const loadPlatformData = async () => {
-      try {
-        const [taskResponse, auditResponse] = await Promise.all([
-          platformTasksAPI.getAll({
-            assignee_id: user?.id,
-            state: 'open',
-          }),
-          platformAuditEventsAPI.getAll({ actor_id: user?.id }),
-        ]);
-        if (!active) return;
-        setTasks(normalizeCollection(taskResponse.data).slice(0, 8));
-        setAuditEvents(normalizeCollection(auditResponse.data).slice(0, 8));
-      } catch (error) {
-        if (!active) return;
-        setTasks([]);
-        setAuditEvents([]);
-      }
+    const syncConsole = async () => {
+      if (!active) return;
+      await Promise.all([loadPlatformData(), loadLobbyData()]);
     };
 
     if (user?.id) {
-      loadPlatformData();
+      syncConsole();
     }
+
+    const handleFocus = () => {
+      if (user?.id) {
+        syncConsole();
+      }
+    };
+
+    const timer = window.setInterval(() => {
+      if (user?.id) {
+        syncConsole();
+      }
+    }, 30000);
+
+    window.addEventListener('focus', handleFocus);
 
     return () => {
       active = false;
+      window.clearInterval(timer);
+      window.removeEventListener('focus', handleFocus);
     };
-  }, [user?.id]);
+  }, [loadLobbyData, loadPlatformData, user?.id]);
+
+  useEffect(() => {
+    if (user?.id) {
+      loadLobbyData();
+    }
+  }, [loadLobbyData, user?.id]);
 
   const entityCount = entities.length;
   const showOrganizationOnboarding = !loading && organizations.length === 0;
@@ -168,6 +215,27 @@ const GlobalConsole = () => {
     }
   };
 
+  const handleOpenLobbyItem = useCallback((item) => {
+    if (!item) return;
+    if (switchOrganization) {
+      switchOrganization(item);
+    }
+    navigate('/app/enterprise/org-overview');
+  }, [navigate, switchOrganization]);
+
+  const handleUnlockLobbyItem = useCallback(async (item) => {
+    if (!item?.id) return;
+    const code = window.prompt(`Enter the access code for ${item.name}`);
+    if (!code) return;
+    try {
+      await organizationsAPI.unlockLobbyItem({ organization_id: item.id, code });
+      await loadLobbyData();
+      handleOpenLobbyItem(item);
+    } catch (error) {
+      window.alert(error?.response?.data?.detail || 'Invalid code.');
+    }
+  }, [handleOpenLobbyItem, loadLobbyData]);
+
   const scrollToWorkspaces = () => {
     navigate('/app/organizations/select');
   };
@@ -193,7 +261,29 @@ const GlobalConsole = () => {
           };
         });
 
+
+      const newsItems = [
+        ...auditEvents.slice(0, 3).map((event) => ({
+          id: `audit-${event.id}`,
+          tag: 'Update',
+          title: event.summary,
+          body: event.action || 'Organizational activity',
+        })),
+        ...((globalNotifications || []).slice(0, 2).map((item, index) => ({
+          id: `notification-${item.id || index}`,
+          tag: 'Alert',
+          title: item.message || item.summary || 'Organization alert',
+          body: item.type || 'News component',
+        }))),
+        ...((complianceDeadlines || []).slice(0, 2).map((deadline, index) => ({
+          id: `deadline-${deadline.id || index}`,
+          tag: 'Market',
+          title: deadline.title || 'Compliance update',
+          body: deadline.deadline_date ? `Due ${deadline.deadline_date}` : 'Compliance deadline',
+        }))),
+      ].slice(0, 6);
   const userInitial = (user?.name || user?.email || 'U').charAt(0).toUpperCase();
+  const consoleIdentity = user?.is_superuser ? 'Curated by Samuel' : (currentOrganization?.name || 'AtonixCorp Console');
 
   const trackWorkspaceLandingEvent = useCallback((eventName, payload = {}) => {
     emitAnalyticsEvent(eventName, {
@@ -279,10 +369,7 @@ const GlobalConsole = () => {
           <div className="gc-topnav-brand">
             <AtonixCorpLogo variant="white" size="small" withText text="AtonixCorp" />
           </div>
-          <div className="gc-topnav-org-block">
-            <span className="gc-topnav-org-label">Organization</span>
-            <strong className="gc-topnav-org-name">{currentOrganization?.name || 'AtonixCorp Organization'}</strong>
-          </div>
+          <span className="gc-topnav-identity">{consoleIdentity}</span>
         </div>
         <div className="gc-topnav-right" ref={profileRef}>
           <div className="gc-topnav-clock" aria-label="Current date and time">
@@ -337,6 +424,57 @@ const GlobalConsole = () => {
           <span className="gc-compliance-badge">Compliance: Current</span>
           <span className="gc-capital-watermark">ATONIXCORP</span>
         </div>
+      </section>
+
+      <section className="gc-news-strip" aria-label="News feed">
+        <div className="gc-section-header gc-section-header--tight">
+          <div>
+            <h2>News</h2>
+            <p>Live organizational updates, compliance alerts, and market headlines</p>
+          </div>
+        </div>
+        {newsItems.length === 0 ? (
+          <div className="gc-news-empty">No news items yet.</div>
+        ) : (
+          <div className="gc-news-grid">
+            {newsItems.map((item) => (
+              <article key={item.id} className="gc-news-card">
+                <span className="gc-news-tag">{item.tag}</span>
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="gc-center-grid" aria-label="Console departments and workspaces">
+        {lobbyLoading ? (
+          <div className="gc-notif-empty" style={{ gridColumn: '1 / -1' }}>Loading console…</div>
+        ) : lobbyError ? (
+          <div className="gc-notif-empty" style={{ gridColumn: '1 / -1' }}>{lobbyError}</div>
+        ) : lobbyItems.length === 0 ? (
+          <div className="gc-notif-empty" style={{ gridColumn: '1 / -1' }}>No departments or workspaces are available yet.</div>
+        ) : (
+          lobbyItems.map((item) => (
+            <article key={item.id} className="gc-center-card">
+              <div className={`gc-center-status ${item.status === 'active' ? 'is-healthy' : 'is-review'}`}>
+                {item.status}
+              </div>
+              <div>
+                <h3 style={{ margin: '0 0 8px', color: '#1e2328' }}>{item.name}</h3>
+                {item.description ? <p style={{ margin: 0, color: '#64748b' }}>{item.description}</p> : null}
+              </div>
+              <button
+                type="button"
+                className="gc-center-link"
+                onClick={() => (item.status === 'active' ? handleOpenLobbyItem(item) : handleUnlockLobbyItem(item))}
+              >
+                {item.status === 'active' ? 'Open' : 'Enter Code'}
+              </button>
+            </article>
+          ))
+        )}
       </section>
 
       <div className="gc-body">

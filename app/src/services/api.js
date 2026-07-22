@@ -300,6 +300,8 @@ export const organizationsAPI = {
   delete: (id) => api.delete(`/organizations/${id}/`),
   verifyIdentity: (data) => api.post('/organizations/verify_registration_number/', data),
   getMyOrganizations: () => api.get('/organizations/my_organizations/'),
+  getLobby: () => api.get('/organizations/lobby/'),
+  unlockLobbyItem: (data) => api.post('/organizations/unlock/', data),
   getOverview: (id) => api.get(`/organizations/${id}/overview/`),
   getPermissionContext: (id) => api.get(`/organizations/${id}/permission_context/`),
   getEmailService: (id) => api.get(`/organizations/${id}/email_service/`),
@@ -364,6 +366,7 @@ export const workspacesAPI = {
 
 export const globalInviteAPI = {
   create: (data) => api.post('/global/invite', data),
+  accept: (data) => api.post('/global/invite/accept', data),
 };
 
 // Roles API

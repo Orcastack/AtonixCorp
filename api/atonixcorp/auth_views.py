@@ -110,7 +110,12 @@ class RegisterView(DeveloperFacingAPIView):
         if User.objects.filter(username__iexact=username).exists():
             return Response({"username": "This username is already in use."}, status=status.HTTP_400_BAD_REQUEST)
 
+        is_first_user = not User.objects.exists()
         user = User.objects.create_user(username=username, email=email, password=password)
+        if is_first_user:
+            user.is_staff = True
+            user.is_superuser = True
+            user.save(update_fields=['is_staff', 'is_superuser'])
 
         # Create profile so the frontend starts from real stored values (no mock).
         profile = UserProfile.objects.create(

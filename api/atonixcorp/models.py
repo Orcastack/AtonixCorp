@@ -4,6 +4,7 @@ from decimal import Decimal
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth.hashers import check_password, make_password
 from django.core.validators import URLValidator
 from django.db.models.functions import Lower
 from django.utils import timezone
@@ -1358,6 +1359,8 @@ class TeamMember(models.Model):
     is_active = models.BooleanField(default=True)
     invited_at = models.DateTimeField(auto_now_add=True)
     accepted_at = models.DateTimeField(null=True, blank=True)
+    invite_code_hash = models.CharField(max_length=128, blank=True)
+    invite_code_issued_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -1367,6 +1370,17 @@ class TeamMember(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.role.name} @ {self.organization.name}"
+
+    def issue_invite_code(self):
+        raw_code = secrets.token_hex(4).upper()
+        self.invite_code_hash = make_password(raw_code)
+        self.invite_code_issued_at = timezone.now()
+        return raw_code
+
+    def check_invite_code(self, raw_code):
+        if not self.invite_code_hash or not raw_code:
+            return False
+        return check_password(str(raw_code).strip(), self.invite_code_hash)
 
 
 class Expense(models.Model):

@@ -485,6 +485,92 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(organizations, many=True)
         return Response(serializer.data)
 
+    @action(detail=False, methods=['get'])
+    def lobby(self, request):
+        """Return all lobby tiles relevant to the current user."""
+        if request.user.is_superuser:
+            organizations = Organization.objects.all().select_related('owner').prefetch_related('team_members__role')
+        else:
+            organizations = Organization.objects.filter(
+                Q(owner=request.user) | Q(team_members__user=request.user)
+            ).distinct().select_related('owner').prefetch_related('team_members__role')
+
+        items = []
+        for organization in organizations.order_by('-created_at'):
+            membership = next(
+                (member for member in organization.team_members.all() if member.user_id == request.user.id),
+                None,
+            )
+            if request.user.is_superuser or organization.owner_id == request.user.id:
+                status_label = 'active'
+            elif membership and membership.accepted_at and membership.is_active:
+                status_label = 'active'
+            elif membership:
+                status_label = 'invited'
+            else:
+                status_label = 'locked'
+
+            item = OrganizationSerializer(organization, context={'request': request}).data
+            item.update({
+                'status': status_label,
+                'role_code': getattr(getattr(membership, 'role', None), 'code', 'ORG_OWNER' if organization.owner_id == request.user.id else None),
+                'has_invite_code': bool(getattr(membership, 'invite_code_hash', None)),
+                'can_unlock': bool(membership and not membership.accepted_at and membership.invite_code_hash),
+                'can_manage': bool(request.user.is_superuser or organization.owner_id == request.user.id),
+            })
+            items.append(item)
+
+        return Response({
+            'role': 'SUPER_USER' if request.user.is_superuser else 'MEMBER',
+            'items': items,
+        })
+
+    @action(detail=False, methods=['post'])
+    def unlock(self, request):
+        """Accept a pending lobby invitation using the issued code."""
+        payload = request.data or {}
+        organization_id = payload.get('organization_id')
+        invite_code = str(payload.get('code') or '').strip()
+        if not organization_id or not invite_code:
+            raise ValidationError({'detail': 'organization_id and code are required.'})
+
+        organization = get_object_or_404(
+            Organization.objects.select_related('owner'),
+            pk=organization_id,
+        )
+        member = get_object_or_404(
+            TeamMember.objects.select_related('role', 'user'),
+            organization=organization,
+            user=request.user,
+        )
+
+        if member.accepted_at and member.is_active:
+            return Response({'status': 'active', 'organization_id': organization.id})
+
+        if not member.check_invite_code(invite_code):
+            return Response({'detail': 'Invalid code.'}, status=drf_status.HTTP_400_BAD_REQUEST)
+
+        member.is_active = True
+        member.accepted_at = timezone.now()
+        member.save(update_fields=['is_active', 'accepted_at', 'updated_at'])
+        log_platform_audit_event(
+            domain='identity',
+            event_type='organization.invitation_accepted',
+            action='organization_invitation_accepted',
+            actor=request.user,
+            organization=organization,
+            resource_type='TeamMember',
+            resource_id=str(member.id),
+            resource_name=organization.name,
+            summary=f'{request.user.email} unlocked access to {organization.name}',
+            metadata={'organization_id': organization.id, 'role_code': member.role.code},
+        )
+        return Response({
+            'status': 'active',
+            'organization_id': organization.id,
+            'organization': OrganizationSerializer(organization, context={'request': request}).data,
+        })
+
     def _require_governance_configuration_owner(self, organization, user):
         if organization.owner_id != user.id:
             raise PermissionDenied('Only the organization owner can export or restore governance configuration.')

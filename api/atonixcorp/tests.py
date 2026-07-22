@@ -1059,6 +1059,84 @@ class DeveloperPortalViewTests(TestCase):
         self.assertEqual(accepted_response.data['status'], IdentityVerification.STATUS_SUBMITTED)
 
 
+class LobbyAccessTests(TestCase):
+    def setUp(self):
+        Role.get_or_create_default_roles()
+        self.owner = User.objects.create_user(username='lobby-owner', email='owner@example.com', password='strong-pass-123')
+        self.invitee = User.objects.create_user(username='lobby-invitee', email='invitee@example.com', password='strong-pass-123')
+        UserProfile.objects.create(user=self.owner, email_verified=True)
+        UserProfile.objects.create(user=self.invitee, email_verified=True)
+        self.organization = Organization.objects.create(
+            owner=self.owner,
+            name='Lobby Finance',
+            slug='lobby-finance',
+            primary_country='US',
+            primary_currency='USD',
+        )
+        self.client = APIClient(HTTP_HOST='localhost')
+
+    def test_invited_member_receives_code_and_can_unlock_lobby_item(self):
+        self.client.force_authenticate(self.owner)
+        invite_response = self.client.post(
+            '/api/global/invite',
+            {
+                'organization_id': self.organization.id,
+                'email': self.invitee.email,
+                'role_code': 'VIEWER',
+            },
+            format='json',
+        )
+
+        self.assertEqual(invite_response.status_code, 201)
+        invitation_code = invite_response.data['invitation_code']
+        self.assertTrue(invitation_code)
+
+        self.client.force_authenticate(self.invitee)
+        lobby_response = self.client.get('/api/organizations/lobby/')
+        self.assertEqual(lobby_response.status_code, 200)
+        self.assertEqual(lobby_response.data['items'][0]['status'], 'invited')
+
+        unlock_response = self.client.post(
+            '/api/organizations/unlock/',
+            {
+                'organization_id': self.organization.id,
+                'code': invitation_code,
+            },
+            format='json',
+        )
+
+        self.assertEqual(unlock_response.status_code, 200)
+        member = TeamMember.objects.get(organization=self.organization, user=self.invitee)
+        self.assertTrue(member.accepted_at)
+        self.assertTrue(member.is_active)
+
+        active_lobby_response = self.client.get('/api/organizations/lobby/')
+        self.assertEqual(active_lobby_response.data['items'][0]['status'], 'active')
+
+
+class FirstUserAdminAssignmentTests(TestCase):
+    @patch('atonixcorp.auth_views.send_verification_email')
+    def test_first_registration_becomes_superuser(self, _send_verification_email):
+        client = APIClient(HTTP_HOST='localhost')
+        response = client.post(
+            '/api/auth/register/',
+            {
+                'email': 'first-admin@example.com',
+                'username': 'first-admin',
+                'password': 'strong-pass-123',
+                'account_type': 'enterprise',
+                'country': 'US',
+                'phone': '+15555550123',
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 201)
+        user = User.objects.get(email='first-admin@example.com')
+        self.assertTrue(user.is_staff)
+        self.assertTrue(user.is_superuser)
+
+
 @override_settings(ATONIXCORP_API_ENVIRONMENT='sandbox')
 class CoreFinancialAPIV1Tests(TestCase):
     def setUp(self):

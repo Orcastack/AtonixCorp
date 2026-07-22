@@ -1275,10 +1275,14 @@ class TeamMembersView(V1BaseAPIView):
         elif role.code != 'EXTERNAL_ADVISOR':
             member.scoped_entities.clear()
 
+        invitation_code = member.issue_invite_code()
+        member.save(update_fields=['invite_code_hash', 'invite_code_issued_at', 'updated_at'])
+
         _audit(organization, request.user, 'create' if created else 'update', 'TeamMember', member.pk, payload)
         member.refresh_from_db()
         response_payload = _team_member_payload(member)
         response_payload['invitation_sent'] = True
+        response_payload['invitation_code'] = invitation_code
         return Response(response_payload, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
 
 
@@ -1330,6 +1334,9 @@ class GlobalWorkspaceInviteView(V1BaseAPIView):
                 member.accepted_at = None
                 member.save(update_fields=['role', 'is_active', 'accepted_at', 'updated_at'])
 
+            invitation_code = member.issue_invite_code()
+            member.save(update_fields=['invite_code_hash', 'invite_code_issued_at', 'updated_at'])
+
             _audit(organization, request.user, 'invite', 'TeamMember', member.pk, {
                 'email': user.email,
                 'role_code': role.code,
@@ -1341,6 +1348,7 @@ class GlobalWorkspaceInviteView(V1BaseAPIView):
                 'user': {'id': user.id, 'email': user.email, 'username': user.username},
                 'role': role.code,
                 'invitation_sent': True,
+                'invitation_code': invitation_code,
             }, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
 
         workspace_ref = payload.get('workspace_id')
