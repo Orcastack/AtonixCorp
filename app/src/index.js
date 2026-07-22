@@ -4,8 +4,6 @@ import '@fontsource/ibm-plex-sans/400.css';
 import '@fontsource/ibm-plex-sans/500.css';
 import '@fontsource/ibm-plex-sans/600.css';
 import '@fontsource/ibm-plex-sans/700.css';
-import '@fontsource/ibm-plex-mono/300.css';
-import '@fontsource/ibm-plex-mono/400.css';
 import './styles/theme.css';
 import './styles/globals.css';
 import './styles/pages.css';

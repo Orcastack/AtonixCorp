@@ -40,7 +40,8 @@ The platform uses bundled IBM Plex Sans for every interface element and IBM Plex
 ```js
 import '@fontsource/ibm-plex-sans/400.css';
 import '@fontsource/ibm-plex-sans/700.css';
-import '@fontsource/ibm-plex-mono/300.css';
+// IBM Plex Mono is optional; metric styles fall back to IBM Plex Sans when it
+// is not bundled by the deployment image.
 ```
 
 - Page titles (`h1`): 24-32px, bold.
