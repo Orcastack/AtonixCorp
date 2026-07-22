@@ -1,0 +1,89 @@
+schema_version: v1
+document_type: atonixcorp_governance_configuration
+generated_at: '2026-07-22T12:27:34.050030+00:00'
+organization:
+  id: 1
+  name: Cloud Access Organization
+  registration_number: US2026110022
+  slug: cloud-access-organization
+  description: ''
+  industry: ''
+  subscription_tier: enterprise
+  primary_country: US
+  primary_currency: USD
+  settings: {}
+entities: []
+offices: []
+governance_policies: []
+workflows: []
+ldap_directory:
+- uid: null
+  dn: o=us2026110022,dc=atonixcorp
+  cn: Cloud Access Organization
+  node_type: organization
+  role_code: ''
+  permissions: []
+  source_type: organization
+  attributes:
+    company_id: 1
+    registration_number: US2026110022
+    subscription_tier: enterprise
+  is_active: true
+- uid: null
+  dn: ou=finance,o=us2026110022,dc=atonixcorp
+  cn: Finance
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: finance
+  is_active: true
+- uid: null
+  dn: ou=governance,o=us2026110022,dc=atonixcorp
+  cn: Governance
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: governance
+  is_active: true
+- uid: null
+  dn: ou=security,o=us2026110022,dc=atonixcorp
+  cn: Security
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: security
+  is_active: true
+- uid: null
+  dn: ou=technology,o=us2026110022,dc=atonixcorp
+  cn: Technology
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: technology
+  is_active: true
+- uid: '6224990476'
+  dn: uid=6224990476,ou=people,o=us2026110022,dc=atonixcorp
+  cn: cloud-owner-access
+  node_type: user
+  role_code: FOUNDER
+  permissions: []
+  source_type: founder
+  attributes:
+    email: ''
+    company_id: 1
+    company_registration_number: US2026110022
+    is_founder: true
+  is_active: true
+integrity:
+  algorithm: HMAC-SHA256
+  key_id: governance-hmac-v1
+  checksum: e4a0a7363c97d675e49f695540257fd79f768136a898672298dfd907c9eb1811
+  signature: a7b3ccf74c81cd7d1bc2fa196e8773ac7f76dfab6636bd701dbeea6e6f532dd6

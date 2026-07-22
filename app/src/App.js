@@ -104,6 +104,7 @@ import AppHelpCenter from './modules/support/HelpCenter';
 import AppSupportTickets from './modules/support/SupportTickets';
 import Product from './pages/Product/Product';
 import Deployment from './pages/Deployment/Deployment';
+import Landing from './pages/Landing/Landing';
 import Features from './pages/Features/Features';
 import Pricing from './pages/Pricing/Pricing';
 import About from './pages/About/About';
@@ -192,7 +193,7 @@ function App() {
             <GlobalErrorCenter />
             <Routes>
               {/* Public Routes */}
-              <Route path="/" element={<Navigate to="/app/console/settings" replace />} />
+              <Route path="/" element={<Landing />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/verify-email" element={<EmailVerification />} />

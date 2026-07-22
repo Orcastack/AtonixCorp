@@ -1,0 +1,89 @@
+schema_version: v1
+document_type: atonixcorp_governance_configuration
+generated_at: '2026-07-22T12:26:14.902916+00:00'
+organization:
+  id: 1
+  name: Bank Ops LLC
+  registration_number: null
+  slug: bank-ops-llc
+  description: ''
+  industry: ''
+  subscription_tier: enterprise
+  primary_country: US
+  primary_currency: USD
+  settings: {}
+entities: []
+offices: []
+governance_policies: []
+workflows: []
+ldap_directory:
+- uid: null
+  dn: o=bank-ops-llc,dc=atonixcorp
+  cn: Bank Ops LLC
+  node_type: organization
+  role_code: ''
+  permissions: []
+  source_type: organization
+  attributes:
+    company_id: 1
+    registration_number: null
+    subscription_tier: enterprise
+  is_active: true
+- uid: null
+  dn: ou=finance,o=bank-ops-llc,dc=atonixcorp
+  cn: Finance
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: finance
+  is_active: true
+- uid: null
+  dn: ou=governance,o=bank-ops-llc,dc=atonixcorp
+  cn: Governance
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: governance
+  is_active: true
+- uid: null
+  dn: ou=security,o=bank-ops-llc,dc=atonixcorp
+  cn: Security
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: security
+  is_active: true
+- uid: null
+  dn: ou=technology,o=bank-ops-llc,dc=atonixcorp
+  cn: Technology
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: technology
+  is_active: true
+- uid: '3891552549'
+  dn: uid=3891552549,ou=people,o=bank-ops-llc,dc=atonixcorp
+  cn: bank-owner
+  node_type: user
+  role_code: FOUNDER
+  permissions: []
+  source_type: founder
+  attributes:
+    email: bank-owner@example.com
+    company_id: 1
+    company_registration_number: null
+    is_founder: true
+  is_active: true
+integrity:
+  algorithm: HMAC-SHA256
+  key_id: governance-hmac-v1
+  checksum: b4d1fc53d5dedf64eec7b43395b1b6123c42c049e9d9ff11e80373d9f65cf999
+  signature: f857a57aa37e8004eb6c0bc75ea20114dc409c023d1c46211748d81cc8958495

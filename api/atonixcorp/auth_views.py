@@ -162,18 +162,20 @@ class RegisterView(DeveloperFacingAPIView):
             event_type='account_registration',
         )
 
+        verification_email_sent = True
+        verification_email_error = None
         try:
             send_verification_email(user)
         except Exception:
+            verification_email_sent = False
+            verification_email_error = 'Account created. The verification email could not be sent right now. You can request a new verification link after sign-in or contact support.'
             logger.exception('Unable to send verification email for newly registered user %s', user.pk)
-            return Response(
-                {'detail': 'Account created, but the verification email could not be sent. Try signing in later or contact support.'},
-                status=status.HTTP_503_SERVICE_UNAVAILABLE,
-            )
         return Response(
             {
                 "user": _user_payload(user),
                 "verification_required": True,
+                "verification_email_sent": verification_email_sent,
+                "detail": verification_email_error,
             },
             status=status.HTTP_201_CREATED,
         )

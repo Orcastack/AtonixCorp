@@ -1,0 +1,111 @@
+schema_version: v1
+document_type: atonixcorp_governance_configuration
+generated_at: '2026-07-22T12:26:39.322914+00:00'
+organization:
+  id: 1
+  name: LGX Demo LLC
+  registration_number: null
+  slug: lgx-demo-llc
+  description: ''
+  industry: ''
+  subscription_tier: enterprise
+  primary_country: US
+  primary_currency: USD
+  settings: {}
+entities:
+- id: 1
+  name: LGX Demo LLC
+  country: US
+  entity_type: corporation
+  status: active
+  registration_number: ''
+  local_currency: USD
+  main_bank: ''
+  tax_authority_url: ''
+  fiscal_year_end: null
+  next_filing_date: null
+  workspace_mode: accounting
+  industry: ''
+  workspace_type: ''
+  workspace_template_key: ''
+  hierarchy_metadata: {}
+  dashboard_config: {}
+  rbac_config: {}
+  enabled_modules: []
+  parent_entity_id: null
+  departments: []
+  roles: []
+offices: []
+governance_policies: []
+workflows: []
+ldap_directory:
+- uid: null
+  dn: o=lgx-demo-llc,dc=atonixcorp
+  cn: LGX Demo LLC
+  node_type: organization
+  role_code: ''
+  permissions: []
+  source_type: organization
+  attributes:
+    company_id: 1
+    registration_number: null
+    subscription_tier: enterprise
+  is_active: true
+- uid: null
+  dn: ou=finance,o=lgx-demo-llc,dc=atonixcorp
+  cn: Finance
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: finance
+  is_active: true
+- uid: null
+  dn: ou=governance,o=lgx-demo-llc,dc=atonixcorp
+  cn: Governance
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: governance
+  is_active: true
+- uid: null
+  dn: ou=security,o=lgx-demo-llc,dc=atonixcorp
+  cn: Security
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: security
+  is_active: true
+- uid: null
+  dn: ou=technology,o=lgx-demo-llc,dc=atonixcorp
+  cn: Technology
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: technology
+  is_active: true
+- uid: '7436848317'
+  dn: uid=7436848317,ou=people,o=lgx-demo-llc,dc=atonixcorp
+  cn: v1-owner
+  node_type: user
+  role_code: FOUNDER
+  permissions: []
+  source_type: founder
+  attributes:
+    email: v1-owner@example.com
+    company_id: 1
+    company_registration_number: null
+    is_founder: true
+  is_active: true
+integrity:
+  algorithm: HMAC-SHA256
+  key_id: governance-hmac-v1
+  checksum: c148f59aeb979ed015e1a718868bff33e7a8640228ade09f2059eae7e8968da8
+  signature: 70c0d622e42a9e8b2d75ccd4db5bbbe5d7113eebc0557dcba581525dbcc9b15f

@@ -142,7 +142,7 @@ const SettingsConsole = () => {
   }, [currentOrganization]);
 
   useEffect(() => {
-    if (activeWorkspace?.id) {
+    if (activeWorkspace?.id && canManageOrgSettings) {
       setWorkspaceSettings((current) => ({
         ...WORKSPACE_DEFAULTS,
         workspace_label: activeWorkspace.name ? `${activeWorkspace.name} Settings` : current.workspace_label,
@@ -159,8 +159,11 @@ const SettingsConsole = () => {
       workspaceLogsAPI.getAll(activeWorkspace.id)
         .then((response) => setWorkspaceLogs(Array.isArray(response.data) ? response.data : []))
         .catch(() => setWorkspaceLogs([]));
+    } else if (!canManageOrgSettings) {
+      setWorkspaceError(null);
+      setWorkspaceLogs([]);
     }
-  }, [activeWorkspace?.id, activeWorkspace?.name, activeWorkspace?.local_currency]);
+  }, [activeWorkspace?.id, activeWorkspace?.name, activeWorkspace?.local_currency, canManageOrgSettings]);
 
   useEffect(() => {
     const selectedEntity = entities.find((item) => String(item.id) === String(selectedEntityId)) || entities[0];

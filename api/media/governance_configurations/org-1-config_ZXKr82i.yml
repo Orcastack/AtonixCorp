@@ -1,0 +1,111 @@
+schema_version: v1
+document_type: atonixcorp_governance_configuration
+generated_at: '2026-07-22T12:26:14.998004+00:00'
+organization:
+  id: 1
+  name: Bank Ops LLC
+  registration_number: null
+  slug: bank-ops-llc
+  description: ''
+  industry: ''
+  subscription_tier: enterprise
+  primary_country: US
+  primary_currency: USD
+  settings: {}
+entities:
+- id: 1
+  name: Bank Ops Entity
+  country: US
+  entity_type: corporation
+  status: active
+  registration_number: ''
+  local_currency: USD
+  main_bank: ''
+  tax_authority_url: ''
+  fiscal_year_end: null
+  next_filing_date: null
+  workspace_mode: accounting
+  industry: ''
+  workspace_type: ''
+  workspace_template_key: ''
+  hierarchy_metadata: {}
+  dashboard_config: {}
+  rbac_config: {}
+  enabled_modules: []
+  parent_entity_id: null
+  departments: []
+  roles: []
+offices: []
+governance_policies: []
+workflows: []
+ldap_directory:
+- uid: null
+  dn: o=bank-ops-llc,dc=atonixcorp
+  cn: Bank Ops LLC
+  node_type: organization
+  role_code: ''
+  permissions: []
+  source_type: organization
+  attributes:
+    company_id: 1
+    registration_number: null
+    subscription_tier: enterprise
+  is_active: true
+- uid: null
+  dn: ou=finance,o=bank-ops-llc,dc=atonixcorp
+  cn: Finance
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: finance
+  is_active: true
+- uid: null
+  dn: ou=governance,o=bank-ops-llc,dc=atonixcorp
+  cn: Governance
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: governance
+  is_active: true
+- uid: null
+  dn: ou=security,o=bank-ops-llc,dc=atonixcorp
+  cn: Security
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: security
+  is_active: true
+- uid: null
+  dn: ou=technology,o=bank-ops-llc,dc=atonixcorp
+  cn: Technology
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: technology
+  is_active: true
+- uid: '3891552549'
+  dn: uid=3891552549,ou=people,o=bank-ops-llc,dc=atonixcorp
+  cn: bank-owner
+  node_type: user
+  role_code: FOUNDER
+  permissions: []
+  source_type: founder
+  attributes:
+    email: bank-owner@example.com
+    company_id: 1
+    company_registration_number: null
+    is_founder: true
+  is_active: true
+integrity:
+  algorithm: HMAC-SHA256
+  key_id: governance-hmac-v1
+  checksum: a6aff92ff764a736be72fed49ba4000e7b5fb79b12a05be3d35d12e2ab9a3389
+  signature: 34f630e639f7fb956f33a3644faa7df5955f9eda56330a80de3d298a56460637
