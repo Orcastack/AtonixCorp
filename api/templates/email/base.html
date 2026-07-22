@@ -1,213 +1,59 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block email_title %}AtonixCorp{% endblock %}</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #edf2f8;
-            color: #0f172a;
-            font-family: Arial, sans-serif;
-        }
-
-        table {
-            border-collapse: collapse;
-        }
-
-        .email-shell {
-            width: 100%;
-            background-color: #edf2f8;
-            padding: 24px 12px;
-        }
-
-        .email-card {
-            width: 100%;
-            max-width: 640px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            border: 1px solid #d7dee8;
-            border-radius: 20px;
-            overflow: hidden;
-        }
-
-        .email-header {
-            padding: 28px 32px 20px;
-            background: linear-gradient(135deg, #0b1f3a 0%, #12315b 100%);
-        }
-
-        .brand-wrap {
-            display: inline-flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .brand-copy {
-            color: #ffffff;
-        }
-
-        .brand-copy strong {
-            display: block;
-            font-size: 12px;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            color: #c8a44d;
-        }
-
-        .brand-copy span {
-            display: block;
-            margin-top: 4px;
-            font-size: 20px;
-            line-height: 1.2;
-            font-weight: 700;
-        }
-
-        .email-body {
-            padding: 32px;
-            font-size: 16px;
-            line-height: 1.7;
-            color: #314155;
-        }
-
-        .email-body h1,
-        .email-body h2,
-        .email-body h3 {
-            margin: 0 0 16px;
-            color: #0f172a;
-            line-height: 1.2;
-        }
-
-        .email-body p {
-            margin: 0 0 16px;
-        }
-
-        .email-body a {
-            color: #0b1f3a;
-            font-weight: 700;
-        }
-
-        .email-panel {
-            margin: 24px 0;
-            padding: 18px 20px;
-            border-radius: 16px;
-            background-color: #f5f7fb;
-            border: 1px solid #d7dee8;
-        }
-
-        .email-footer {
-            padding: 0 32px 28px;
-            font-size: 13px;
-            line-height: 1.6;
-            color: #64748b;
-        }
-
-        .eyebrow {
-            margin: 0 0 10px;
-            font-size: 11px;
-            letter-spacing: 0.16em;
-            text-transform: uppercase;
-            color: #8c9bb0;
-            font-weight: 700;
-        }
-
-        .cta-button {
-            display: inline-block;
-            padding: 13px 22px;
-            border-radius: 999px;
-            background: linear-gradient(135deg, #0b1f3a 0%, #12315b 100%);
-            color: #ffffff !important;
-            text-decoration: none;
-            font-weight: 700;
-        }
-
-        .meta-list {
-            margin: 0;
-            padding: 0;
-            list-style: none;
-        }
-
-        .meta-list li {
-            margin: 0 0 8px;
-        }
-
-        .digest-item {
-            margin: 0 0 14px;
-            padding: 18px 20px;
-            border-radius: 16px;
-            background-color: #f5f7fb;
-            border: 1px solid #d7dee8;
-        }
-
-        .digest-item h3 {
-            margin: 0 0 8px;
-            font-size: 18px;
-        }
-
-        .muted {
-            color: #64748b;
-        }
-
-        .preheader {
-            display: none;
-            visibility: hidden;
-            opacity: 0;
-            color: transparent;
-            height: 0;
-            width: 0;
-            overflow: hidden;
-            mso-hide: all;
-        }
-
-        @media only screen and (max-width: 640px) {
-            .email-header,
-            .email-body,
-            .email-footer {
-                padding-left: 22px;
-                padding-right: 22px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="preheader">{% block email_preheader %}AtonixCorp platform update{% endblock %}</div>
-    <table role="presentation" width="100%" class="email-shell">
-        <tr>
-            <td align="center">
-                <table role="presentation" width="100%" class="email-card">
-                    <tr>
-                        <td class="email-header">
-                            <div class="brand-wrap">
-                                <svg width="52" height="52" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                    <circle cx="32" cy="32" r="30" fill="#0B1F3A"/>
-                                    <circle cx="32" cy="32" r="29" stroke="#C8A44D" stroke-width="2"/>
-                                    <path d="M45.5 18.5C49.8 22.6 52.5 28.4 52.5 34.8" stroke="#C8A44D" stroke-width="3" stroke-linecap="round"/>
-                                    <path d="M23.2 45L32.1 18L40.8 45" stroke="white" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M26.9 35H37.2" stroke="#C8A44D" stroke-width="3.5" stroke-linecap="round"/>
-                                </svg>
-                                <div class="brand-copy">
-                                    <strong>{% block email_brand_name %}{{ email_brand_name|default:"AtonixCorp" }}{% endblock %}</strong>
-                                    <span>{% block email_brand_title %}{{ email_brand_title|default:"Institutional Platform" }}{% endblock %}</span>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="email-body">
-                            {% block email_content %}{% endblock %}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="email-footer">
-                            {% block email_footer %}
-                            {{ email_brand_footer|default:"AtonixCorp developer communications are structured for operational clarity, predictable onboarding, and institutional-grade trust." }}
-                            {% endblock %}
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-</body>
+    <body style="margin:0;padding:0;background:#eef2f7;color:#1f2937;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:40px 20px;background:radial-gradient(circle at top,#f9fbff 0,#eef2f7 48%,#e7edf5 100%);">
+            <tr>
+                <td align="center">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:680px;border-collapse:separate;border-spacing:0;overflow:hidden;border:1px solid #dbe5ef;border-radius:22px;background:#ffffff;box-shadow:0 24px 70px rgba(15,23,42,0.12);">
+                        <tr>
+                            <td style="height:8px;background:linear-gradient(90deg,#0f4c81 0%,#1f7abf 48%,#6fb7e9 100%);font-size:0;line-height:0;">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:34px 40px 24px;background:linear-gradient(180deg,#f8fbff 0%,#ffffff 100%);border-bottom:1px solid #e8eef5;">
+                                <table role="presentation" cellspacing="0" cellpadding="0" style="width:100%;">
+                                    <tr>
+                                        <td style="vertical-align:middle;">
+                                            <table role="presentation" cellspacing="0" cellpadding="0">
+                                                <tr>
+                                                    <td style="width:54px;height:54px;border-radius:18px;background:linear-gradient(145deg,#0f4c81 0%,#184f7d 40%,#2a7cc2 100%);text-align:center;vertical-align:middle;box-shadow:0 10px 24px rgba(15,76,129,0.24);">
+                                                        <span style="display:inline-block;color:#ffffff;font-size:18px;font-weight:700;letter-spacing:1px;line-height:54px;">{{ email_brand_mark|default:email_brand_name|default:'AT' }}</span>
+                                                    </td>
+                                                    <td style="padding-left:16px;vertical-align:middle;">
+                                                        <div style="color:#0f172a;font-size:20px;font-weight:700;line-height:1.2;">{{ email_brand_name|default:'AtonixCorp' }}</div>
+                                                        <div style="margin-top:4px;color:#5b6b7c;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;">{% block email_preheader %}{{ email_brand_title|default:'Secure notification' }}{% endblock %}</div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:38px 40px 32px;color:#314155;font-size:16px;line-height:1.8;">
+                                {% block email_content %}{% endblock %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:0 40px 28px;">
+                                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;border-radius:18px;background:linear-gradient(180deg,#f8fbff 0%,#f3f7fb 100%);border:1px solid #dce6ef;">
+                                    <tr>
+                                        <td class="email-footer" style="padding:18px 22px;color:#5b6b7c;font-size:12px;line-height:1.7;">
+                                            {% block email_footer %}
+                                            <strong style="display:block;margin-bottom:4px;color:#0f172a;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;">{{ email_support_team_name|default:'The AtonixCorp Security Team' }}</strong>
+                                            <div>{{ email_brand_footer|default:"AtonixCorp developer communications are structured for operational clarity, predictable onboarding, and institutional-grade trust." }}</div>
+                                            {% endblock %}
+                                            <div style="margin-top:8px;">
+                                                <a href="mailto:{{ email_support_email|default:'support@atonixcorp.com' }}" style="color:#0f4c81;text-decoration:none;font-weight:600;">{{ email_support_email|default:'support@atonixcorp.com' }}</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
 </html>

@@ -1,5 +1,6 @@
+{% extends 'email/base.txt' %}
+{% block body %}
 {{ title }}
 
 {{ message }}
-
-This is an automated {{ brand_name }} service notification. Please do not reply to this email.
+{% endblock %}

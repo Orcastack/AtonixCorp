@@ -1,0 +1,9 @@
+{{ brand_name }}
+{{ header_label|default:'Secure notification' }}
+
+{% block body %}{% endblock %}
+
+{{ support_team_name }}
+{{ footer_note|default:'This message was sent automatically to keep your account secure.' }}
+{{ support_email }}{% if support_url %}
+Support portal: {{ support_url }}{% endif %}

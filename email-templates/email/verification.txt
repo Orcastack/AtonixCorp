@@ -1,3 +1,5 @@
+{% extends 'email/base.txt' %}
+{% block body %}
 Hi {{ user_name }},
 
 Thanks for joining {{ brand_name }}. Before you continue, we need to confirm your email address.
@@ -5,6 +7,4 @@ Thanks for joining {{ brand_name }}. Before you continue, we need to confirm you
 Verify Email: {{ verification_link }}
 
 For your security, this link expires in {{ expiration_minutes }} minutes and can only be used once. If this was not you, no action is required.
-
-The {{ brand_name }} Security Team
-{{ support_email }}
+{% endblock %}

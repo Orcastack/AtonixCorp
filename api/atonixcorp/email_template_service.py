@@ -10,8 +10,18 @@ from django.utils.html import strip_tags
 
 def render_email_template(template_name, context):
     """Return HTML and accessible plain-text bodies for a named email template."""
+    brand_name = getattr(settings, 'EMAIL_BRAND_NAME', 'AtonixCorp')
+    brand_mark = ''.join(part[0] for part in brand_name.split() if part).upper()[:2] or 'AT'
     template_context = {
-        'brand_name': getattr(settings, 'EMAIL_BRAND_NAME', 'AtonixCorp'),
+        'brand_name': brand_name,
+        'brand_mark': getattr(settings, 'EMAIL_BRAND_MARK', brand_mark),
+        'email_brand_name': brand_name,
+        'email_brand_mark': getattr(settings, 'EMAIL_BRAND_MARK', brand_mark),
+        'email_brand_title': getattr(settings, 'EMAIL_BRAND_TITLE', 'Secure notification'),
+        'email_support_email': getattr(settings, 'EMAIL_SUPPORT_EMAIL', 'support@atonixcorp.com'),
+        'email_support_team_name': getattr(settings, 'EMAIL_SUPPORT_TEAM_NAME', 'The AtonixCorp Security Team'),
+        'email_brand_footer': getattr(settings, 'EMAIL_BRAND_FOOTER', ''),
+        'support_team_name': getattr(settings, 'EMAIL_SUPPORT_TEAM_NAME', 'The AtonixCorp Security Team'),
         'support_email': getattr(settings, 'EMAIL_SUPPORT_EMAIL', 'support@atonixcorp.com'),
         'support_url': getattr(settings, 'EMAIL_SUPPORT_URL', ''),
         **context,

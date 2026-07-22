@@ -245,7 +245,7 @@ EMAIL_BRAND_FOOTER = os.getenv(
     'EMAIL_BRAND_FOOTER',
     'AtonixCorp finance operations communications are designed for secure approval workflows, accountable execution, and institutional-grade control.',
 )
-EMAIL_SUPPORT_EMAIL = os.getenv('EMAIL_SUPPORT_EMAIL', 'support@atonixcorp.local')
+EMAIL_SUPPORT_EMAIL = os.getenv('EMAIL_SUPPORT_EMAIL', 'support@atonixcorp.com')
 EMAIL_SUPPORT_URL = os.getenv('EMAIL_SUPPORT_URL', FRONTEND_BASE_URL)
 EMAIL_VERIFICATION_TOKEN_TTL_SECONDS = int(os.getenv('EMAIL_VERIFICATION_TOKEN_TTL_SECONDS', '3600'))
 

@@ -1,6 +1,9 @@
+{% extends 'email/base.txt' %}
+{% block body %}
 {{ title }}
 
 {{ content_text }}
 
 You received this email because you opted in to communications from {{ brand_name }}.
 Unsubscribe: {{ unsubscribe_url }}
+{% endblock %}
