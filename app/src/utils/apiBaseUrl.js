@@ -7,8 +7,17 @@ const isLocalBrowser = () => typeof window !== 'undefined'
 
 const configuredApiOrigin = () => {
   const configuredUrl = process.env.REACT_APP_API_URL || process.env.REACT_APP_API_BASE_URL;
-  if (!configuredUrl || (!isLocalBrowser() && configuredUrl.includes('localhost'))) return '';
-  return configuredUrl.replace(/\/api\/?$/, '').replace(/\/$/, '');
+  if (!configuredUrl) return '';
+
+  const normalizedOrigin = configuredUrl.replace(/\/api\/?$/, '').replace(/\/$/, '');
+  if (isLocalBrowser()) {
+    return normalizedOrigin.includes('localhost') || normalizedOrigin.includes('127.0.0.1')
+      ? normalizedOrigin
+      : LOCAL_API_ORIGIN;
+  }
+
+  if (normalizedOrigin.includes('localhost')) return '';
+  return normalizedOrigin;
 };
 
 export const getApiOrigin = () => configuredApiOrigin()

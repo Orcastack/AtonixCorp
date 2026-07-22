@@ -15,9 +15,11 @@ from django.shortcuts import get_object_or_404
 from django.utils.dateparse import parse_date
 from datetime import datetime, timedelta
 from collections import defaultdict
+from functools import lru_cache
 from decimal import Decimal, ROUND_HALF_UP
 
 from django.utils import timezone
+from django.db import connection
 from workspaces.models import Workspace
 
 from .governance_configurations import restore_governance_document
@@ -162,6 +164,17 @@ from .platform_foundation import (
 )
 from .platform_tasks import create_task as create_platform_task_record, update_task as update_platform_task_record, transition_task as transition_platform_task
 
+
+
+@lru_cache(maxsize=1)
+def _teammember_invite_code_schema_ready():
+    table_name = TeamMember._meta.db_table
+    try:
+        with connection.cursor() as cursor:
+            columns = {column.name for column in connection.introspection.get_table_description(cursor, table_name)}
+    except Exception:
+        return False
+    return {'invite_code_hash', 'invite_code_issued_at'}.issubset(columns)
 
 def _accessible_organizations_queryset(user):
     if not user or not user.is_authenticated:
@@ -489,21 +502,30 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     def lobby(self, request):
         """Return all lobby tiles relevant to the current user."""
         if request.user.is_superuser:
-            organizations = Organization.objects.all().select_related('owner').prefetch_related('team_members__role')
+            organizations = Organization.objects.all().select_related('owner')
         else:
             organizations = Organization.objects.filter(
                 Q(owner=request.user) | Q(team_members__user=request.user)
-            ).distinct().select_related('owner').prefetch_related('team_members__role')
+            ).distinct().select_related('owner')
+
+        organization_list = list(organizations.order_by('-created_at'))
+        invite_schema_ready = _teammember_invite_code_schema_ready()
+        membership_rows = {}
+        if organization_list:
+            membership_queryset = TeamMember.objects.filter(
+                organization__in=organization_list,
+                user=request.user,
+            ).values('organization_id', 'is_active', 'accepted_at')
+            if invite_schema_ready:
+                membership_queryset = membership_queryset.values('organization_id', 'is_active', 'accepted_at', 'role__code')
+            membership_rows = {row['organization_id']: row for row in membership_queryset}
 
         items = []
-        for organization in organizations.order_by('-created_at'):
-            membership = next(
-                (member for member in organization.team_members.all() if member.user_id == request.user.id),
-                None,
-            )
+        for organization in organization_list:
+            membership = membership_rows.get(organization.id)
             if request.user.is_superuser or organization.owner_id == request.user.id:
                 status_label = 'active'
-            elif membership and membership.accepted_at and membership.is_active:
+            elif membership and membership.get('accepted_at') and membership.get('is_active'):
                 status_label = 'active'
             elif membership:
                 status_label = 'invited'
@@ -513,9 +535,9 @@ class OrganizationViewSet(viewsets.ModelViewSet):
             item = OrganizationSerializer(organization, context={'request': request}).data
             item.update({
                 'status': status_label,
-                'role_code': getattr(getattr(membership, 'role', None), 'code', 'ORG_OWNER' if organization.owner_id == request.user.id else None),
-                'has_invite_code': bool(getattr(membership, 'invite_code_hash', None)),
-                'can_unlock': bool(membership and not membership.accepted_at and membership.invite_code_hash),
+                'role_code': membership.get('role__code') if membership else ('ORG_OWNER' if organization.owner_id == request.user.id else None),
+                'has_invite_code': False,
+                'can_unlock': False,
                 'can_manage': bool(request.user.is_superuser or organization.owner_id == request.user.id),
             })
             items.append(item)
@@ -528,6 +550,9 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def unlock(self, request):
         """Accept a pending lobby invitation using the issued code."""
+        if not _teammember_invite_code_schema_ready():
+            raise ValidationError({'detail': 'Invite code unlocking requires the latest database migration.'})
+
         payload = request.data or {}
         organization_id = payload.get('organization_id')
         invite_code = str(payload.get('code') or '').strip()

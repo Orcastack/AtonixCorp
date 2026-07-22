@@ -1,6 +1,7 @@
 import React from 'react';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
+import { getApiOrigin } from '../../utils/apiBaseUrl';
 import './CLIDocs.css';
 
 const authCommands = [
@@ -37,6 +38,8 @@ const endpointRows = [
   { method: 'POST', path: '/v1/api-keys', description: 'Create a long-lived integration key that can be used by the CLI.' },
 ];
 
+const docsBaseUrl = `${getApiOrigin()}/v1`;
+
 const CLIDocs = () => {
   return (
     <div className="cli-docs-page">
@@ -51,9 +54,9 @@ const CLIDocs = () => {
             automatic token refresh, and the currently available authenticated business commands.
           </p>
           <div className="cli-docs-hero-links">
-            <a href="http://localhost:8000/v1/docs" target="_blank" rel="noreferrer">Backend Redoc</a>
-            <a href="http://localhost:8000/v1/swagger" target="_blank" rel="noreferrer">Swagger UI</a>
-            <a href="http://localhost:8000/v1/openapi.yaml" target="_blank" rel="noreferrer">OpenAPI YAML</a>
+            <a href={`${docsBaseUrl}/docs`} target="_blank" rel="noreferrer">Backend Redoc</a>
+            <a href={`${docsBaseUrl}/swagger`} target="_blank" rel="noreferrer">Swagger UI</a>
+            <a href={`${docsBaseUrl}/openapi.yaml`} target="_blank" rel="noreferrer">OpenAPI YAML</a>
           </div>
         </div>
       </section>
