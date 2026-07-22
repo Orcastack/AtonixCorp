@@ -1,6 +1,8 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import EquityCrudModuleScreen from '../components/EquityCrudModuleScreen';
 import { useEquity } from '../../../context/EquityContext';
+import { organizationsAPI } from '../../../services/api';
 
 const EMPTY_FORM = {
   name: '',
@@ -26,6 +28,7 @@ const EMPTY_HOLDING_FORM = {
 };
 
 const OwnershipRegistry = () => {
+  const { workspaceId } = useParams();
   const {
     shareholders,
     holdings,
@@ -45,6 +48,16 @@ const OwnershipRegistry = () => {
   const [editingId, setEditingId] = useState(null);
   const [holdingForm, setHoldingForm] = useState(EMPTY_HOLDING_FORM);
   const [editingHoldingId, setEditingHoldingId] = useState(null);
+
+  useEffect(() => {
+    const entityId = Number(workspaceId);
+    if (!Number.isInteger(entityId)) {
+      return;
+    }
+    organizationsAPI.recordDashboardEntry({ branch: 'equity', entity_id: entityId }).catch(() => {
+      // Entry auditing must not block the equity registry from rendering.
+    });
+  }, [workspaceId]);
 
   const metrics = useMemo(() => ([
     { label: 'Registered holders', value: summary.totalShareholders, note: 'Individuals, entities, employees, and investors' },

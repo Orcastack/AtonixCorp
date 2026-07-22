@@ -36,6 +36,7 @@ from .models import (
     ComplianceDocument,
     GovernanceCommissionEntry,
     Customer,
+    DashboardAccessGrant,
     Consolidation,
     ConsolidationEntity,
     DeveloperAPI,
@@ -1120,6 +1121,136 @@ class LobbyAccessTests(TestCase):
 
         active_lobby_response = self.client.get('/api/organizations/lobby/')
         self.assertEqual(active_lobby_response.data['items'][0]['status'], 'active')
+
+
+class DashboardAccessSeparationTests(TestCase):
+    def setUp(self):
+        Role.get_or_create_default_roles()
+        self.owner = User.objects.create_user(username='dashboard-owner', email='dashboard-owner@example.com', password='strong-pass-123')
+        self.employee = User.objects.create_user(username='dashboard-employee', email='dashboard-employee@example.com', password='strong-pass-123')
+        UserProfile.objects.create(user=self.owner, email_verified=True)
+        UserProfile.objects.create(user=self.employee, email_verified=True)
+        self.organization = Organization.objects.create(
+            owner=self.owner,
+            name='Dashboard Separation Holdings',
+            slug='dashboard-separation-holdings',
+            primary_country='US',
+            primary_currency='USD',
+        )
+        self.finance_entity = Entity.objects.create(
+            organization=self.organization,
+            name='Finance Entity',
+            country='US',
+            entity_type='corporation',
+            status='active',
+            local_currency='USD',
+        )
+        self.other_entity = Entity.objects.create(
+            organization=self.organization,
+            name='Restricted Entity',
+            country='US',
+            entity_type='corporation',
+            status='active',
+            local_currency='USD',
+        )
+        self.department = EntityDepartment.objects.create(
+            entity=self.finance_entity,
+            name='Finance Department',
+            code='DASH-FIN',
+        )
+        self.client = APIClient(HTTP_HOST='localhost')
+
+    def test_department_invitation_isolated_until_unlocked_and_revocable(self):
+        self.client.force_authenticate(self.owner)
+        invite_response = self.client.post(
+            '/api/global/invite',
+            {
+                'organization_id': self.organization.id,
+                'email': self.employee.email,
+                'role_code': 'VIEWER',
+                'department_id': self.department.id,
+                'access_expires_at': (timezone.now() + timedelta(days=1)).isoformat(),
+            },
+            format='json',
+        )
+
+        self.assertEqual(invite_response.status_code, 201)
+        self.assertEqual(invite_response.data['dashboard_access']['department_code'], self.department.department_code)
+        member = TeamMember.objects.get(organization=self.organization, user=self.employee)
+        grant = DashboardAccessGrant.objects.get(invitation=member)
+        self.assertFalse(grant.is_active)
+
+        self.client.force_authenticate(self.employee)
+        pre_unlock_entities = self.client.get('/api/entities/').data
+        self.assertEqual(pre_unlock_entities['count'], 0)
+        self.assertEqual(pre_unlock_entities['results'], [])
+        pre_unlock_lobby = self.client.get('/api/organizations/lobby/')
+        self.assertEqual(pre_unlock_lobby.data['items'][0]['departments'], [])
+
+        unlock_response = self.client.post(
+            '/api/organizations/unlock/',
+            {'organization_id': self.organization.id, 'code': invite_response.data['invitation_code']},
+            format='json',
+        )
+        self.assertEqual(unlock_response.status_code, 200)
+        self.assertTrue(DashboardAccessGrant.objects.get(pk=grant.pk).is_active)
+
+        entities_response = self.client.get('/api/entities/')
+        self.assertEqual(
+            [entity['id'] for entity in entities_response.data['results']],
+            [self.finance_entity.id],
+        )
+        lobby_response = self.client.get('/api/organizations/lobby/')
+        self.assertEqual(lobby_response.data['items'][0]['departments'][0]['department_code'], self.department.department_code)
+
+        entry_response = self.client.post(
+            '/api/organizations/dashboard-entry/',
+            {'branch': 'entity', 'entity_id': self.finance_entity.id, 'department_id': self.department.id},
+            format='json',
+        )
+        self.assertEqual(entry_response.status_code, 200)
+        self.assertTrue(PlatformAuditEvent.objects.filter(event_type='dashboard.entered', actor=self.employee).exists())
+
+        self.client.force_authenticate(self.owner)
+        revoke_response = self.client.post(
+            f'/v1/team-members/tm_{member.id}/deactivate',
+            {},
+            format='json',
+            HTTP_X_ORGANIZATION_ID=f'org_{self.organization.id}',
+        )
+        self.assertEqual(revoke_response.status_code, 200)
+        grant.refresh_from_db()
+        self.assertIsNotNone(grant.revoked_at)
+
+        self.client.force_authenticate(self.employee)
+        post_revoke_entities = self.client.get('/api/entities/').data
+        self.assertEqual(post_revoke_entities['count'], 0)
+        self.assertEqual(post_revoke_entities['results'], [])
+
+    def test_department_invitation_can_grant_equity_branch(self):
+        self.client.force_authenticate(self.owner)
+        invite_response = self.client.post(
+            '/api/global/invite',
+            {
+                'organization_id': self.organization.id,
+                'email': self.employee.email,
+                'role_code': 'VIEWER',
+                'department_id': self.department.id,
+                'dashboard_branches': ['entity', 'equity'],
+            },
+            format='json',
+        )
+
+        self.assertEqual(invite_response.status_code, 201)
+        self.assertEqual(
+            {item['branch'] for item in invite_response.data['dashboard_accesses']},
+            {'entity', 'equity'},
+        )
+        member = TeamMember.objects.get(organization=self.organization, user=self.employee)
+        self.assertEqual(
+            DashboardAccessGrant.objects.filter(invitation=member).values_list('branch', flat=True).count(),
+            2,
+        )
 
 
 class FirstUserAdminAssignmentTests(TestCase):

@@ -6,7 +6,7 @@ services:
       context: ./api
       dockerfile: Dockerfile
     container_name: atonixcorp-api
-    command: python manage.py runserver 0.0.0.0:8000
+    command: /bin/sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     ports:
       - "127.0.0.1:8000:8000"
     volumes:

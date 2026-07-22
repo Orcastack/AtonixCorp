@@ -685,6 +685,49 @@ class EntityDepartment(models.Model):
         super().save(*args, **kwargs)
 
 
+class DashboardAccessGrant(models.Model):
+    """A revocable, optionally temporary grant for one isolated dashboard branch."""
+
+    BRANCH_WORKSPACE = 'workspace'
+    BRANCH_ENTITY = 'entity'
+    BRANCH_EQUITY = 'equity'
+    BRANCH_CHOICES = [
+        (BRANCH_WORKSPACE, 'Workspace'),
+        (BRANCH_ENTITY, 'Entity'),
+        (BRANCH_EQUITY, 'Equity'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='dashboard_access_grants')
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='dashboard_access_grants')
+    branch = models.CharField(max_length=20, choices=BRANCH_CHOICES)
+    entity = models.ForeignKey(Entity, on_delete=models.CASCADE, null=True, blank=True, related_name='dashboard_access_grants')
+    workspace = models.ForeignKey('workspaces.Workspace', on_delete=models.CASCADE, null=True, blank=True, related_name='dashboard_access_grants')
+    department = models.ForeignKey(EntityDepartment, on_delete=models.CASCADE, null=True, blank=True, related_name='dashboard_access_grants')
+    invitation = models.ForeignKey('TeamMember', on_delete=models.SET_NULL, null=True, blank=True, related_name='dashboard_access_grants')
+    granted_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='dashboard_access_grants_issued')
+    expires_at = models.DateTimeField(null=True, blank=True)
+    revoked_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['user', 'branch', 'revoked_at']),
+            models.Index(fields=['organization', 'branch']),
+        ]
+
+    @property
+    def is_active(self):
+        invitation_is_active = (
+            self.invitation_id is None
+            or (self.invitation.is_active and self.invitation.accepted_at is not None)
+        )
+        return invitation_is_active and self.revoked_at is None and (
+            self.expires_at is None or self.expires_at > timezone.now()
+        )
+
+
 class BankAccount(models.Model):
     """Bank accounts for entities"""
     VERIFICATION_STATUS_CHOICES = [

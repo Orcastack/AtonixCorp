@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEnterprise } from '../../context/EnterpriseContext';
+import { organizationsAPI } from '../../services/api';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import '../../styles/EntityPages.css';
 
@@ -64,6 +65,15 @@ const EntityDashboard = () => {
   const [complianceDocuments, setComplianceDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
+
+  useEffect(() => {
+    if (!entity?.id) {
+      return;
+    }
+    organizationsAPI.recordDashboardEntry({ branch: 'entity', entity_id: entity.id }).catch(() => {
+      // Entry auditing must not prevent an authorized dashboard from rendering.
+    });
+  }, [entity?.id]);
 
   useEffect(() => {
     const loadEntityData = async () => {

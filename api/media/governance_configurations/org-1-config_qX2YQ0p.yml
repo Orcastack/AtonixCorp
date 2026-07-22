@@ -1,0 +1,89 @@
+schema_version: v1
+document_type: atonixcorp_governance_configuration
+generated_at: '2026-07-22T07:59:35.159464+00:00'
+organization:
+  id: 1
+  name: Identity Code Holdings
+  registration_number: null
+  slug: identity-code-holdings
+  description: ''
+  industry: ''
+  subscription_tier: enterprise
+  primary_country: US
+  primary_currency: USD
+  settings: {}
+entities: []
+offices: []
+governance_policies: []
+workflows: []
+ldap_directory:
+- uid: null
+  dn: o=identity-code-holdings,dc=atonixcorp
+  cn: Identity Code Holdings
+  node_type: organization
+  role_code: ''
+  permissions: []
+  source_type: organization
+  attributes:
+    company_id: 1
+    registration_number: null
+    subscription_tier: enterprise
+  is_active: true
+- uid: null
+  dn: ou=finance,o=identity-code-holdings,dc=atonixcorp
+  cn: Finance
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: finance
+  is_active: true
+- uid: null
+  dn: ou=governance,o=identity-code-holdings,dc=atonixcorp
+  cn: Governance
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: governance
+  is_active: true
+- uid: null
+  dn: ou=security,o=identity-code-holdings,dc=atonixcorp
+  cn: Security
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: security
+  is_active: true
+- uid: null
+  dn: ou=technology,o=identity-code-holdings,dc=atonixcorp
+  cn: Technology
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: technology
+  is_active: true
+- uid: '6989534848'
+  dn: uid=6989534848,ou=people,o=identity-code-holdings,dc=atonixcorp
+  cn: code-owner
+  node_type: user
+  role_code: FOUNDER
+  permissions: []
+  source_type: founder
+  attributes:
+    email: code-owner@example.com
+    company_id: 1
+    company_registration_number: null
+    is_founder: true
+  is_active: true
+integrity:
+  algorithm: HMAC-SHA256
+  key_id: governance-hmac-v1
+  checksum: b26347dbb5f9cd6574dd9138fe0c39865603f1cc6ca2a85b56d5eb4b1884b4b0
+  signature: 7495aee2463de0161b3c80648f822abe69ee497530330a3b8eea90af49f94c6b

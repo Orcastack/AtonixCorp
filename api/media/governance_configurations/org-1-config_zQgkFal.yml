@@ -1,0 +1,146 @@
+schema_version: v1
+document_type: atonixcorp_governance_configuration
+generated_at: '2026-07-22T08:04:18.238797+00:00'
+organization:
+  id: 1
+  name: Identity Code Holdings
+  registration_number: null
+  slug: identity-code-holdings
+  description: ''
+  industry: ''
+  subscription_tier: enterprise
+  primary_country: US
+  primary_currency: USD
+  settings: {}
+entities:
+- id: 1
+  name: Identity Code Entity
+  country: US
+  entity_type: corporation
+  status: active
+  registration_number: ''
+  local_currency: USD
+  main_bank: ''
+  tax_authority_url: ''
+  fiscal_year_end: null
+  next_filing_date: null
+  workspace_mode: accounting
+  industry: ''
+  workspace_type: ''
+  workspace_template_key: ''
+  hierarchy_metadata: {}
+  dashboard_config: {}
+  rbac_config: {}
+  enabled_modules: []
+  parent_entity_id: null
+  departments:
+  - name: Finance
+    code: ID-FIN
+    description: ''
+    budget: null
+    currency: USD
+    is_active: true
+  roles: []
+offices:
+- entity_id: 1
+  name: Identity Code Workspace
+  description: ''
+  tier: free
+  status: active
+  departments: []
+governance_policies: []
+workflows: []
+ldap_directory:
+- uid: null
+  dn: o=identity-code-holdings,dc=atonixcorp
+  cn: Identity Code Holdings
+  node_type: organization
+  role_code: ''
+  permissions: []
+  source_type: organization
+  attributes:
+    company_id: 1
+    registration_number: null
+    subscription_tier: enterprise
+  is_active: true
+- uid: null
+  dn: ou=finance,o=identity-code-holdings,dc=atonixcorp
+  cn: Finance
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: finance
+  is_active: true
+- uid: null
+  dn: ou=governance,o=identity-code-holdings,dc=atonixcorp
+  cn: Governance
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: governance
+  is_active: true
+- uid: null
+  dn: ou=id-fin,ou=finance,o=identity-code-holdings,dc=atonixcorp
+  cn: Finance
+  node_type: department
+  role_code: ''
+  permissions: []
+  source_type: entity_department
+  attributes:
+    department_code: ID-FIN
+    entity_id: 1
+  is_active: true
+- uid: null
+  dn: ou=identity-code-workspace-c2a33f10,o=identity-code-holdings,dc=atonixcorp
+  cn: Identity Code Workspace
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: workspace
+  attributes:
+    workspace_id: c2a33f10-35a7-4ef2-8e6f-eea397425f2c
+    entity_id: 1
+    tier: free
+  is_active: true
+- uid: null
+  dn: ou=security,o=identity-code-holdings,dc=atonixcorp
+  cn: Security
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: security
+  is_active: true
+- uid: null
+  dn: ou=technology,o=identity-code-holdings,dc=atonixcorp
+  cn: Technology
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: technology
+  is_active: true
+- uid: '1544557293'
+  dn: uid=1544557293,ou=people,o=identity-code-holdings,dc=atonixcorp
+  cn: code-owner
+  node_type: user
+  role_code: FOUNDER
+  permissions: []
+  source_type: founder
+  attributes:
+    email: code-owner@example.com
+    company_id: 1
+    company_registration_number: null
+    is_founder: true
+  is_active: true
+integrity:
+  algorithm: HMAC-SHA256
+  key_id: governance-hmac-v1
+  checksum: be558a841ac884c459d4fc47c55d902bbdccf197291648d44e10ec299933cf44
+  signature: 4380d6fc9046163b12453b8048bf50cbcee6ee733d14a2080c42f3d2fb483955

@@ -123,6 +123,9 @@ class PermissionService:
     @staticmethod
     def get_role(workspace_id, user) -> str | None:
         """Return the user's role in the workspace, or None if not a member."""
+        profile = getattr(user, 'profile', None)
+        if user.is_superuser or getattr(profile, 'platform_role', '') == 'admin':
+            return MemberRole.OWNER
         try:
             membership = WorkspaceMember.objects.get(
                 workspace_id=workspace_id, user=user
@@ -379,12 +382,13 @@ class WorkspaceService:
 
     @staticmethod
     def get_workspace(workspace_id, user: User) -> Workspace:
-        """Return workspace if user is a member."""
+        """Return workspace if user can at least view the overview."""
         try:
             ws = Workspace.objects.get(pk=workspace_id)
         except Workspace.DoesNotExist:
             raise NotFound('Workspace not found.')
-        PermissionService.assert_member(workspace_id, user)
+        if PermissionService.get_permission_summary(workspace_id, user) is None:
+            raise PermissionDenied('You are not a member of this workspace.')
         return ws
 
     @staticmethod
@@ -437,6 +441,14 @@ class WorkspaceService:
     @staticmethod
     def list_user_workspaces(user: User):
         """Return all workspaces where the user holds any membership."""
+        profile = getattr(user, 'profile', None)
+        if user.is_superuser or getattr(profile, 'platform_role', '') == 'admin':
+            return Workspace.objects.exclude(status=WorkspaceStatus.DELETED).select_related('linked_entity__organization').annotate(
+                members_count=Count('members', distinct=True),
+                departments_count=Count('groups', distinct=True),
+                clients_count=Count('linked_entity__organization__clients', distinct=True),
+                component_count=Count('modules', filter=Q(modules__enabled=True), distinct=True),
+            )
         member_ws_ids = WorkspaceMember.objects.filter(user=user).values_list('workspace_id', flat=True)
         return Workspace.objects.filter(pk__in=member_ws_ids).exclude(status=WorkspaceStatus.DELETED).select_related('linked_entity__organization').annotate(
             members_count=Count('members', distinct=True),

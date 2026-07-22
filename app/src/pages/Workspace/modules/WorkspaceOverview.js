@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEnterprise } from '../../../context/EnterpriseContext';
+import { organizationsAPI } from '../../../services/api';
 import { hasEquityModule } from '../../../utils/workspaceModules';
 import './WorkspaceModules.css';
 import './WorkspaceOverview.css';
@@ -122,6 +123,16 @@ const WorkspaceOverview = () => {
     return activeWorkspace || {};
   }, [workspaceId, activeWorkspace, entities]);
   const permissionSummary = getWorkspacePermissionSummary(ws.id || workspaceId);
+
+  useEffect(() => {
+    const resolvedWorkspaceId = Number(ws.id || workspaceId);
+    if (!Number.isInteger(resolvedWorkspaceId)) {
+      return;
+    }
+    organizationsAPI.recordDashboardEntry({ branch: 'workspace', workspace_id: resolvedWorkspaceId }).catch(() => {
+      // Entry auditing must not block the workspace dashboard from rendering.
+    });
+  }, [workspaceId, ws.id]);
 
   const statusCfg = STATUS_CONFIG[ws.status] || { label: ws.status || 'Active', cls: 'wso-badge-active' };
   const entityLabel = ENTITY_TYPE_LABELS[ws.entity_type] || ws.entity_type || '—';

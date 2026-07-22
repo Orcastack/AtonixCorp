@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from django.contrib.auth.models import User
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
+from django.utils import timezone
 
 from atonixcorp.models import (
     Permission,
@@ -13,6 +14,7 @@ from atonixcorp.models import (
     ROLE_ORG_OWNER,
     ROLE_VIEWER,
 )
+from atonixcorp.models import DashboardAccessGrant
 
 from .models import MemberRole, Workspace, WorkspaceGroup, WorkspaceGroupMember, WorkspaceMember
 
@@ -253,7 +255,22 @@ class AccountingPermissionService:
         ).get(pk=workspace_id)
 
         membership = WorkspaceMember.objects.filter(workspace_id=workspace_id, user=user).first()
+        workspace_grant = None
         if membership is None:
+            workspace_grant = DashboardAccessGrant.objects.select_related('invitation').filter(
+                workspace_id=workspace_id,
+                user=user,
+                branch=DashboardAccessGrant.BRANCH_WORKSPACE,
+                revoked_at__isnull=True,
+            ).filter(
+                Q(expires_at__isnull=True) | Q(expires_at__gt=timezone.now()),
+                Q(invitation__isnull=True) | Q(invitation__is_active=True, invitation__accepted_at__isnull=False),
+            ).first()
+            if workspace_grant is None:
+                return None
+
+        effective_role = membership.role if membership is not None else MemberRole.VIEWER
+        if membership is None and workspace_grant is None:
             return None
 
         organization = getattr(workspace.linked_entity, 'organization', None)
@@ -284,7 +301,7 @@ class AccountingPermissionService:
 
         levels = AccountingPermissionService._empty_levels()
         AccountingPermissionService._escalate(levels, ORG_ROLE_CATEGORY_LEVELS.get(org_role_code, {}))
-        AccountingPermissionService._escalate(levels, WORKSPACE_ROLE_CATEGORY_LEVELS.get(membership.role, {}))
+        AccountingPermissionService._escalate(levels, WORKSPACE_ROLE_CATEGORY_LEVELS.get(effective_role, {}))
 
         for permission_code in permission_codes + entity_role_permission_codes:
             AccountingPermissionService._escalate(levels, PERMISSION_CATEGORY_LEVELS.get(permission_code, {}))
@@ -296,26 +313,21 @@ class AccountingPermissionService:
         AccountingPermissionService._escalate(levels, AccountingPermissionService._department_levels_for_names(all_department_names))
 
         department_owner_ids = [department.id for department in workspace_departments if department.owner_id == user.id]
-        user_member_department_ids = [
-            department.id
-            for department in workspace_departments
-            if any(member.user_id == user.id for member in department.group_members.all())
-        ]
 
         enabled_modules = AccountingPermissionService._enabled_workspace_modules(workspace)
         has_equity = any(module_key.startswith('equity_') for module_key in enabled_modules) or getattr(workspace.linked_entity, 'workspace_mode', '') in {'equity', 'combined', 'standalone'}
         has_accounting = any(not module_key.startswith('equity_') for module_key in enabled_modules) or getattr(workspace.linked_entity, 'workspace_mode', '') in {'accounting', 'combined'}
 
-        if has_equity and membership.role != MemberRole.VIEWER:
+        if has_equity and effective_role != MemberRole.VIEWER:
             levels['equity'] = max(levels['equity'], LEVEL_WRITE)
         elif has_equity:
             levels['equity'] = max(levels['equity'], LEVEL_READ)
 
-        can_manage_members = membership.role in {MemberRole.OWNER, MemberRole.ADMIN} or levels['operations'] >= LEVEL_MANAGE
-        can_manage_departments = membership.role in {MemberRole.OWNER, MemberRole.ADMIN}
+        can_manage_members = effective_role in {MemberRole.OWNER, MemberRole.ADMIN} or levels['operations'] >= LEVEL_MANAGE
+        can_manage_departments = effective_role in {MemberRole.OWNER, MemberRole.ADMIN}
         can_manage_owned_departments = bool(department_owner_ids)
-        can_manage_settings = membership.role in {MemberRole.OWNER, MemberRole.ADMIN} or levels['finance'] >= LEVEL_MANAGE
-        can_delete_workspace = membership.role == MemberRole.OWNER or is_org_owner
+        can_manage_settings = effective_role in {MemberRole.OWNER, MemberRole.ADMIN} or levels['finance'] >= LEVEL_MANAGE
+        can_delete_workspace = effective_role == MemberRole.OWNER or is_org_owner
 
         can_see_all_departments = can_manage_departments or org_role_code in {ROLE_ORG_OWNER, ROLE_CFO} or levels['audit'] >= LEVEL_MANAGE
         visible_departments = []
@@ -339,15 +351,15 @@ class AccountingPermissionService:
 
         workspace_sections = {
             'overview': True,
-            'members': membership.role != MemberRole.VIEWER or can_manage_members,
+            'members': effective_role != MemberRole.VIEWER or can_manage_members,
             'departments': bool(visible_departments) or can_manage_departments,
-            'meetings': membership.role != MemberRole.VIEWER,
-            'calendar': membership.role != MemberRole.VIEWER,
-            'files': membership.role != MemberRole.VIEWER,
+            'meetings': effective_role != MemberRole.VIEWER,
+            'calendar': effective_role != MemberRole.VIEWER,
+            'files': effective_role != MemberRole.VIEWER,
             'permissions': can_manage_members or levels['audit'] >= LEVEL_READ or levels['voting_decision_rights'] >= LEVEL_READ,
             'settings': can_manage_settings,
-            'email': membership.role != MemberRole.VIEWER,
-            'marketing': levels['marketing'] >= LEVEL_READ or membership.role in {MemberRole.OWNER, MemberRole.ADMIN},
+            'email': effective_role != MemberRole.VIEWER,
+            'marketing': levels['marketing'] >= LEVEL_READ or effective_role in {MemberRole.OWNER, MemberRole.ADMIN},
         }
 
         equity_sections = {
@@ -366,12 +378,12 @@ class AccountingPermissionService:
 
         actions = {
             'read': True,
-            'write': membership.role != MemberRole.VIEWER,
+            'write': effective_role != MemberRole.VIEWER,
             'manage_members': can_manage_members,
             'manage_departments': can_manage_departments,
             'manage_owned_departments': can_manage_owned_departments,
-            'manage_meetings': membership.role != MemberRole.VIEWER,
-            'manage_files': membership.role != MemberRole.VIEWER,
+            'manage_meetings': effective_role != MemberRole.VIEWER,
+            'manage_files': effective_role != MemberRole.VIEWER,
             'manage_settings': can_manage_settings,
             'manage_modules': can_manage_settings,
             'delete_workspace': can_delete_workspace,
@@ -382,7 +394,7 @@ class AccountingPermissionService:
         return {
             'workspace_id': str(workspace.id),
             'user_id': user.pk,
-            'workspace_role': membership.role,
+            'workspace_role': effective_role,
             'context': {
                 'organization_id': organization.id if organization else None,
                 'organization_role_code': org_role_code,
@@ -406,7 +418,7 @@ class AccountingPermissionService:
             'dashboards': {
                 'workspace_dashboard': workspace_sections['overview'],
                 'entity_dashboard': bool(workspace.linked_entity_id and (levels['finance'] >= LEVEL_READ or levels['accounting'] >= LEVEL_READ or levels['compliance'] >= LEVEL_READ)),
-                'project_dashboard': membership.role != MemberRole.VIEWER or levels['compliance'] >= LEVEL_READ,
+                'project_dashboard': effective_role != MemberRole.VIEWER or levels['compliance'] >= LEVEL_READ,
                 'equity_dashboard': any(equity_sections.values()),
             },
             'workspace_sections': workspace_sections,

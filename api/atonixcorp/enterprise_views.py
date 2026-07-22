@@ -30,9 +30,9 @@ from .organization_email_service import provision_email_account, send_campaign, 
 from .services.domain_verification import verify_organization_domains
 
 from .models import (
-    Organization, OrganizationDirectoryEntry, GovernanceCloudExport, OrganizationEmailAccount, OrganizationEmailCampaign, OrganizationEmailDelivery, Entity, TeamMember, Role, Permission, TaxExposure, ROLE_ORG_OWNER, ROLE_CFO,
+    Organization, OrganizationDirectoryEntry, GovernanceCloudExport, OrganizationEmailAccount, OrganizationEmailCampaign, OrganizationEmailDelivery, Entity, TeamMember, Role, Permission, TaxExposure, UserProfile, ROLE_ORG_OWNER, ROLE_CFO,
     ROLE_FINANCE_ANALYST, ROLE_VIEWER, ROLE_EXTERNAL_ADVISOR,
-    TaxProfile, TaxRegimeRegistry, TaxCalculation, TaxFiling, TaxAuditLog, TaxRuleSetVersion, TaxRiskAlert, ComplianceDeadline, CashflowForecast, AuditLog, PlatformAuditEvent, PlatformTask, EntityDepartment,
+    TaxProfile, TaxRegimeRegistry, TaxCalculation, TaxFiling, TaxAuditLog, TaxRuleSetVersion, TaxRiskAlert, ComplianceDeadline, CashflowForecast, AuditLog, PlatformAuditEvent, PlatformTask, EntityDepartment, DashboardAccessGrant,
     GovernancePolicy, GovernanceAmendment, GovernanceVote, GovernanceCommissionPlan, GovernanceCommissionEntry,
     Budget, Scenario, Consolidation,
     EntityRole, EntityStaff, BankAccount, Wallet, ComplianceDocument,
@@ -185,13 +185,45 @@ def _accessible_organizations_queryset(user):
     ).distinct()
 
 
+def _has_global_dashboard_access(user):
+    profile = getattr(user, 'profile', None)
+    return bool(user and user.is_authenticated and (
+        user.is_superuser or getattr(profile, 'platform_role', '') == 'admin'
+    ))
+
+
+def _is_department_scoped_employee(user):
+    return bool(
+        user and user.is_authenticated
+        and UserProfile.objects.filter(user=user, platform_role=UserProfile.PLATFORM_ROLE_EMPLOYEE).exists()
+    )
+
+
+def _active_dashboard_grants_queryset(user, branch=None):
+    queryset = DashboardAccessGrant.objects.filter(user=user, revoked_at__isnull=True).filter(
+        Q(expires_at__isnull=True) | Q(expires_at__gt=timezone.now())
+    ).filter(
+        Q(invitation__isnull=True) | Q(invitation__accepted_at__isnull=False, invitation__is_active=True)
+    )
+    return queryset.filter(branch=branch) if branch else queryset
+
+
 def _accessible_entities_queryset(user, organization=None):
     if not user or not user.is_authenticated:
         return Entity.objects.none()
 
     base_qs = Entity.objects.all()
     if organization is not None:
-                base_qs = base_qs.filter(organization=organization)
+        base_qs = base_qs.filter(organization=organization)
+
+    if _has_global_dashboard_access(user):
+        return base_qs
+
+    if _is_department_scoped_employee(user):
+        granted_entity_ids = _active_dashboard_grants_queryset(user).filter(
+            branch__in=[DashboardAccessGrant.BRANCH_ENTITY, DashboardAccessGrant.BRANCH_EQUITY]
+        ).values_list('entity_id', flat=True)
+        return base_qs.filter(id__in=granted_entity_ids).distinct()
 
     if organization is not None and organization.owner_id == user.id:
         return base_qs
@@ -220,7 +252,11 @@ def _accessible_workspaces_queryset(user):
     if not user or not user.is_authenticated:
         return Workspace.objects.none()
 
-    return Workspace.objects.filter(Q(owner=user) | Q(members__user=user)).distinct()
+    if _has_global_dashboard_access(user):
+        return Workspace.objects.all()
+
+    workspace_ids = _active_dashboard_grants_queryset(user, DashboardAccessGrant.BRANCH_WORKSPACE).values_list('workspace_id', flat=True)
+    return Workspace.objects.filter(Q(owner=user) | Q(members__user=user) | Q(id__in=workspace_ids)).distinct()
 
 
 def _fallback_permission_codes_for_role(role_code):
@@ -510,11 +546,20 @@ class OrganizationViewSet(viewsets.ModelViewSet):
 
         organization_list = list(organizations.order_by('-created_at'))
         departments_by_organization = {}
+        granted_department_ids = None
+        if _is_department_scoped_employee(request.user):
+            granted_department_ids = set(_active_dashboard_grants_queryset(request.user).filter(
+                branch__in=[DashboardAccessGrant.BRANCH_ENTITY, DashboardAccessGrant.BRANCH_EQUITY],
+                department__isnull=False,
+            ).values_list('department_id', flat=True))
         if organization_list:
-            for department in EntityDepartment.objects.filter(
+            department_queryset = EntityDepartment.objects.filter(
                 entity__organization__in=organization_list,
                 is_active=True,
-            ).select_related('entity').order_by('name'):
+            )
+            if granted_department_ids is not None:
+                department_queryset = department_queryset.filter(id__in=granted_department_ids)
+            for department in department_queryset.select_related('entity').order_by('name'):
                 departments_by_organization.setdefault(department.entity.organization_id, []).append({
                     'id': department.id,
                     'name': department.name,
@@ -560,6 +605,54 @@ class OrganizationViewSet(viewsets.ModelViewSet):
             'role': 'SUPER_USER' if request.user.is_superuser else 'MEMBER',
             'items': items,
         })
+
+    @action(detail=False, methods=['post'], url_path='dashboard-entry')
+    def dashboard_entry(self, request):
+        """Authorize and audit movement into an isolated dashboard branch."""
+        payload = request.data or {}
+        branch = str(payload.get('branch') or '').strip().lower()
+        if branch not in dict(DashboardAccessGrant.BRANCH_CHOICES):
+            raise ValidationError({'branch': 'Branch must be workspace, entity, or equity.'})
+
+        organization = None
+        entity = None
+        workspace_id = None
+        department = None
+        if branch in {DashboardAccessGrant.BRANCH_ENTITY, DashboardAccessGrant.BRANCH_EQUITY}:
+            entity = _get_accessible_entity_or_404(request.user, payload.get('entity_id'))
+            organization = entity.organization
+            department_id = payload.get('department_id')
+            if department_id not in (None, ''):
+                department = get_object_or_404(EntityDepartment, id=department_id, entity=entity, is_active=True)
+                if _is_department_scoped_employee(request.user) and not _active_dashboard_grants_queryset(request.user, branch).filter(
+                    entity=entity,
+                    department=department,
+                ).exists():
+                    raise PermissionDenied('This dashboard is not granted for the selected department.')
+        else:
+            workspace = get_object_or_404(_accessible_workspaces_queryset(request.user), id=payload.get('workspace_id'))
+            workspace_id = workspace.id
+            organization = workspace.linked_entity.organization if workspace.linked_entity_id else None
+
+        log_platform_audit_event(
+            domain='identity',
+            event_type='dashboard.entered',
+            action='dashboard_entered',
+            actor=request.user,
+            organization=organization,
+            entity=entity,
+            workspace_id=workspace_id,
+            resource_type='Dashboard',
+            resource_id=str(entity.id if entity else workspace_id),
+            resource_name=branch,
+            summary=f'{request.user.get_username()} entered the {branch} dashboard',
+            metadata={
+                'branch': branch,
+                'department_code': department.department_code if department else '',
+                'actor_public_user_id': getattr(getattr(request.user, 'profile', None), 'public_user_id', ''),
+            },
+        )
+        return Response({'allowed': True, 'branch': branch})
 
     @action(detail=False, methods=['post'])
     def unlock(self, request):

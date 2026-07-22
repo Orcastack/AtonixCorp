@@ -1,3 +1,4 @@
+from django.utils.dateparse import parse_date, parse_datetime
 import hashlib
 import hmac
 import json
@@ -36,6 +37,8 @@ from .models import (
     BookkeepingCategory,
     ChartOfAccounts,
     Customer,
+        DashboardAccessGrant,
+        EntityDepartment,
     Entity,
     GeneralLedger,
     IdempotencyKey,
@@ -309,6 +312,87 @@ def _ensure_invited_user_profile(user):
         profile.platform_role = UserProfile.PLATFORM_ROLE_EMPLOYEE
         profile.save(update_fields=['platform_role', 'updated_at'])
     return profile
+
+
+def _parse_access_expiry(value):
+    if value in (None, ''):
+        return None
+    expires_at = parse_datetime(str(value))
+    if expires_at is None:
+        raise ValidationError({'access_expires_at': 'Use an ISO 8601 date-time.'})
+    if timezone.is_naive(expires_at):
+        expires_at = timezone.make_aware(expires_at)
+    if expires_at <= timezone.now():
+        raise ValidationError({'access_expires_at': 'Expiry must be in the future.'})
+    return expires_at
+
+
+def _requested_department_dashboard_branches(payload):
+    requested_branches = payload.get('dashboard_branches')
+    if requested_branches in (None, ''):
+        return [DashboardAccessGrant.BRANCH_ENTITY]
+    if not isinstance(requested_branches, list) or not requested_branches:
+        raise ValidationError({'dashboard_branches': 'Provide a non-empty list of dashboard branches.'})
+
+    allowed_branches = {
+        DashboardAccessGrant.BRANCH_ENTITY,
+        DashboardAccessGrant.BRANCH_EQUITY,
+    }
+    branches = []
+    for branch in requested_branches:
+        if branch not in allowed_branches:
+            raise ValidationError({'dashboard_branches': 'Department invitations support entity and equity branches.'})
+        if branch not in branches:
+            branches.append(branch)
+    return branches
+
+
+def _grant_department_dashboard_access(payload, organization, user, member, actor):
+    department_id = payload.get('department_id')
+    if department_id in (None, ''):
+        return []
+    department = get_object_or_404(
+        EntityDepartment.objects.select_related('entity'),
+        id=department_id,
+        entity__organization=organization,
+        is_active=True,
+    )
+    expires_at = _parse_access_expiry(payload.get('access_expires_at'))
+    grants = []
+    for branch in _requested_department_dashboard_branches(payload):
+        grant, _ = DashboardAccessGrant.objects.update_or_create(
+            user=user,
+            organization=organization,
+            branch=branch,
+            entity=department.entity,
+            department=department,
+            defaults={
+                'invitation': member,
+                'granted_by': actor,
+                'expires_at': expires_at,
+                'revoked_at': None,
+            },
+        )
+        grants.append(grant)
+        log_platform_audit_event(
+            domain='identity', event_type='dashboard_access.granted', action='dashboard_access_granted',
+            actor=actor, organization=organization, entity=department.entity,
+            resource_type='DashboardAccessGrant', resource_id=str(grant.id), resource_name=department.name,
+            summary=f'Granted {user.email} access to {department.name}',
+            metadata={'branch': grant.branch, 'department_code': department.department_code, 'expires_at': expires_at.isoformat() if expires_at else ''},
+        )
+    return grants
+
+
+def _dashboard_access_payloads(grants):
+    return [
+        {
+            'branch': grant.branch,
+            'department_code': grant.department.department_code,
+            'expires_at': grant.expires_at.isoformat() if grant.expires_at else None,
+        }
+        for grant in grants
+    ]
 
 
 def _emit_event(organization, event_type, data):
@@ -1294,6 +1378,7 @@ class TeamMembersView(V1BaseAPIView):
 
         invitation_code = member.issue_invite_code()
         member.save(update_fields=['invite_code_hash', 'invite_code_issued_at', 'invitation_reference', 'updated_at'])
+        dashboard_grants = _grant_department_dashboard_access(payload, organization, user, member, request.user)
 
         _audit(organization, request.user, 'create' if created else 'update', 'TeamMember', member.pk, {
             'email': user.email,
@@ -1302,12 +1387,16 @@ class TeamMembersView(V1BaseAPIView):
             'invitee_identity_code': invitee_profile.identity_code,
             'enterprise_code': organization.enterprise_code,
             'invitation_code_issued': True,
+                'department_code': dashboard_grants[0].department.department_code if dashboard_grants else '',
         })
         member.refresh_from_db()
         response_payload = _team_member_payload(member)
         response_payload['invitation_sent'] = True
         response_payload['invitation_code'] = invitation_code
         response_payload['invitation_reference'] = member.invitation_reference
+        if dashboard_grants:
+            response_payload['dashboard_access'] = _dashboard_access_payloads(dashboard_grants)[0]
+            response_payload['dashboard_accesses'] = _dashboard_access_payloads(dashboard_grants)
         return Response(response_payload, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
 
 
@@ -1363,6 +1452,7 @@ class GlobalWorkspaceInviteView(V1BaseAPIView):
 
             invitation_code = member.issue_invite_code()
             member.save(update_fields=['invite_code_hash', 'invite_code_issued_at', 'invitation_reference', 'updated_at'])
+            dashboard_grants = _grant_department_dashboard_access(payload, organization, user, member, request.user)
 
             _audit(organization, request.user, 'invite', 'TeamMember', member.pk, {
                 'email': user.email,
@@ -1372,6 +1462,7 @@ class GlobalWorkspaceInviteView(V1BaseAPIView):
                 'invitee_identity_code': invitee_profile.identity_code,
                 'enterprise_code': organization.enterprise_code,
                 'invitation_code_issued': True,
+                'department_code': dashboard_grants[0].department.department_code if dashboard_grants else '',
             })
             return Response({
                 'organization_id': organization.id,
@@ -1382,6 +1473,8 @@ class GlobalWorkspaceInviteView(V1BaseAPIView):
                 'invitation_sent': True,
                 'invitation_code': invitation_code,
                 'invitation_reference': member.invitation_reference,
+                'dashboard_access': _dashboard_access_payloads(dashboard_grants)[0] if dashboard_grants else None,
+                'dashboard_accesses': _dashboard_access_payloads(dashboard_grants),
             }, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
 
         workspace_ref = payload.get('workspace_id')
@@ -1416,7 +1509,7 @@ class GlobalWorkspaceInviteView(V1BaseAPIView):
                 user.set_unusable_password()
                 user.save(update_fields=['password'])
 
-            invitee_profile = _ensure_invited_user_profile(user)
+        invitee_profile = _ensure_invited_user_profile(user)
 
         membership = WorkspaceMember.objects.filter(workspace_id=workspace_id, user=user).first()
         if membership and membership.role is not None and membership.status == ParticipantStatus.ACCEPTED:
@@ -1453,7 +1546,20 @@ class TeamMemberDeactivateView(V1BaseAPIView):
         )
         member.is_active = False
         member.save(update_fields=['is_active', 'updated_at'])
-        _audit(organization, request.user, 'update', 'TeamMember', member.pk, {'deactivated': True})
+        revoked_count = DashboardAccessGrant.objects.filter(
+            invitation=member,
+            revoked_at__isnull=True,
+        ).update(revoked_at=timezone.now())
+        _audit(organization, request.user, 'update', 'TeamMember', member.pk, {
+            'deactivated': True,
+            'dashboard_grants_revoked': revoked_count,
+        })
+        log_platform_audit_event(
+            domain='identity', event_type='dashboard_access.revoked', action='dashboard_access_revoked',
+            actor=request.user, organization=organization, resource_type='TeamMember', resource_id=str(member.id),
+            resource_name=member.user.email, summary=f'Revoked dashboard access for {member.user.email}',
+            metadata={'dashboard_grants_revoked': revoked_count},
+        )
         payload = _team_member_payload(member)
         payload['deactivated'] = True
         return Response(payload, status=status.HTTP_200_OK)

@@ -18,5 +18,5 @@ ENV PYTHONUNBUFFERED=1 \
 # Expose port
 EXPOSE 8000
 
-# Run Django development server (suitable for local dev; use gunicorn for prod)
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Apply migrations before starting the Django development server.
+CMD ["/bin/sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]

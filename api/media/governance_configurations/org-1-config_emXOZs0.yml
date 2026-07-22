@@ -1,0 +1,114 @@
+schema_version: v1
+document_type: atonixcorp_governance_configuration
+generated_at: '2026-07-22T08:17:38.599843+00:00'
+organization:
+  id: 1
+  name: Dashboard Separation Holdings
+  registration_number: null
+  slug: dashboard-separation-holdings
+  description: ''
+  industry: ''
+  subscription_tier: enterprise
+  primary_country: US
+  primary_currency: USD
+  settings: {}
+entities: []
+offices: []
+governance_policies: []
+workflows: []
+ldap_directory:
+- uid: null
+  dn: o=dashboard-separation-holdings,dc=atonixcorp
+  cn: Dashboard Separation Holdings
+  node_type: organization
+  role_code: ''
+  permissions: []
+  source_type: organization
+  attributes:
+    company_id: 1
+    registration_number: null
+    subscription_tier: enterprise
+  is_active: true
+- uid: null
+  dn: ou=finance,o=dashboard-separation-holdings,dc=atonixcorp
+  cn: Finance
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: finance
+  is_active: true
+- uid: null
+  dn: ou=governance,o=dashboard-separation-holdings,dc=atonixcorp
+  cn: Governance
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: governance
+  is_active: true
+- uid: null
+  dn: ou=security,o=dashboard-separation-holdings,dc=atonixcorp
+  cn: Security
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: security
+  is_active: true
+- uid: null
+  dn: ou=technology,o=dashboard-separation-holdings,dc=atonixcorp
+  cn: Technology
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: technology
+  is_active: true
+- uid: '2642247948'
+  dn: uid=2642247948,ou=people,o=dashboard-separation-holdings,dc=atonixcorp
+  cn: dashboard-owner
+  node_type: user
+  role_code: FOUNDER
+  permissions:
+  - view_org_overview
+  - manage_org_settings
+  - manage_billing
+  - view_entities
+  - create_entity
+  - edit_entity
+  - delete_entity
+  - view_tax_compliance
+  - edit_tax_compliance
+  - manage_tax_regimes
+  - view_tax_audit_logs
+  - submit_tax_filings
+  - run_tax_calculations
+  - edit_tax_registrations
+  - export_tax_reports
+  - view_cashflow
+  - edit_cashflow
+  - view_risk_exposure
+  - edit_risk_exposure
+  - view_reports
+  - generate_reports
+  - export_reports
+  - view_team
+  - manage_team
+  - assign_roles
+  source_type: founder
+  attributes:
+    email: dashboard-owner@example.com
+    company_id: 1
+    company_registration_number: null
+    is_founder: true
+  is_active: true
+integrity:
+  algorithm: HMAC-SHA256
+  key_id: governance-hmac-v1
+  checksum: 3771b3e4d01f5d4b08b8d137569891c686517f3f90829d2f145c82199e825089
+  signature: d8a3c815ffe95ded74be94032c879f9003d5f13aed587a2671c0ff9b4c6c6094

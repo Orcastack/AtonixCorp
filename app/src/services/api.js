@@ -302,6 +302,7 @@ export const organizationsAPI = {
   getMyOrganizations: () => api.get('/organizations/my_organizations/'),
   getLobby: () => api.get('/organizations/lobby/'),
   unlockLobbyItem: (data) => api.post('/organizations/unlock/', data),
+  recordDashboardEntry: (data) => api.post('/organizations/dashboard-entry/', data),
   getOverview: (id) => api.get(`/organizations/${id}/overview/`),
   getPermissionContext: (id) => api.get(`/organizations/${id}/permission_context/`),
   getEmailService: (id) => api.get(`/organizations/${id}/email_service/`),
