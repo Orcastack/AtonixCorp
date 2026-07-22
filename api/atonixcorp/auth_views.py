@@ -1,4 +1,5 @@
 import logging
+import re
 
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -34,6 +35,9 @@ def _user_payload(user):
         'tax_type': getattr(profile, 'tax_type', UserProfile.TAX_TYPE_CORPORATE),
         'tax_rate': float(getattr(profile, 'tax_rate', 0) or 0),
         'secure_user_id': getattr(profile, 'secure_user_id', ''),
+        'identity_code': getattr(profile, 'identity_code', ''),
+        'public_user_id': getattr(profile, 'public_user_id', ''),
+        'platform_role': getattr(profile, 'platform_role', UserProfile.PLATFORM_ROLE_MEMBER),
         'email_verified': bool(getattr(profile, 'email_verified', False)),
     }
 
@@ -49,6 +53,10 @@ class SecureUserIdTokenObtainPairSerializer(TokenObtainPairSerializer):
             profile = UserProfile.objects.select_related('user').filter(secure_user_id=raw_value).first()
             if profile:
                 return profile.user.get_username()
+
+        profile = UserProfile.objects.select_related('user').filter(public_user_id__iexact=raw_value).first()
+        if profile:
+            return profile.user.get_username()
 
         user = User.objects.filter(email__iexact=raw_value).first()
         if user:
@@ -75,6 +83,8 @@ class RegisterView(DeveloperFacingAPIView):
         payload = request.data or {}
         email = (payload.get("email") or "").strip().lower()
         username = (payload.get("username") or "").strip()
+        first_name = (payload.get("first_name") or "").strip()
+        last_name = (payload.get("last_name") or "").strip()
         password = payload.get("password") or ""
         account_type = (payload.get("account_type") or ACCOUNT_TYPE_ENTERPRISE).strip()
         country = (payload.get("country") or "").strip()
@@ -86,6 +96,8 @@ class RegisterView(DeveloperFacingAPIView):
             return Response({"email": "This field is required."}, status=status.HTTP_400_BAD_REQUEST)
         if not username:
             return Response({"username": "This field is required."}, status=status.HTTP_400_BAD_REQUEST)
+        if not first_name:
+            return Response({"first_name": "This field is required."}, status=status.HTTP_400_BAD_REQUEST)
         if username.casefold() == email.casefold():
             return Response({"username": "Username or employee ID must be different from your email address."}, status=status.HTTP_400_BAD_REQUEST)
         if len(username) > User._meta.get_field('username').max_length:
@@ -111,7 +123,13 @@ class RegisterView(DeveloperFacingAPIView):
             return Response({"username": "This username is already in use."}, status=status.HTTP_400_BAD_REQUEST)
 
         is_first_user = not User.objects.exists()
-        user = User.objects.create_user(username=username, email=email, password=password)
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+        )
         if is_first_user:
             user.is_staff = True
             user.is_superuser = True
@@ -123,6 +141,7 @@ class RegisterView(DeveloperFacingAPIView):
             account_type=account_type if account_type in [ACCOUNT_TYPE_PERSONAL, ACCOUNT_TYPE_ENTERPRISE] else ACCOUNT_TYPE_ENTERPRISE,
             country=country,
             phone=phone,
+            platform_role=UserProfile.PLATFORM_ROLE_SUPER_USER if is_first_user else UserProfile.PLATFORM_ROLE_MEMBER,
         )
 
         if tax_type in [UserProfile.TAX_TYPE_CORPORATE, UserProfile.TAX_TYPE_PERSONAL, UserProfile.TAX_TYPE_VAT]:
@@ -158,6 +177,29 @@ class RegisterView(DeveloperFacingAPIView):
             },
             status=status.HTTP_201_CREATED,
         )
+
+
+class UsernameSuggestionsView(DeveloperFacingAPIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        scope = str(request.query_params.get('scope') or 'user').strip().lower()
+        raw_name = str(request.query_params.get('name') or request.query_params.get('first_name') or '').strip()
+        base = re.sub(r'[^a-z0-9]', '', raw_name.lower())[:140]
+        if not base:
+            raise ValidationError({'name': 'A first name or enterprise name is required.'})
+
+        year = timezone.localdate().year
+        candidates = [f'{base}01', f'{base}{year}', f'{base}_global']
+        if scope == 'enterprise':
+            from .models import Organization
+
+            available = [candidate for candidate in candidates if not Organization.objects.filter(enterprise_username__iexact=candidate).exists()]
+        elif scope == 'user':
+            available = [candidate for candidate in candidates if not User.objects.filter(username__iexact=candidate).exists()]
+        else:
+            raise ValidationError({'scope': 'Scope must be user or enterprise.'})
+        return Response({'suggestions': available or candidates, 'scope': scope})
 
 
 class MeView(DeveloperFacingAPIView):

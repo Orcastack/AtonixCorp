@@ -52,6 +52,7 @@ from .models import (
     SystemEvent,
     TeamMember,
     Transaction,
+    UserProfile,
     Vendor,
     WebhookDelivery,
     WebhookEndpoint,
@@ -285,6 +286,8 @@ def _is_cash_account(account):
 def _audit(organization, user, action, model_name, object_id, changes=None, *, entity=None, ip_address=None):
     if not user or not getattr(user, 'is_authenticated', False):
         return
+    audit_changes = dict(changes or {})
+    audit_changes.setdefault('actor_public_user_id', getattr(getattr(user, 'profile', None), 'public_user_id', ''))
     AuditLog.objects.create(
         organization=organization,
         entity=entity,
@@ -292,9 +295,20 @@ def _audit(organization, user, action, model_name, object_id, changes=None, *, e
         action=action,
         model_name=model_name,
         object_id=str(object_id),
-        changes=changes or {},
+        changes=audit_changes,
         ip_address=ip_address,
     )
+
+
+def _ensure_invited_user_profile(user):
+    profile, _ = UserProfile.objects.get_or_create(
+        user=user,
+        defaults={'platform_role': UserProfile.PLATFORM_ROLE_EMPLOYEE},
+    )
+    if profile.platform_role == UserProfile.PLATFORM_ROLE_MEMBER:
+        profile.platform_role = UserProfile.PLATFORM_ROLE_EMPLOYEE
+        profile.save(update_fields=['platform_role', 'updated_at'])
+    return profile
 
 
 def _emit_event(organization, event_type, data):
@@ -454,6 +468,7 @@ def _team_member_payload(member):
         'id': _public_id('tm', member.pk),
         'user': {
             'id': member.user.pk,
+            'identity_code': getattr(getattr(member.user, 'profile', None), 'identity_code', ''),
             'email': member.user.email,
             'username': member.user.username,
             'first_name': member.user.first_name,
@@ -1247,6 +1262,8 @@ class TeamMembersView(V1BaseAPIView):
             user.set_unusable_password()
             user.save(update_fields=['password'])
 
+        invitee_profile = _ensure_invited_user_profile(user)
+
         member, created = TeamMember.objects.get_or_create(
             organization=organization,
             user=user,
@@ -1276,13 +1293,21 @@ class TeamMembersView(V1BaseAPIView):
             member.scoped_entities.clear()
 
         invitation_code = member.issue_invite_code()
-        member.save(update_fields=['invite_code_hash', 'invite_code_issued_at', 'updated_at'])
+        member.save(update_fields=['invite_code_hash', 'invite_code_issued_at', 'invitation_reference', 'updated_at'])
 
-        _audit(organization, request.user, 'create' if created else 'update', 'TeamMember', member.pk, payload)
+        _audit(organization, request.user, 'create' if created else 'update', 'TeamMember', member.pk, {
+            'email': user.email,
+            'role_code': role.code,
+            'inviter_identity_code': getattr(getattr(request.user, 'profile', None), 'identity_code', ''),
+            'invitee_identity_code': invitee_profile.identity_code,
+            'enterprise_code': organization.enterprise_code,
+            'invitation_code_issued': True,
+        })
         member.refresh_from_db()
         response_payload = _team_member_payload(member)
         response_payload['invitation_sent'] = True
         response_payload['invitation_code'] = invitation_code
+        response_payload['invitation_reference'] = member.invitation_reference
         return Response(response_payload, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
 
 
@@ -1321,6 +1346,8 @@ class GlobalWorkspaceInviteView(V1BaseAPIView):
                 user.set_unusable_password()
                 user.save(update_fields=['password'])
 
+            invitee_profile = _ensure_invited_user_profile(user)
+
             member, created = TeamMember.objects.get_or_create(
                 organization=organization,
                 user=user,
@@ -1335,20 +1362,26 @@ class GlobalWorkspaceInviteView(V1BaseAPIView):
                 member.save(update_fields=['role', 'is_active', 'accepted_at', 'updated_at'])
 
             invitation_code = member.issue_invite_code()
-            member.save(update_fields=['invite_code_hash', 'invite_code_issued_at', 'updated_at'])
+            member.save(update_fields=['invite_code_hash', 'invite_code_issued_at', 'invitation_reference', 'updated_at'])
 
             _audit(organization, request.user, 'invite', 'TeamMember', member.pk, {
                 'email': user.email,
                 'role_code': role.code,
                 'invitation_target': 'organization',
+                'inviter_identity_code': getattr(getattr(request.user, 'profile', None), 'identity_code', ''),
+                'invitee_identity_code': invitee_profile.identity_code,
+                'enterprise_code': organization.enterprise_code,
+                'invitation_code_issued': True,
             })
             return Response({
                 'organization_id': organization.id,
+                'enterprise_code': organization.enterprise_code,
                 'registration_number': organization.registration_number,
-                'user': {'id': user.id, 'email': user.email, 'username': user.username},
+                'user': {'id': user.id, 'identity_code': invitee_profile.identity_code, 'email': user.email, 'username': user.username},
                 'role': role.code,
                 'invitation_sent': True,
                 'invitation_code': invitation_code,
+                'invitation_reference': member.invitation_reference,
             }, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
 
         workspace_ref = payload.get('workspace_id')
@@ -1383,6 +1416,8 @@ class GlobalWorkspaceInviteView(V1BaseAPIView):
                 user.set_unusable_password()
                 user.save(update_fields=['password'])
 
+            invitee_profile = _ensure_invited_user_profile(user)
+
         membership = WorkspaceMember.objects.filter(workspace_id=workspace_id, user=user).first()
         if membership and membership.role is not None and membership.status == ParticipantStatus.ACCEPTED:
             return Response({'detail': 'This user is already a workspace member.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -1390,8 +1425,10 @@ class GlobalWorkspaceInviteView(V1BaseAPIView):
         invited = MemberService.invite_member(workspace_id, request.user, user)
         response_data = {
             'workspace_id': str(workspace_id),
+            'workspace_code': invited.workspace.workspace_code,
             'user': {
                 'id': invited.user_id,
+                'identity_code': invitee_profile.identity_code,
                 'email': invited.user.email,
                 'username': invited.user.username,
             },

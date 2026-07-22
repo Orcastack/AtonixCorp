@@ -6,6 +6,7 @@ from .auth_views import (
     RegisterView,
     ResendEmailVerificationView,
     SecureUserIdTokenObtainPairSerializer,
+    UsernameSuggestionsView,
     VerifyEmailView,
 )
 from .developer_portal_common import StandardizedTokenObtainPairView, StandardizedTokenRefreshView
@@ -13,6 +14,7 @@ from .developer_portal_common import StandardizedTokenObtainPairView, Standardiz
 
 urlpatterns = [
     path("register/", RegisterView.as_view(), name="auth_register"),
+    path("username-suggestions/", UsernameSuggestionsView.as_view(), name="auth_username_suggestions"),
     path("token/", StandardizedTokenObtainPairView.as_view(serializer_class=SecureUserIdTokenObtainPairSerializer), name="token_obtain_pair"),
     path("token/refresh/", StandardizedTokenRefreshView.as_view(), name="token_refresh"),
     path("me/", MeView.as_view(), name="auth_me"),

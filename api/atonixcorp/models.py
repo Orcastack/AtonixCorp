@@ -1,8 +1,10 @@
 import secrets
 import uuid
+import re
 from decimal import Decimal
 
 from django.db import models
+from django.db import transaction
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import check_password, make_password
 from django.core.validators import URLValidator
@@ -52,6 +54,47 @@ ACCOUNT_TYPE_CHOICES = [
 ]
 
 
+class IdentityCodeSequence(models.Model):
+    """Per-year sequence backing immutable public identity codes."""
+
+    code_type = models.CharField(max_length=3)
+    year = models.PositiveIntegerField()
+    last_value = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['code_type', 'year'], name='unique_identity_code_sequence'),
+        ]
+
+
+def generate_identity_code(code_type):
+    """Generate a monotonic public code such as USR-2026-0001."""
+    year = timezone.now().year
+    with transaction.atomic():
+        sequence, _ = IdentityCodeSequence.objects.select_for_update().get_or_create(
+            code_type=code_type,
+            year=year,
+        )
+        sequence.last_value += 1
+        sequence.save(update_fields=['last_value'])
+        return f'{code_type}-{year}-{sequence.last_value:03d}'
+
+
+def generate_user_identity_code(first_name, last_name):
+    """Create an immutable human-readable user ID from names and registration date."""
+    date_value = timezone.localdate()
+    initials = re.sub(r'[^A-Z0-9]', '', f'{first_name[:3]}{last_name[:3]}'.upper())
+    initials = (initials or 'USR')[:6]
+    with transaction.atomic():
+        sequence, _ = IdentityCodeSequence.objects.select_for_update().get_or_create(
+            code_type='UID',
+            year=date_value.year,
+        )
+        sequence.last_value += 1
+        sequence.save(update_fields=['last_value'])
+        return f'{initials}-{date_value:%d%m%y}-{date_value.year}-{sequence.last_value:03d}'
+
+
 class UserProfile(models.Model):
     """Extended user profile with account type and preferences"""
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
@@ -65,6 +108,19 @@ class UserProfile(models.Model):
     phone = models.CharField(max_length=20, blank=True)
     email_verified = models.BooleanField(default=False)
     email_verified_at = models.DateTimeField(null=True, blank=True)
+    identity_code = models.CharField(max_length=20, unique=True, editable=False, db_index=True, blank=True)
+    public_user_id = models.CharField(max_length=40, unique=True, editable=False, db_index=True, blank=True)
+    PLATFORM_ROLE_SUPER_USER = 'super_user'
+    PLATFORM_ROLE_ADMIN = 'admin'
+    PLATFORM_ROLE_MEMBER = 'member'
+    PLATFORM_ROLE_EMPLOYEE = 'employee'
+    PLATFORM_ROLE_CHOICES = [
+        (PLATFORM_ROLE_SUPER_USER, 'Super User'),
+        (PLATFORM_ROLE_ADMIN, 'Admin'),
+        (PLATFORM_ROLE_MEMBER, 'Member'),
+        (PLATFORM_ROLE_EMPLOYEE, 'Employee'),
+    ]
+    platform_role = models.CharField(max_length=20, choices=PLATFORM_ROLE_CHOICES, default=PLATFORM_ROLE_MEMBER)
 
     TAX_TYPE_CORPORATE = 'corporate'
     TAX_TYPE_PERSONAL = 'personal'
@@ -89,8 +145,17 @@ class UserProfile(models.Model):
                 return candidate
 
     def save(self, *args, **kwargs):
+        if self.pk:
+            stored_codes = UserProfile.objects.filter(pk=self.pk).values('identity_code', 'public_user_id').first()
+            if stored_codes:
+                self.identity_code = stored_codes['identity_code']
+                self.public_user_id = stored_codes['public_user_id']
         if not self.secure_user_id:
             self.secure_user_id = self.generate_secure_user_id()
+        if not self.identity_code:
+            self.identity_code = generate_identity_code('USR')
+        if not self.public_user_id:
+            self.public_user_id = generate_user_identity_code(self.user.first_name, self.user.last_name)
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -147,6 +212,8 @@ class Organization(models.Model):
     employee_count = models.IntegerField(default=1)
     primary_currency = models.CharField(max_length=3, default='USD')
     primary_country = models.CharField(max_length=100)
+    enterprise_code = models.CharField(max_length=20, unique=True, editable=False, db_index=True, blank=True)
+    enterprise_username = models.CharField(max_length=150, unique=True, blank=True)
     settings = models.JSONField(default=dict, blank=True)
     website = models.URLField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -162,10 +229,29 @@ class Organization(models.Model):
     def save(self, *args, **kwargs):
         if self.registration_number:
             self.registration_number = normalize_registration_number(self.registration_number)
+        if self.pk:
+            stored_code = Organization.objects.filter(pk=self.pk).values_list('enterprise_code', flat=True).first()
+            if stored_code:
+                self.enterprise_code = stored_code
+        if not self.enterprise_code:
+            self.enterprise_code = generate_identity_code('ENT')
+        if not self.enterprise_username:
+            base_username = re.sub(r'[^a-z0-9]', '', self.name.lower())[:140] or 'enterprise'
+            candidate = f'{base_username}{timezone.now():%Y}'
+            suffix = 1
+            while Organization.objects.exclude(pk=self.pk).filter(enterprise_username__iexact=candidate).exists():
+                suffix += 1
+                candidate = f'{base_username}{suffix:03d}'
+            self.enterprise_username = candidate
         super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
+
+
+class EnterpriseInvitationSequence(models.Model):
+    organization = models.OneToOneField(Organization, on_delete=models.CASCADE, related_name='invitation_sequence')
+    last_value = models.PositiveIntegerField(default=0)
 
 
 class GovernanceConfiguration(models.Model):
@@ -573,6 +659,7 @@ class EntityDepartment(models.Model):
     entity = models.ForeignKey(Entity, on_delete=models.CASCADE, related_name='departments')
     name = models.CharField(max_length=100)
     code = models.CharField(max_length=20, unique=True)
+    department_code = models.CharField(max_length=20, unique=True, editable=False, db_index=True, blank=True)
     description = models.TextField(blank=True)
     head_of_department = models.ForeignKey('EntityStaff', on_delete=models.SET_NULL, null=True, blank=True, related_name='headed_departments')
     budget = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
@@ -587,6 +674,15 @@ class EntityDepartment(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.entity.name}"
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            stored_code = EntityDepartment.objects.filter(pk=self.pk).values_list('department_code', flat=True).first()
+            if stored_code:
+                self.department_code = stored_code
+        if not self.department_code:
+            self.department_code = generate_identity_code('DEP')
+        super().save(*args, **kwargs)
 
 
 class BankAccount(models.Model):
@@ -1361,6 +1457,7 @@ class TeamMember(models.Model):
     accepted_at = models.DateTimeField(null=True, blank=True)
     invite_code_hash = models.CharField(max_length=128, blank=True)
     invite_code_issued_at = models.DateTimeField(null=True, blank=True)
+    invitation_reference = models.CharField(max_length=40, unique=True, editable=False, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -1375,6 +1472,14 @@ class TeamMember(models.Model):
         raw_code = secrets.token_hex(4).upper()
         self.invite_code_hash = make_password(raw_code)
         self.invite_code_issued_at = timezone.now()
+        if not self.invitation_reference:
+            with transaction.atomic():
+                sequence, _ = EnterpriseInvitationSequence.objects.select_for_update().get_or_create(
+                    organization=self.organization,
+                )
+                sequence.last_value += 1
+                sequence.save(update_fields=['last_value'])
+                self.invitation_reference = f'INV-{self.organization.enterprise_code}-{sequence.last_value:02d}'
         return raw_code
 
     def check_invite_code(self, raw_code):

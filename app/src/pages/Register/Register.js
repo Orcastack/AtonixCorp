@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { countryDropdownOptions } from '../../utils/countryDropdowns';
 import AtonixCorpLogo from '../../components/branding/AtonixCorpLogo';
+import { getApiOrigin } from '../../utils/apiBaseUrl';
 
 const Register = () => {
   const [step, setStep] = useState(1); // 1: email → 2: details
   const [username, setUsername] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [usernameSuggestions, setUsernameSuggestions] = useState([]);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -17,6 +21,33 @@ const Register = () => {
   const [error, setError] = useState('');
   const { register } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const name = firstName.trim();
+    if (!name) {
+      setUsernameSuggestions([]);
+      return undefined;
+    }
+
+    const controller = new AbortController();
+    const loadSuggestions = async () => {
+      try {
+        const response = await fetch(
+          `${getApiOrigin()}/api/auth/username-suggestions/?first_name=${encodeURIComponent(name)}`,
+          { signal: controller.signal },
+        );
+        if (!response.ok) return;
+        const data = await response.json();
+        const suggestions = data.suggestions || [];
+        setUsernameSuggestions(suggestions);
+        setUsername((currentUsername) => currentUsername || suggestions[0] || '');
+      } catch (requestError) {
+        if (requestError.name !== 'AbortError') setUsernameSuggestions([]);
+      }
+    };
+    loadSuggestions();
+    return () => controller.abort();
+  }, [firstName]);
 
   const selectedCountry = countryDropdownOptions.find(c => c.code === country);
   const passwordStrength = password.length < 6
@@ -48,7 +79,7 @@ const Register = () => {
     e.preventDefault();
     setError('');
 
-    if (!username || !password || !confirmPassword || !country || !phone) {
+    if (!firstName || !username || !password || !confirmPassword || !country || !phone) {
       setError('Please fill in all fields');
       return;
     }
@@ -73,7 +104,7 @@ const Register = () => {
       return;
     }
 
-    const result = await register(username.trim(), email, password, country, phone, 'enterprise');
+    const result = await register(username.trim(), email, password, country, phone, 'enterprise', firstName.trim(), lastName.trim());
     if (result.success) {
       navigate('/verify-email', { state: { email } });
     } else if (result.verificationRequired) {
@@ -155,16 +186,42 @@ const Register = () => {
 
           <form onSubmit={handleDetailsSubmit} className="auth-form">
             <div className="form-group">
-              <label htmlFor="username">Username or Employee ID</label>
+              <label htmlFor="firstName">First Name</label>
+              <input
+                type="text"
+                id="firstName"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                autoComplete="given-name"
+                autoFocus
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="lastName">Last Name</label>
+              <input
+                type="text"
+                id="lastName"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                autoComplete="family-name"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="username">Username</label>
               <input
                 type="text"
                 id="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Jane Doe or EMP-1024"
+                placeholder="samuel01"
                 autoComplete="username"
-                autoFocus
+                list="username-suggestions"
               />
+              <datalist id="username-suggestions">
+                {usernameSuggestions.map((suggestion) => <option key={suggestion} value={suggestion} />)}
+              </datalist>
             </div>
 
             <div className="form-group">

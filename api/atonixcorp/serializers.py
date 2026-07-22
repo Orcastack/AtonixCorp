@@ -62,8 +62,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ['user_id', 'secure_user_id', 'email', 'username', 'first_name', 'last_name', 'account_type', 'country', 'phone', 'tax_type', 'tax_rate', 'avatar_color', 'created_at']
-        read_only_fields = ['created_at']
+        fields = ['user_id', 'secure_user_id', 'identity_code', 'public_user_id', 'platform_role', 'email', 'username', 'first_name', 'last_name', 'account_type', 'country', 'phone', 'tax_type', 'tax_rate', 'avatar_color', 'created_at']
+        read_only_fields = ['identity_code', 'public_user_id', 'platform_role', 'created_at']
 
     def get_first_name(self, obj):
         return obj.user.first_name
@@ -87,8 +87,8 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Organization
-        fields = ['id', 'name', 'registration_number', 'slug', 'description', 'logo_url', 'industry', 'employee_count', 'primary_currency', 'primary_country', 'country', 'currency', 'email', 'address', 'service_time', 'settings', 'website', 'owner_name', 'owner_email', 'created_at', 'updated_at']
-        read_only_fields = ['created_at', 'updated_at']
+        fields = ['id', 'enterprise_code', 'enterprise_username', 'name', 'registration_number', 'slug', 'description', 'logo_url', 'industry', 'employee_count', 'primary_currency', 'primary_country', 'country', 'currency', 'email', 'address', 'service_time', 'settings', 'website', 'owner_name', 'owner_email', 'created_at', 'updated_at']
+        read_only_fields = ['enterprise_code', 'created_at', 'updated_at']
         extra_kwargs = {
             'slug': {'required': False, 'allow_blank': True},
         }
@@ -732,8 +732,8 @@ class EntityDepartmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EntityDepartment
-        fields = ['id', 'entity', 'name', 'code', 'description', 'head_of_department', 'head_name', 'budget', 'currency', 'staff_count', 'is_active', 'created_at', 'updated_at']
-        read_only_fields = ['created_at', 'updated_at']
+        fields = ['id', 'entity', 'name', 'code', 'department_code', 'description', 'head_of_department', 'head_name', 'budget', 'currency', 'staff_count', 'is_active', 'created_at', 'updated_at']
+        read_only_fields = ['department_code', 'created_at', 'updated_at']
 
     def get_staff_count(self, obj):
         return obj.staff.count()

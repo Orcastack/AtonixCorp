@@ -54,7 +54,7 @@ class WorkspaceSerializer(serializers.ModelSerializer):
     class Meta:
         model  = Workspace
         fields = (
-            'id', 'owner', 'name', 'description', 'tier', 'status',
+            'id', 'workspace_code', 'owner', 'name', 'description', 'tier', 'status',
             'linked_entity_id', 'linked_entity_name', 'linked_entity_industry',
             'business_type', 'country_of_incorporation', 'currency', 'fiscal_year',
             'tax_regime', 'component_count',
@@ -63,7 +63,7 @@ class WorkspaceSerializer(serializers.ModelSerializer):
             'hierarchy_metadata', 'dashboard_config', 'rbac_config',
             'created_at', 'updated_at',
         )
-        read_only_fields = ('id', 'owner', 'created_at', 'updated_at')
+        read_only_fields = ('id', 'workspace_code', 'owner', 'created_at', 'updated_at')
 
     @staticmethod
     def _format_fiscal_year(fiscal_year_end):

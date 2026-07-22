@@ -509,6 +509,19 @@ class OrganizationViewSet(viewsets.ModelViewSet):
             ).distinct().select_related('owner')
 
         organization_list = list(organizations.order_by('-created_at'))
+        departments_by_organization = {}
+        if organization_list:
+            for department in EntityDepartment.objects.filter(
+                entity__organization__in=organization_list,
+                is_active=True,
+            ).select_related('entity').order_by('name'):
+                departments_by_organization.setdefault(department.entity.organization_id, []).append({
+                    'id': department.id,
+                    'name': department.name,
+                    'department_code': department.department_code,
+                    'entity_id': department.entity_id,
+                    'entity_name': department.entity.name,
+                })
         invite_schema_ready = _teammember_invite_code_schema_ready()
         membership_rows = {}
         if organization_list:
@@ -539,6 +552,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
                 'has_invite_code': False,
                 'can_unlock': False,
                 'can_manage': bool(request.user.is_superuser or organization.owner_id == request.user.id),
+                'departments': departments_by_organization.get(organization.id, []),
             })
             items.append(item)
 

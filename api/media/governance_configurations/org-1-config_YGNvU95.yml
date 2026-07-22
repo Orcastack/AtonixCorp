@@ -1,0 +1,133 @@
+schema_version: v1
+document_type: atonixcorp_governance_configuration
+generated_at: '2026-07-22T07:41:31.009132+00:00'
+organization:
+  id: 1
+  name: Lobby Finance
+  registration_number: null
+  slug: lobby-finance
+  description: ''
+  industry: ''
+  subscription_tier: enterprise
+  primary_country: US
+  primary_currency: USD
+  settings: {}
+entities: []
+offices: []
+governance_policies: []
+workflows: []
+ldap_directory:
+- uid: null
+  dn: o=lobby-finance,dc=atonixcorp
+  cn: Lobby Finance
+  node_type: organization
+  role_code: ''
+  permissions: []
+  source_type: organization
+  attributes:
+    company_id: 1
+    registration_number: null
+    subscription_tier: enterprise
+  is_active: true
+- uid: null
+  dn: ou=finance,o=lobby-finance,dc=atonixcorp
+  cn: Finance
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: finance
+  is_active: true
+- uid: null
+  dn: ou=governance,o=lobby-finance,dc=atonixcorp
+  cn: Governance
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: governance
+  is_active: true
+- uid: null
+  dn: ou=security,o=lobby-finance,dc=atonixcorp
+  cn: Security
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: security
+  is_active: true
+- uid: null
+  dn: ou=technology,o=lobby-finance,dc=atonixcorp
+  cn: Technology
+  node_type: office
+  role_code: ''
+  permissions: []
+  source_type: default_office
+  attributes:
+    office_key: technology
+  is_active: true
+- uid: '4238348533'
+  dn: uid=4238348533,ou=people,o=lobby-finance,dc=atonixcorp
+  cn: lobby-invitee
+  node_type: user
+  role_code: VIEWER
+  permissions:
+  - view_org_overview
+  - view_entities
+  - view_tax_compliance
+  - view_cashflow
+  - view_risk_exposure
+  - view_reports
+  source_type: team_member
+  attributes:
+    email: invitee@example.com
+    company_id: 1
+    company_registration_number: null
+    scoped_entity_ids: []
+  is_active: true
+- uid: '4251736722'
+  dn: uid=4251736722,ou=people,o=lobby-finance,dc=atonixcorp
+  cn: lobby-owner
+  node_type: user
+  role_code: FOUNDER
+  permissions:
+  - view_org_overview
+  - manage_org_settings
+  - manage_billing
+  - view_entities
+  - create_entity
+  - edit_entity
+  - delete_entity
+  - view_tax_compliance
+  - edit_tax_compliance
+  - manage_tax_regimes
+  - view_tax_audit_logs
+  - submit_tax_filings
+  - run_tax_calculations
+  - edit_tax_registrations
+  - export_tax_reports
+  - view_cashflow
+  - edit_cashflow
+  - view_risk_exposure
+  - edit_risk_exposure
+  - view_reports
+  - generate_reports
+  - export_reports
+  - view_team
+  - manage_team
+  - assign_roles
+  source_type: founder
+  attributes:
+    email: owner@example.com
+    company_id: 1
+    company_registration_number: null
+    is_founder: true
+  is_active: true
+integrity:
+  algorithm: HMAC-SHA256
+  key_id: governance-hmac-v1
+  checksum: 1cb2861f93365c879e33f584457dd050743041cd026da9f03fc9b89b56e3dc45
+  signature: 4264bb3483bac10fedbf6fc167d5728a5732d60b35659ea1dd100d5cc86a17f4

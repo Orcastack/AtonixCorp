@@ -53,6 +53,7 @@ class Workspace(models.Model):
     id          = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner       = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_workspaces')
     linked_entity = models.OneToOneField('finances.Entity', on_delete=models.SET_NULL, null=True, blank=True, related_name='linked_workspace')
+    workspace_code = models.CharField(max_length=20, unique=True, editable=False, db_index=True, blank=True)
     name        = models.CharField(max_length=255)
     description = models.TextField(blank=True, default='')
     tier        = models.CharField(max_length=20, choices=WorkspaceTier.choices, default=WorkspaceTier.FREE)
@@ -65,6 +66,17 @@ class Workspace(models.Model):
 
     def __str__(self):
         return f'{self.name} ({self.tier})'
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            stored_code = Workspace.objects.filter(pk=self.pk).values_list('workspace_code', flat=True).first()
+            if stored_code:
+                self.workspace_code = stored_code
+        if not self.workspace_code:
+            from atonixcorp.models import generate_identity_code
+
+            self.workspace_code = generate_identity_code('WSP')
+        super().save(*args, **kwargs)
 
 
 # ─────────────────────────────────────────────────────────────────────────────

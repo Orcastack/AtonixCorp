@@ -456,13 +456,14 @@ const GlobalConsole = () => {
         ) : lobbyItems.length === 0 ? (
           <div className="gc-notif-empty" style={{ gridColumn: '1 / -1' }}>No departments or workspaces are available yet.</div>
         ) : (
-          lobbyItems.map((item) => (
+          lobbyItems.flatMap((item) => [
             <article key={item.id} className="gc-center-card">
               <div className={`gc-center-status ${item.status === 'active' ? 'is-healthy' : 'is-review'}`}>
                 {item.status}
               </div>
               <div>
                 <h3 style={{ margin: '0 0 8px', color: '#1e2328' }}>{item.name}</h3>
+                {item.enterprise_code ? <p style={{ margin: '0 0 8px', color: '#64748b' }}>{item.enterprise_code}</p> : null}
                 {item.description ? <p style={{ margin: 0, color: '#64748b' }}>{item.description}</p> : null}
               </div>
               <button
@@ -472,8 +473,27 @@ const GlobalConsole = () => {
               >
                 {item.status === 'active' ? 'Open' : 'Enter Code'}
               </button>
-            </article>
-          ))
+            </article>,
+            ...(item.departments || []).map((department) => (
+              <article key={`${item.id}-${department.id}`} className="gc-center-card">
+                <div className={`gc-center-status ${item.status === 'active' ? 'is-healthy' : 'is-review'}`}>
+                  department
+                </div>
+                <div>
+                  <h3 style={{ margin: '0 0 8px', color: '#1e2328' }}>{department.name}</h3>
+                  <p style={{ margin: '0 0 8px', color: '#64748b' }}>{department.department_code}</p>
+                  <p style={{ margin: 0, color: '#64748b' }}>{item.name}</p>
+                </div>
+                <button
+                  type="button"
+                  className="gc-center-link"
+                  onClick={() => (item.status === 'active' ? handleOpenLobbyItem(item) : handleUnlockLobbyItem(item))}
+                >
+                  {item.status === 'active' ? 'Open' : 'Enter Code'}
+                </button>
+              </article>
+            )),
+          ])
         )}
       </section>
 

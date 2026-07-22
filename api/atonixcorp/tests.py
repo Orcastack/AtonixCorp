@@ -1090,6 +1090,7 @@ class LobbyAccessTests(TestCase):
         self.assertEqual(invite_response.status_code, 201)
         invitation_code = invite_response.data['invitation_code']
         self.assertTrue(invitation_code)
+        self.assertEqual(invite_response.data['invitation_reference'], f'INV-{self.organization.enterprise_code}-01')
 
         self.client.force_authenticate(self.invitee)
         lobby_response = self.client.get('/api/organizations/lobby/')
@@ -1109,6 +1110,13 @@ class LobbyAccessTests(TestCase):
         member = TeamMember.objects.get(organization=self.organization, user=self.invitee)
         self.assertTrue(member.accepted_at)
         self.assertTrue(member.is_active)
+        self.invitee.profile.refresh_from_db()
+        self.assertEqual(self.invitee.profile.platform_role, UserProfile.PLATFORM_ROLE_EMPLOYEE)
+
+        invitation_audit = AuditLog.objects.get(organization=self.organization, model_name='TeamMember')
+        self.assertEqual(invitation_audit.changes['enterprise_code'], self.organization.enterprise_code)
+        self.assertEqual(invitation_audit.changes['invitee_identity_code'], self.invitee.profile.identity_code)
+        self.assertEqual(invitation_audit.changes['actor_public_user_id'], self.owner.profile.public_user_id)
 
         active_lobby_response = self.client.get('/api/organizations/lobby/')
         self.assertEqual(active_lobby_response.data['items'][0]['status'], 'active')
@@ -1123,6 +1131,8 @@ class FirstUserAdminAssignmentTests(TestCase):
             {
                 'email': 'first-admin@example.com',
                 'username': 'first-admin',
+                'first_name': 'First',
+                'last_name': 'Admin',
                 'password': 'strong-pass-123',
                 'account_type': 'enterprise',
                 'country': 'US',
@@ -1135,6 +1145,96 @@ class FirstUserAdminAssignmentTests(TestCase):
         user = User.objects.get(email='first-admin@example.com')
         self.assertTrue(user.is_staff)
         self.assertTrue(user.is_superuser)
+
+
+class PublicIdentityCodeTests(TestCase):
+    @patch('atonixcorp.auth_views.send_verification_email')
+    def test_registration_assigns_immutable_user_code_and_platform_role(self, _send_verification_email):
+        client = APIClient(HTTP_HOST='localhost')
+        response = client.post(
+            '/api/auth/register/',
+            {
+                'email': 'identity-admin@example.com',
+                'username': 'identity-admin',
+                'first_name': 'Samuel',
+                'last_name': 'Johnson',
+                'password': 'strong-pass-123',
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertRegex(response.data['user']['public_user_id'], r'^SAMJOH-\d{6}-\d{4}-001$')
+        self.assertEqual(response.data['user']['platform_role'], UserProfile.PLATFORM_ROLE_SUPER_USER)
+
+        profile = UserProfile.objects.get(user__email='identity-admin@example.com')
+        original_identity_code = profile.identity_code
+        profile.country = 'US'
+        profile.save()
+        profile.refresh_from_db()
+        self.assertEqual(profile.identity_code, original_identity_code)
+
+        profile.public_user_id = 'modified'
+        profile.save(update_fields=['public_user_id'])
+        profile.refresh_from_db()
+        self.assertEqual(profile.public_user_id, response.data['user']['public_user_id'])
+
+    def test_username_suggestions_are_available_and_case_insensitively_unique(self):
+        User.objects.create_user(username='samuel01', email='taken@example.com', password='strong-pass-123')
+        client = APIClient(HTTP_HOST='localhost')
+
+        response = client.get('/api/auth/username-suggestions/?first_name=Samuel')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn('samuel01', response.data['suggestions'])
+        self.assertIn(f'samuel{timezone.localdate().year}', response.data['suggestions'])
+
+    @patch('atonixcorp.auth_views.send_verification_email')
+    def test_subsequent_registration_is_a_member_with_distinct_user_code(self, _send_verification_email):
+        first_user = User.objects.create_user(username='seed-user', email='seed@example.com', password='strong-pass-123')
+        UserProfile.objects.create(user=first_user)
+        client = APIClient(HTTP_HOST='localhost')
+
+        response = client.post(
+            '/api/auth/register/',
+            {
+                'email': 'identity-member@example.com',
+                'username': 'identity-member',
+                'first_name': 'Identity',
+                'last_name': 'Member',
+                'password': 'strong-pass-123',
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['user']['platform_role'], UserProfile.PLATFORM_ROLE_MEMBER)
+        self.assertNotEqual(response.data['user']['public_user_id'], first_user.profile.public_user_id)
+
+    def test_enterprise_department_and_workspace_receive_public_codes(self):
+        owner = User.objects.create_user(username='code-owner', email='code-owner@example.com', password='strong-pass-123')
+        UserProfile.objects.create(user=owner)
+        organization = Organization.objects.create(
+            owner=owner,
+            name='Identity Code Holdings',
+            slug='identity-code-holdings',
+            primary_country='US',
+            primary_currency='USD',
+        )
+        entity = Entity.objects.create(
+            organization=organization,
+            name='Identity Code Entity',
+            country='US',
+            entity_type='corporation',
+            status='active',
+            local_currency='USD',
+        )
+        department = EntityDepartment.objects.create(entity=entity, name='Finance', code='ID-FIN')
+        workspace = WorkspaceService.create_workspace(owner, {'name': 'Identity Code Workspace', 'linked_entity_id': entity.id})
+
+        self.assertRegex(organization.enterprise_code, r'^ENT-\d{4}-\d{3,}$')
+        self.assertRegex(department.department_code, r'^DEP-\d{4}-\d{3,}$')
+        self.assertRegex(workspace.workspace_code, r'^WSP-\d{4}-\d{3,}$')
 
 
 @override_settings(ATONIXCORP_API_ENVIRONMENT='sandbox')
