@@ -74,12 +74,6 @@ src/
 
 ## Features in Detail
 
-### Mock Data
-The app currently uses mock data stored in Context API. This allows you to:
-- Test all features without backend
-- See realistic examples
-- Understand the data structure
-
 ### State Management
 Uses React Context API with the following operations:
 - Add/Delete/Update Expenses
@@ -87,13 +81,12 @@ Uses React Context API with the following operations:
 - Add/Delete/Update Budgets
 - Automatic calculations for totals and balances
 
-## Future Enhancements (Django API Integration)
+## Runtime Data
 
-The app is designed to easily integrate with a Django REST API backend:
-- User authentication
-- Data persistence
-- Multi-user support
-- Cloud synchronization
+Authenticated application data is loaded through the Django REST API and scoped
+to the active organization or workspace. New features must use a typed API
+service and persisted backend data; mock services, demo fallbacks, and fixture
+records are not permitted in production paths.
 
 ## License
 

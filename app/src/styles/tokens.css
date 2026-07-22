@@ -18,6 +18,9 @@
   --color-gray: var(--color-silver-700);
   --color-primary: var(--color-navy-900);
   --color-primary-rgb: 16, 42, 67;
+  --color-primary-strong: var(--color-navy-950);
+  --color-accent-black: #000000;
+  --color-accent-black-rgb: 0, 0, 0;
   --color-secondary: var(--color-blue-700);
   --color-background: var(--color-silver-100);
   --color-background-rgb: 243, 246, 249;
@@ -33,6 +36,16 @@
   --color-error: #b42318;
   --color-warning: #9a6700;
   --color-info: var(--color-blue-700);
+
+  /* Flagship dashboard contract: navy authority, black contrast, status-only color. */
+  --dashboard-primary: var(--color-navy-950);
+  --dashboard-primary-soft: #e9eef4;
+  --dashboard-ink: var(--color-black);
+  --dashboard-surface: var(--color-white);
+  --dashboard-canvas: #f4f7fb;
+  --dashboard-border: #d7e0e9;
+  --dashboard-focus: #2878bd;
+  --dashboard-update-glow: rgba(11, 31, 58, 0.16);
 
   /* Dropdown controls and menus always declare both a surface and ink color. */
   --color-dropdown-surface: var(--color-white);
@@ -92,6 +105,7 @@
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
+  --font-weight-light: 300;
   --line-height-body: 1.5;
   --line-height-heading: 1.2;
 

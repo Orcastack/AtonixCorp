@@ -35,16 +35,28 @@ New feature styles should use the existing tokens and should not introduce a sec
 
 ## Typography
 
-The platform uses bundled IBM Plex Sans for interface text and IBM Plex Mono for code or data that benefits from fixed-width alignment.
+The platform uses bundled IBM Plex Sans for every interface element and IBM Plex Mono for numeric metrics, code, and tabular data. Do not add a local font stack or a page-specific webfont.
+
+```js
+import '@fontsource/ibm-plex-sans/400.css';
+import '@fontsource/ibm-plex-sans/700.css';
+import '@fontsource/ibm-plex-mono/300.css';
+```
 
 - Page titles (`h1`): 24-32px, bold.
 - Section titles (`h2`): 20-24px, bold.
 - Body text: 16px, regular, 1.5 line height.
 - Labels and metadata: 14px, semibold.
+- Metrics and stats: IBM Plex Mono, light, tabular numerals.
 
 ## Palette
 
-Use the semantic variables instead of raw color values:
+Use the semantic variables instead of raw color values. Dashboard surfaces use one primary authority color and black contrast; green, amber, red, and blue are reserved for status or accessibility feedback.
+
+- Dashboard primary: `--dashboard-primary` (`--color-navy-950`).
+- Dashboard black accent: `--dashboard-ink` (`--color-black`).
+- Dashboard surface/canvas: `--dashboard-surface`, `--dashboard-canvas`.
+- Dashboard borders and update state: `--dashboard-border`, `--dashboard-update-glow`.
 
 - Authority: `--color-navy-950`, `--color-navy-900`, `--color-navy-800`.
 - Technology accents: `--color-blue-700`, `--color-blue-600`, `--color-blue-100`.
@@ -56,13 +68,12 @@ Avoid raw colors, neon effects, glow treatments, decorative gradients, and page-
 
 ## Enterprise Dashboards
 
-Organization dashboards use a white and cool-gray canvas with blue for navigation
-and interactive controls, green for positive performance, and amber or red only
-for status conditions. Dashboard panels, metrics, tabs, and resource cards use a
-1px border, 2px corner radius, and restrained shadow. Metric labels are 11px
-uppercase metadata; values are 25px bold figures with no decorative gradients.
-Keep dashboard grids at four metrics on wide screens, two on tablet, and one on
-mobile. Tabs use a blue bottom border for the active state and a gray hover fill.
+Organization dashboards use the shared dashboard contract. Compose
+`.dashboard-surface`, `.dashboard-grid` or `.metrics-wall`, and
+`.dashboard-card`/`.metric-card` for new surfaces. The grid is four columns on
+desktop, two on tablet, and one on mobile. Metric labels are compact metadata;
+values use light IBM Plex Mono. Updated cards may use the restrained shared
+update glow, never a decorative gradient.
 
 ### Organization Overview Console
 
@@ -74,9 +85,8 @@ financial zero values remain legible and aligned. The card's colored left rule i
 the visual indicator: blue is neutral, green is positive performance, and amber
 is reserved for tax attention.
 
-Quick-action cards remain neutral surfaces. The Reports action alone may use the
-`#4f46e5` to `#818cf8` horizontal gradient as a 3px top rail, never as a page
-background, card fill, or header treatment. On small screens, organization tabs
+Quick-action cards remain neutral surfaces. Status colors are reserved for
+meaningful alerts and highlights. On small screens, organization tabs
 scroll horizontally and metric grids reduce from four columns to two and then one
 without changing the card hierarchy.
 

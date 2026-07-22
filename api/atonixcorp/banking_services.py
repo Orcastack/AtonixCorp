@@ -167,28 +167,20 @@ def prepare_oauth_consent(integration, *, redirect_uri, scopes=None, requested_b
         metadata={'provider_name': integration.provider_name},
     )
 
-    if authorize_url and client_id and redirect_uri:
-        params = {
-            'response_type': 'code',
-            'client_id': client_id,
-            'redirect_uri': redirect_uri,
-            'scope': ' '.join(scopes),
-            'state': state,
-        }
-        consent_url = f'{authorize_url}?{urlencode(params)}'
-        mode = 'oauth'
-    else:
-        callback_params = urlencode(
-            {
-                'bank_integration': integration.id,
-                'provider': provider_code,
-                'state': state,
-                'code': f'demo-{state}',
-            }
+    if not authorize_url or not client_id or not redirect_uri:
+        raise ValueError(
+            f'Banking provider {provider_code} is not configured for OAuth consent.'
         )
-        separator = '&' if '?' in redirect_uri else '?'
-        consent_url = f'{redirect_uri}{separator}{callback_params}'
-        mode = 'mock'
+
+    params = {
+        'response_type': 'code',
+        'client_id': client_id,
+        'redirect_uri': redirect_uri,
+        'scope': ' '.join(scopes),
+        'state': state,
+    }
+    consent_url = f'{authorize_url}?{urlencode(params)}'
+    mode = 'oauth'
 
     _audit_banking_event(
         integration,
