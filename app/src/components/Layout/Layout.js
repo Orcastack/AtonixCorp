@@ -8,7 +8,7 @@ import './Layout.css';
 
 const Layout = ({ children }) => {
   const { user, logout } = useAuth();
-  const { currentOrganization } = useEnterprise();
+  const { currentOrganization, hasPermission, PERMISSIONS } = useEnterprise();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -139,6 +139,24 @@ const Layout = ({ children }) => {
     { to: '/support-tickets',     label: 'Support Tickets', target: '_blank', rel: 'noreferrer noopener' },
   ];
 
+  const canSeeEnterprise = hasPermission(PERMISSIONS.VIEW_ORG_OVERVIEW);
+  const canSeeDepartments = hasPermission(PERMISSIONS.VIEW_TEAM);
+  const canSeeFinance = hasPermission(PERMISSIONS.VIEW_ENTITIES);
+  const visibleSections = {
+    overview: canSeeEnterprise,
+    workspace: canSeeEnterprise || canSeeDepartments,
+    accounting: canSeeFinance,
+    billing: canSeeFinance,
+    reporting: canSeeFinance,
+    budgeting: canSeeFinance,
+    compliance: canSeeEnterprise,
+    documents: canSeeEnterprise,
+    clients: canSeeEnterprise,
+    automation: canSeeEnterprise,
+    integrations: canSeeEnterprise,
+    firm: canSeeEnterprise,
+  };
+
   const firmNav = [
     { to: '/app/firm/dashboard',    label: 'Firm Dashboard' },
     { to: '/app/firm/white-label',  label: 'White Label' },
@@ -194,6 +212,7 @@ const Layout = ({ children }) => {
       }
 
       const { to, icon, label, target, rel } = item;
+      const fallbackIcon = (label || '•').slice(0, 1).toUpperCase();
       return (
         <li key={to}>
           <NavLink
@@ -203,7 +222,7 @@ const Layout = ({ children }) => {
             target={target}
             rel={rel}
           >
-            <span className="nav-icon">{icon}</span>
+            <span className="nav-icon">{icon || fallbackIcon}</span>
             {!sidebarMinimized && <span className="nav-label">{label}</span>}
           </NavLink>
         </li>
@@ -246,41 +265,41 @@ const Layout = ({ children }) => {
 
         {/* Navigation */}
         <ul className="nav-menu">
-          {renderSection('Overview', overviewNav)}
-          <li className="nav-divider" role="separator" />
+          {visibleSections.overview && renderSection('Overview', overviewNav)}
+          {visibleSections.overview && <li className="nav-divider" role="separator" />}
 
-          {renderSection('Workspace', workspaceNav, 'workspace-label')}
-          <li className="nav-divider" role="separator" />
+          {visibleSections.workspace && renderSection('Workspace', workspaceNav, 'workspace-label')}
+          {visibleSections.workspace && <li className="nav-divider" role="separator" />}
 
-          {renderSection('Accounting', accountingNav)}
-          <li className="nav-divider" role="separator" />
+          {visibleSections.accounting && renderSection('Accounting', accountingNav)}
+          {visibleSections.accounting && <li className="nav-divider" role="separator" />}
 
-          {renderSection('Billing & Payments', billingNav)}
-          <li className="nav-divider" role="separator" />
+          {visibleSections.billing && renderSection('Billing & Payments', billingNav)}
+          {visibleSections.billing && <li className="nav-divider" role="separator" />}
 
-          {renderSection('Financial Reporting', reportingNav)}
-          <li className="nav-divider" role="separator" />
+          {visibleSections.reporting && renderSection('Financial Reporting', reportingNav)}
+          {visibleSections.reporting && <li className="nav-divider" role="separator" />}
 
-          {renderSection('Budgeting & Forecasting', budgetingNav)}
-          <li className="nav-divider" role="separator" />
+          {visibleSections.budgeting && renderSection('Budgeting & Forecasting', budgetingNav)}
+          {visibleSections.budgeting && <li className="nav-divider" role="separator" />}
 
-          {renderSection('Tax & Compliance', complianceNav)}
-          <li className="nav-divider" role="separator" />
+          {visibleSections.compliance && renderSection('Tax & Compliance', complianceNav)}
+          {visibleSections.compliance && <li className="nav-divider" role="separator" />}
 
-          {renderSection('Document Management', documentsNav)}
-          <li className="nav-divider" role="separator" />
+          {visibleSections.documents && renderSection('Document Management', documentsNav)}
+          {visibleSections.documents && <li className="nav-divider" role="separator" />}
 
-          {renderSection('Client Management', clientsNav)}
-          <li className="nav-divider" role="separator" />
+          {visibleSections.clients && renderSection('Client Management', clientsNav)}
+          {visibleSections.clients && <li className="nav-divider" role="separator" />}
 
-          {renderSection('Automation', automationNav)}
-          <li className="nav-divider" role="separator" />
+          {visibleSections.automation && renderSection('Automation', automationNav)}
+          {visibleSections.automation && <li className="nav-divider" role="separator" />}
 
-          {renderSection('Integrations', integrationsNav)}
-          <li className="nav-divider" role="separator" />
+          {visibleSections.integrations && renderSection('Integrations', integrationsNav)}
+          {visibleSections.integrations && <li className="nav-divider" role="separator" />}
 
-          {renderSection('Firm Management', firmNav)}
-          <li className="nav-divider" role="separator" />
+          {visibleSections.firm && renderSection('Firm Management', firmNav)}
+          {visibleSections.firm && <li className="nav-divider" role="separator" />}
 
           {renderSection('Support', supportNav)}
         </ul>

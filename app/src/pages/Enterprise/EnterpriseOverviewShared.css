@@ -1,11 +1,11 @@
 .enterprise-overview {
-  --overview-ink: #1f5f9b;
-  --overview-muted: rgba(31, 95, 155, 0.72);
+  --overview-ink: #102b4d;
+  --overview-muted: rgba(16, 43, 77, 0.66);
   --overview-surface: #ffffff;
-  --overview-line: rgba(31, 95, 155, 0.16);
-  --overview-shadow: 0 22px 50px rgba(31, 95, 155, 0.08);
-  --overview-hero-bg: #1f5f9b;
-  --overview-accent: #2878BD;
+  --overview-line: rgba(16, 43, 77, 0.12);
+  --overview-shadow: 0 20px 48px rgba(16, 43, 77, 0.09);
+  --overview-hero-bg: #102b4d;
+  --overview-accent: #c99b3b;
   color: var(--overview-ink);
   display: grid;
   gap: 28px;
@@ -24,6 +24,60 @@
   overflow: hidden;
   padding: 30px 32px;
   position: relative;
+}
+
+.org-dashboard-page {
+  animation: enterprise-page-in 420ms ease both;
+}
+
+.org-dashboard-page .metric-card,
+.org-dashboard-page .summary-card,
+.org-dashboard-page .position-card,
+.org-dashboard-page .action-button {
+  animation: enterprise-card-in 420ms ease both;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.org-dashboard-page .metric-card:hover,
+.org-dashboard-page .summary-card:hover,
+.org-dashboard-page .position-card:hover,
+.org-dashboard-page .action-button:hover {
+  border-color: rgba(201, 155, 59, 0.46);
+  box-shadow: 0 24px 52px rgba(16, 43, 77, 0.14);
+  transform: translateY(-3px);
+}
+
+.org-dashboard-page .metric-value,
+.org-dashboard-page .card-value,
+.org-dashboard-page .position-value {
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.org-dashboard-page .ed-tab-btn.active {
+  box-shadow: inset 0 -2px 0 #c99b3b;
+  color: #102b4d;
+}
+
+@keyframes enterprise-page-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes enterprise-card-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .org-dashboard-page,
+  .org-dashboard-page .metric-card,
+  .org-dashboard-page .summary-card,
+  .org-dashboard-page .position-card,
+  .org-dashboard-page .action-button {
+    animation: none;
+    transition: none;
+  }
 }
 
 .overview-hero::after {
@@ -175,10 +229,56 @@
 
 .metric-details span,
 .metric-badge {
+  .enterprise-compliance-ticker {
+    align-items: center;
+    background: #102b4d;
+    border: 1px solid rgba(201, 155, 59, 0.32);
+    border-radius: 14px;
+    box-shadow: 0 14px 32px rgba(16, 43, 77, 0.12);
+    color: #f8fafc;
+    display: flex;
+    gap: 16px;
+    min-height: 44px;
+    overflow: hidden;
+    padding: 0 16px;
+  }
+
+  .enterprise-compliance-ticker-label {
+    color: #e2bd68;
+    flex: 0 0 auto;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .enterprise-compliance-ticker-track {
+    display: flex;
+    gap: 48px;
+    min-width: max-content;
+    white-space: nowrap;
+    animation: enterprise-ticker 28s linear infinite;
+  }
+
+  .enterprise-compliance-ticker-track span::before {
+    color: #e2bd68;
+    content: '•';
+    margin-right: 12px;
+  }
+
+  @keyframes enterprise-ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-32%); }
+  }
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
   padding: 8px 12px;
+  .enterprise-compliance-ticker-track {
+    animation: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 .metric-details .asset {

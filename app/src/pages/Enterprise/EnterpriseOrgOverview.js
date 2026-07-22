@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEnterprise } from '../../context/EnterpriseContext';
+import { useAnimatedNumber } from '../../utils/dashboardMetrics';
 import '../../styles/EntityPages.css';
 import './EnterpriseOverviewShared.css';
 import './EnterpriseOverviewSections.css';
@@ -86,6 +87,11 @@ const EnterpriseOrgOverview = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [sortBy, setSortBy] = useState('revenue');
 
+  const animatedNetPosition = useAnimatedNumber(orgOverview?.net_position || 0);
+  const animatedTaxExposure = useAnimatedNumber(orgOverview?.total_tax_exposure || 0);
+  const animatedRevenue = useAnimatedNumber(branchData.reduce((sum, branch) => sum + branch.revenue, 0));
+  const animatedProfit = useAnimatedNumber(Math.abs(branchData.reduce((sum, branch) => sum + branch.revenue - branch.expenses, 0)));
+
   const createdWorkspaces = (entities || []).filter((e) => e.workspace_mode === 'workspace');
   const createdEquity = (entities || []).filter((e) => e.workspace_mode === 'equity');
   const createdEntities = (entities || []).filter((e) => e.workspace_mode !== 'workspace' && e.workspace_mode !== 'equity');
@@ -164,8 +170,6 @@ const EnterpriseOrgOverview = () => {
   const {
     total_assets = 0,
     total_liabilities = 0,
-    net_position = 0,
-    total_tax_exposure = 0,
     active_jurisdictions = 0,
     active_entities = 0,
     pending_tax_returns = 0,
@@ -254,23 +258,32 @@ const EnterpriseOrgOverview = () => {
             <div className="summary-cards org-summary-cards" style={{ gridTemplateColumns: 'repeat(4, minmax(0, 1fr))' }}>
               <div className="summary-card profit">
                 <div className="card-label">Net Position</div>
-                <div className="card-value">{formatCurrency(net_position, { maximumFractionDigits: 2 })}</div>
+                <div className="card-value">{formatCurrency(animatedNetPosition, { maximumFractionDigits: 2 })}</div>
                 <div className="card-count">Assets {formatCurrency(total_assets)} vs liabilities {formatCurrency(total_liabilities)}</div>
               </div>
               <div className="summary-card expense">
                 <div className="card-label">Tax Exposure</div>
-                <div className="card-value">{formatCurrency(total_tax_exposure)}</div>
+                <div className="card-value">{formatCurrency(animatedTaxExposure)}</div>
                 <div className="card-count">{pending_tax_returns} returns pending this period</div>
               </div>
               <div className="summary-card income">
                 <div className="card-label">Consolidated Revenue</div>
-                <div className="card-value">{formatCompactCurrency(totalRevenue)}</div>
+                <div className="card-value">{formatCompactCurrency(animatedRevenue)}</div>
                 <div className="card-count">{branchData.length} branches contributing</div>
               </div>
               <div className={`summary-card ${totalProfit >= 0 ? 'profit' : 'expense'}`}>
                 <div className="card-label">Net Profit</div>
-                <div className="card-value">{formatCompactCurrency(Math.abs(totalProfit))}</div>
+                <div className="card-value">{formatCompactCurrency(animatedProfit)}</div>
                 <div className="card-count">{profitMargin.toFixed(1)}% consolidated margin</div>
+              </div>
+            </div>
+
+            <div className="enterprise-compliance-ticker" role="status" aria-label="Compliance status feed">
+              <span className="enterprise-compliance-ticker-label">Live control feed</span>
+              <div className="enterprise-compliance-ticker-track">
+                <span>{attentionCount ? `${attentionCount} compliance item${attentionCount === 1 ? '' : 's'} require review` : 'All compliance controls are operating normally'}</span>
+                <span>{active_jurisdictions} active jurisdictions monitored</span>
+                <span>{missing_data_entities} entities with incomplete reporting data</span>
               </div>
             </div>
 

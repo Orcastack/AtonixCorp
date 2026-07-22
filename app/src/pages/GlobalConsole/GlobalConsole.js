@@ -60,6 +60,8 @@ const GlobalConsole = () => {
     fetchGlobalNotifications,
     loading,
     complianceDeadlines,
+    hasPermission,
+    PERMISSIONS,
   } = useEnterprise();
 
   const [profileOpen, setProfileOpen] = useState(false);
@@ -77,6 +79,31 @@ const GlobalConsole = () => {
   const profileRef = useRef(null);
   const onboardingEnteredAtRef = useRef(null);
   const onboardingCtaClickedRef = useRef(false);
+  const panelPreferenceKey = `atonixcorp_console_panels_${user?.id || 'guest'}`;
+  const [expandedPanels, setExpandedPanels] = useState({});
+
+  useEffect(() => {
+    try {
+      const savedPanels = JSON.parse(localStorage.getItem(panelPreferenceKey) || '{}');
+      setExpandedPanels(savedPanels && typeof savedPanels === 'object' ? savedPanels : {});
+    } catch {
+      setExpandedPanels({});
+    }
+  }, [panelPreferenceKey]);
+
+  const togglePanel = useCallback((panel) => {
+    setExpandedPanels((current) => {
+      const next = { ...current, [panel]: !current[panel] };
+      localStorage.setItem(panelPreferenceKey, JSON.stringify(next));
+      emitAnalyticsEvent('console_panel_toggle', {
+        panel,
+        expanded: next[panel],
+        userId: user?.id || null,
+        organizationId: currentOrganization?.id || null,
+      });
+      return next;
+    });
+  }, [currentOrganization?.id, panelPreferenceKey, user?.id]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -371,6 +398,15 @@ const GlobalConsole = () => {
     'No pending equity events',
     'No capital movements scheduled',
   ];
+  const canSeeEnterprise = hasPermission(PERMISSIONS.VIEW_ORG_OVERVIEW);
+  const canSeeEntity = hasPermission(PERMISSIONS.VIEW_ENTITIES);
+  const canSeeWorkspace = hasPermission(PERMISSIONS.VIEW_TEAM) || canSeeEnterprise;
+  const visibleConsoleSections = [
+    canSeeWorkspace && { key: 'workspace', label: 'Workspace', note: 'Tasks, collaboration, and shared work' },
+    canSeeEntity && { key: 'entity', label: 'Entity', note: 'Compliance, governance, and filings' },
+    canSeeEntity && { key: 'equity', label: 'Equity', note: 'Capital tables and vesting schedules' },
+    canSeeEnterprise && { key: 'enterprise', label: 'Enterprise', note: 'Organizations, policies, and global oversight' },
+  ].filter(Boolean);
 
   return (
     <div className="global-console-page premium-dashboard-shell">
@@ -451,10 +487,39 @@ const GlobalConsole = () => {
           </div>
         </div>
 
-        <div className="premium-dashboard-grid premium-grid-3">
+        {(expandedPanels.workspace || expandedPanels.entity || expandedPanels.enterprise) && (
+        <div className="premium-dashboard-grid premium-grid-3 gc-expandable-content">
           <section className="premium-panel premium-section">
             <div className="premium-section-header">
               <div>
+
+              <section className="gc-console-sections" aria-label="Authorized dashboard sections">
+                <div className="gc-console-sections-header">
+                  <div>
+                    <div className="premium-section-kicker">Unified command surface</div>
+                    <h2 className="premium-section-title">Your operating views</h2>
+                  </div>
+                  <span>{visibleConsoleSections.length} authorized views</span>
+                </div>
+                <div className="gc-console-section-list">
+                  {visibleConsoleSections.map((section) => (
+                    <button
+                      type="button"
+                      key={section.key}
+                      className={`gc-console-section-toggle${expandedPanels[section.key] ? ' is-expanded' : ''}`}
+                      aria-expanded={Boolean(expandedPanels[section.key])}
+                      onClick={() => togglePanel(section.key)}
+                    >
+                      <span className="gc-console-section-icon" aria-hidden="true">{section.label.slice(0, 1)}</span>
+                      <span className="gc-console-section-copy">
+                        <strong>{section.label}</strong>
+                        <small>{section.note}</small>
+                      </span>
+                      <span className="gc-console-section-state">{expandedPanels[section.key] ? 'Open' : 'View'}</span>
+                    </button>
+                  ))}
+                </div>
+              </section>
                 <div className="premium-section-kicker">Team activity</div>
                 <h2 className="premium-section-title">Collaboration and task flow</h2>
                 <p className="premium-section-subtitle">Live operational work, grouped into a calm premium card layout.</p>
@@ -514,6 +579,7 @@ const GlobalConsole = () => {
             </div>
           </section>
         </div>
+        )}
       </section>
 
       <section className="gc-capital-hero">
