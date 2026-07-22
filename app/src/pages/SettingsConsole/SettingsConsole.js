@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEnterprise } from '../../context/EnterpriseContext';
 import { useEquity } from '../../context/EquityContext';
@@ -231,13 +231,6 @@ const SettingsConsole = () => {
     };
   }, [currentOrganization?.id, fetchGovernanceCloudExports]);
 
-  const profileCards = useMemo(() => ([
-    { label: 'Enterprise settings profile', value: `${currentOrganization?.name || 'Enterprise'} Settings`, note: currentOrganization?.enterprise_code || 'Enterprise code unavailable' },
-    { label: 'Workspace settings profile', value: `${activeWorkspace?.name || 'Workspace'} Settings`, note: activeWorkspace?.workspace_code || 'Workspace code unavailable' },
-    { label: 'Entity settings profile', value: `${(entities.find((item) => String(item.id) === String(selectedEntityId)) || entities[0] || {}).name || 'Entity'} Settings`, note: 'Name-inherited branch settings' },
-    { label: 'Equity settings profile', value: `${(profile?.workspace?.name || activeWorkspace?.name || 'Equity')} Settings`, note: equityEnabled ? 'Equity control plane active' : 'Equity control plane disabled' },
-  ]), [activeWorkspace?.name, activeWorkspace?.workspace_code, currentOrganization?.enterprise_code, currentOrganization?.name, entities, equityEnabled, profile, selectedEntityId]);
-
   const selectedEntity = entities.find((item) => String(item.id) === String(selectedEntityId)) || null;
 
   const handleOrgSave = async () => {
@@ -429,16 +422,6 @@ const SettingsConsole = () => {
             </div>
           </div>
         </header>
-
-        <div className="eq-metric-grid premium-grid-3 settings-console-summary">
-          {profileCards.map((card) => (
-            <article key={card.label} className="eq-metric-card premium-metric-card">
-              <span className="eq-metric-label premium-metric-label">{card.label}</span>
-              <strong className="eq-metric-value premium-metric-value">{card.value}</strong>
-              <span className="eq-metric-note premium-metric-note">{card.note}</span>
-            </article>
-          ))}
-        </div>
 
         <div className="settings-console-layout">
           <aside className="settings-console-sidebar premium-panel">
